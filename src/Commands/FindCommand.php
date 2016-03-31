@@ -77,20 +77,20 @@ class FindCommand extends Command
      */
     private function tableRows() : array
     {
-        $languages = $this->manager->languages();
+        $allLanguages = $this->manager->languages();
 
         $filesContent = [];
 
         $output = [];
 
-        foreach ($this->files as $fileName => $languages) {
-            foreach ($languages as $languageKey => $filePath) {
+        foreach ($this->files as $fileName => $fileLanguages) {
+            foreach ($fileLanguages as $languageKey => $filePath) {
                 $lines = $filesContent[$languageKey] = (array) include $filePath;
 
                 foreach ($lines as $key => $line) {
                     if (Str::contains($line, $this->argument('keyword'))) {
                         $output[$key]['key'] = $fileName.'.'.$key;
-                        $output[$key][$languageKey] = $line;
+                        $output[$key][$languageKey] = "<bg=yellow;fg=black>{$line}</>";
                     }
                 }
             }
@@ -98,9 +98,9 @@ class FindCommand extends Command
 
         // Now that we collected all values that matches the keyword argument
         // in a close match, we collect the values for the rest of the
-        // languages for the found keys to complete the tabel view.
+        // languages for the found keys to complete the table view.
         foreach ($output as $key => $values) {
-            foreach ($languages as $languageKey => $path) {
+            foreach ($allLanguages as $languageKey) {
                 $output[$key][$languageKey] = $values[$languageKey] ?? $filesContent[$languageKey][$key] ?? '';
             }
         }

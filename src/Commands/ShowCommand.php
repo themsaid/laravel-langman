@@ -88,16 +88,27 @@ class ShowCommand extends Command
      */
     private function tableRows() : array
     {
+        $allLanguages = $this->manager->languages();
+
         $output = [];
 
         foreach ($this->files as $language => $file) {
-            foreach ((array) include $file as $key => $value) {
+            foreach ($filesContent[$language] =(array) include $file as $key => $value) {
                 if (! $this->shouldShowKey($key)) {
                     continue;
                 }
 
                 $output[$key]['key'] = $key;
                 $output[$key][$language] = $value;
+            }
+        }
+
+        // Now that we collected all values that matches the keyword argument
+        // in a close match, we collect the values for the rest of the
+        // languages for the found keys to complete the table view.
+        foreach ($output as $key => $values) {
+            foreach ($allLanguages as $languageKey) {
+                $output[$key][$languageKey] = $values[$languageKey] ?? '<bg=red>  MISSING  </>';
             }
         }
 

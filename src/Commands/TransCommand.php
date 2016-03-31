@@ -145,11 +145,17 @@ class TransCommand extends Command
             $languages = [$this->languageKey];
         }
 
+        $values = $this->collectValues($languages);
+
         $this->manager->fillKey(
             $this->fileName,
             $this->key,
-            $this->collectValues($languages)
+            $values
         );
+
+        foreach ($values as $languageKey => $value) {
+            $this->info("{$this->fileName}.{$this->key}.{$languageKey} was set to \"{$value}\" successfully.");
+        }
     }
 
     /**
