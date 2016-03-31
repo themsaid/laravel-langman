@@ -73,7 +73,7 @@ class ShowCommand extends Command
     {
         $this->parseKey();
 
-        $this->files = $this->filesForKey();
+        $this->files = $this->filesFromKey();
 
         $this->table(
             array_merge(['key'], array_keys($this->files)),
@@ -91,13 +91,9 @@ class ShowCommand extends Command
         $output = [];
 
         foreach ($this->files as $language => $file) {
-            $content = (array) include $file;
-
-            foreach ($content as $key => $value) {
-                if ($this->key) {
-                    if ($this->option('c') && ! Str::contains($key, $this->key)) {
-                        continue;
-                    }
+            foreach ((array) include $file as $key => $value) {
+                if (! $this->shouldShowKey($key)) {
+                    continue;
                 }
 
                 $output[$key]['key'] = $key;
@@ -113,7 +109,7 @@ class ShowCommand extends Command
      *
      * @return array
      */
-    private function filesForKey(): array
+    private function filesFromKey(): array
     {
         try {
             return $this->manager->files()[$this->file];
@@ -137,5 +133,24 @@ class ShowCommand extends Command
             // If explosion resulted 1 array item then it's the file, we
             // leave the key as null.
         }
+    }
+
+    /**
+     * Determine if the given key should exist in the output.
+     *
+     * @param $key
+     * @return bool
+     */
+    private function shouldShowKey($key) : bool
+    {
+        if ($this->key) {
+            if ($this->option('close') && ! Str::contains($key, $this->key)) {
+                return false;
+            } elseif ($key != $this->key) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
