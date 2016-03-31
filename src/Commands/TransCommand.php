@@ -145,6 +145,21 @@ class TransCommand extends Command
             $languages = [$this->languageKey];
         }
 
+        $this->manager->fillKey(
+            $this->fileName,
+            $this->key,
+            $this->collectValues($languages)
+        );
+    }
+
+    /**
+     * Collect translation values from console via questions.
+     *
+     * @param $languages
+     * @return array
+     */
+    private function collectValues($languages) : array
+    {
         $values = [];
 
         foreach ($languages as $languageKey) {
@@ -162,6 +177,6 @@ class TransCommand extends Command
             );
         }
 
-        $this->manager->fillKey($this->fileName, $this->key, $values);
+        return $values;
     }
 }
