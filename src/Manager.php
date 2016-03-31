@@ -118,10 +118,10 @@ class Manager
      */
     public function writeFile(string $filePath, array $translations)
     {
-        $content = "<?php \n\n return [";
+        $content = "<?php \n\nreturn [";
 
         foreach ($translations as $key => $value) {
-            $content .= "'{$key}' => '{$value}',";
+            $content .= "\n    '{$key}' => '{$value}',";
         }
 
         $content .= "\n];";
