@@ -52,7 +52,7 @@ class ShowCommandTest extends TestCase
             'nl' => ['user' => "<?php\n return ['name' => 'Naam'];"],
         ]);
 
-        $this->artisan('langman:show', ['key' => 'user.name', '-c' => null]);
+        $this->artisan('langman:show', ['key' => 'user.na', '-c' => null]);
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
