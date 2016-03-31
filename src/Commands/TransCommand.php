@@ -132,14 +132,22 @@ class TransCommand extends Command
      */
     private function fillKey()
     {
-        $values = [];
+        $languages = $this->manager->languages();
 
-        foreach ($this->manager->languages() as $languageKey) {
-            // If a language key was specified then we prompt for it only
-            if ($this->languageKey && $this->languageKey != $languageKey) {
-                continue;
+        if ($this->languageKey) {
+            if (! in_array($this->languageKey, $languages)) {
+                $this->error(sprintf('Language (%s) could not be found!', $this->languageKey));
+
+                return;
             }
 
+            // If a language key was specified then we prompt for it only.
+            $languages = [$this->languageKey];
+        }
+
+        $values = [];
+
+        foreach ($languages as $languageKey) {
             $languageContent = (array) include $this->files[$languageKey];
 
             $values[$languageKey] = $this->ask(
