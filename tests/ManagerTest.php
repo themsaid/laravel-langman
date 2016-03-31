@@ -2,7 +2,7 @@
 
 use Mockery as m;
 
-class TestManager extends TestCase
+class ManagerTest extends TestCase
 {
     protected function getEnvironmentSetUp($app)
     {
@@ -30,5 +30,18 @@ class TestManager extends TestCase
         ];
 
         $this->assertEquals($expected, $manager->files());
+    }
+
+    public function testLanguagesMethod()
+    {
+        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+
+        $this->createTempFiles([
+            'en' => [],
+            'sp' => [],
+            'nl' => [],
+        ]);
+
+        $this->assertEquals(['en', 'nl', 'sp'], $manager->languages());
     }
 }

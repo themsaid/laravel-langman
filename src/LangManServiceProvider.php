@@ -17,7 +17,8 @@ class LangManServiceProvider extends ServiceProvider
         });
 
         $this->commands([
-            \Themsaid\LangMan\Commands\ShowCommand::class
+            \Themsaid\LangMan\Commands\ShowCommand::class,
+            \Themsaid\LangMan\Commands\FindCommand::class,
         ]);
     }
 }

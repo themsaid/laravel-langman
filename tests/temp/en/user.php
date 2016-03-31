@@ -1,2 +1,2 @@
 <?php
- return ['name' => 'Name', 'age' => 'Age', 'username' => 'uname'];
+ return ['not_found' => 'user not found', 'age' => 'Age'];

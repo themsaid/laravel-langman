@@ -52,4 +52,18 @@ class Manager
 
         return $filesByFile->toArray();
     }
+
+    /**
+     * Array of supported languages.
+     *
+     * ex: ['en', 'sp']
+     *
+     * @return array
+     */
+    public function languages() : array
+    {
+        return array_map(function ($directory) {
+            return str_replace($this->path.'/', '', $directory);
+        }, $this->disk->directories($this->path));
+    }
 }

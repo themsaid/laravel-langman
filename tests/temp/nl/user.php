@@ -1,2 +1,2 @@
 <?php
- return ['name' => 'Naam'];
+ return ['not_found' => 'something'];

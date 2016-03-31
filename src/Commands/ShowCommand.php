@@ -76,7 +76,7 @@ class ShowCommand extends Command
         $this->files = $this->filesFromKey();
 
         $this->table(
-            array_merge(['key'], array_keys($this->files)),
+            array_merge(['key'], $this->manager->languages()),
             $this->tableRows()
         );
     }
