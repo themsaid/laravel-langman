@@ -1,5 +1,5 @@
 {
-    "name": "themsaid/laravel-lang-manager",
+    "name": "themsaid/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
     "homepage": "https://github.com/themsaid/laravel-lang-manager",
