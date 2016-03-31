@@ -9,6 +9,9 @@ class FindCommandTest extends TestCase
 
     public function testCommandErrorOnFilesNotFound()
     {
+        array_map('unlink', glob(__DIR__.'/temp/*/*'));
+        array_map('rmdir', glob(__DIR__.'/temp/*'));
+        
         $this->createTempFiles();
 
         $this->artisan('langman:find', ['keyword' => 'ragnar']);

@@ -9,18 +9,23 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         return [\Themsaid\LangMan\LangManServiceProvider::class];
     }
 
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     public function tearDown()
     {
         parent::tearDown();
+
+        array_map('unlink', glob(__DIR__.'/temp/*/*'));
+        array_map('rmdir', glob(__DIR__.'/temp/*'));
 
         $this->consoleOutput = '';
     }
 
     public function createTempFiles($files = [])
     {
-        array_map('unlink', glob(__DIR__.'/temp/*/*'));
-        array_map('rmdir', glob(__DIR__.'/temp/*'));
-
         foreach ($files as $lang => $langFiles) {
             mkdir(__DIR__.'/temp/'.$lang);
 
