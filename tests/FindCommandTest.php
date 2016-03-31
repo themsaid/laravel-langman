@@ -24,13 +24,14 @@ class FindCommandTest extends TestCase
         $this->createTempFiles([
             'en' => ['user' => "<?php\n return ['not_found' => 'user not found', 'age' => 'Age'];"],
             'nl' => ['user' => "<?php\n return ['not_found' => 'something'];"],
+            'sp' => ['user' => "<?php\n return ['else' => 'else'];"],
         ]);
 
         $this->artisan('langman:find', ['keyword' => 'not found']);
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
-        $this->assertRegExp('/user\.not_found(?:.*)user not found/', $this->consoleOutput());
+        $this->assertRegExp('/user\.not_found(?:.*)user not found(?:.*)something/', $this->consoleOutput());
         $this->assertNotContains('age', $this->consoleOutput());
-        $this->assertNotContains('something', $this->consoleOutput());
+        $this->assertNotContains('else', $this->consoleOutput());
     }
 }
