@@ -21,7 +21,6 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('confirm')->never();
         $command->shouldReceive('ask')->with('user.age.nl translation: (Hint: en = "Age")', '')->andReturn('fill_age');
         $command->shouldReceive('ask')->with('product.name.en translation: (Hint: nl = "Naam")', '')->andReturn('fill_name');
         $command->shouldReceive('ask')->with('product.color.nl translation: (Hint: en = "color")', '')->andReturn('fill_color');

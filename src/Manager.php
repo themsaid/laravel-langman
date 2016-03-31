@@ -96,13 +96,30 @@ class Manager
     {
         foreach ($values as $languageKey => $value) {
             $filePath = $this->path."/{$languageKey}/{$fileName}.php";
-            try {
-                $fileContent = (array) include $filePath;
-            } catch (\ErrorException $e) {
-                throw new FileNotFoundException('File not found: '.$filePath);
-            }
+
+            $fileContent = $this->getFileContent($filePath);
 
             $fileContent[$key] = $value;
+
+            $this->writeFile($filePath, $fileContent);
+        }
+    }
+
+    /**
+     * Remove a key from all language files.
+     *
+     * @param string $fileName
+     * @param string $key
+     * @return void
+     */
+    public function removeKey(string $fileName, string $key)
+    {
+        foreach ($this->languages() as $language) {
+            $filePath = $this->path."/{$language}/{$fileName}.php";
+
+            $fileContent = $this->getFileContent($filePath);
+
+            unset($fileContent[$key]);
 
             $this->writeFile($filePath, $fileContent);
         }
@@ -126,5 +143,23 @@ class Manager
         $content .= "\n];";
 
         file_put_contents($filePath, $content);
+    }
+
+    /**
+     * Get the content in the given file path.
+     *
+     * @param $filePath
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function getFileContent($filePath) : array
+    {
+        try {
+            $fileContent = (array) include $filePath;
+
+            return $fileContent;
+        } catch (\ErrorException $e) {
+            throw new FileNotFoundException('File not found: '.$filePath);
+        }
     }
 }

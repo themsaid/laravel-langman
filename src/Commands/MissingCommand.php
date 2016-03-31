@@ -19,7 +19,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Find missing translation values and fill them on demand.';
+    protected $description = 'Find missing translation values and fill them.';
 
     /**
      * The Languages manager instance.
