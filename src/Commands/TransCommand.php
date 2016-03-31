@@ -135,6 +135,11 @@ class TransCommand extends Command
         $values = [];
 
         foreach ($this->manager->languages() as $languageKey) {
+            // If a language key was specified then we prompt for it only
+            if ($this->languageKey && $this->languageKey != $languageKey) {
+                continue;
+            }
+
             $languageContent = (array) include $this->files[$languageKey];
 
             $values[$languageKey] = $this->ask(
