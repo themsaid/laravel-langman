@@ -19,6 +19,8 @@ class LangmanServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/langman.php', 'langman');
+
         $this->app->bind(Manager::class, function () {
             return new Manager(
                 new Filesystem(),

@@ -144,9 +144,11 @@ class ShowCommand extends Command
     private function shouldShowKey($key) : bool
     {
         if ($this->key) {
-            if ($this->option('close') && ! Str::contains($key, $this->key)) {
+            if (! $this->option('close') && $key != $this->key) {
                 return false;
-            } elseif ($key != $this->key) {
+            }
+
+            if ($this->option('close') && ! Str::contains($key, $this->key)) {
                 return false;
             }
         }
