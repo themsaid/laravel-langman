@@ -1,7 +1,5 @@
 <?php
 
-use Mockery as m;
-
 class ShowCommandTest extends TestCase
 {
     protected function getEnvironmentSetUp($app)
