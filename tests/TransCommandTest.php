@@ -19,6 +19,15 @@ class TransCommandTest extends TestCase
         $this->assertContains('Could not recognize the key you want to translate.', $this->consoleOutput());
     }
 
+    public function testCommandErrorOutputOnLanguageNotFound()
+    {
+        $this->createTempFiles(['en' => ['users' => '']]);
+
+        $this->artisan('langman:trans', ['key' => 'users.name.sd']);
+
+        $this->assertContains('Language (sd) could not be found!', $this->consoleOutput());
+    }
+
     public function testCommandAsksForConfirmationToCreateFileIfNotFound()
     {
         $this->createTempFiles();
@@ -100,5 +109,24 @@ class TransCommandTest extends TestCase
         $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
         $this->assertEquals('name', $enFile['name']);
         $this->assertEquals('naam', $nlFile['name']);
+    }
+
+    public function testCommandAsksForValueForOnlyProvidedLanguage()
+    {
+        $this->createTempFiles([
+            'en' => ['users' => "<?php\n return [];"],
+            'nl' => ['users' => "<?php\n return [];"],
+        ]);
+
+        $manager = $this->app[Manager::class];
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
+        $command->shouldReceive('confirm')->never();
+        $command->shouldReceive('ask')->once()->with('users.name.en translation:', '')->andReturn('name');
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:trans', ['key' => 'users.name.en']);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $this->assertEquals('name', $enFile['name']);
     }
 }
