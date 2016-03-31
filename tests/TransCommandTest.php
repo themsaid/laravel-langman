@@ -58,7 +58,7 @@ class TransCommandTest extends TestCase
         $this->assertFileExists($this->app['config']['langman.path'].'/en/users.php');
     }
 
-    public function testCommandAsksForValuePerLanguageAndWriteToFIle()
+    public function testCommandAsksForValuePerLanguageAndWriteToFile()
     {
         $this->createTempFiles([
             'en' => ['users' => "<?php\n return [];"],
@@ -68,8 +68,30 @@ class TransCommandTest extends TestCase
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
-        $command->shouldReceive('ask')->with('users.name.en translation:')->andReturn('name');
-        $command->shouldReceive('ask')->with('users.name.nl translation:')->andReturn('naam');
+        $command->shouldReceive('ask')->with('users.name.en translation:', '')->andReturn('name');
+        $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:trans', ['key' => 'users.name']);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+        $this->assertEquals('name', $enFile['name']);
+        $this->assertEquals('naam', $nlFile['name']);
+    }
+
+    public function testCommandAsksForValuePerLanguageAndWriteToFileUpdatingExisting()
+    {
+        $this->createTempFiles([
+            'en' => ['users' => "<?php\n return ['name' => 'nil'];"],
+            'nl' => ['users' => "<?php\n return [];"],
+        ]);
+
+        $manager = $this->app[Manager::class];
+        $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[ask]', [$manager]);
+        $command->shouldReceive('confirm')->never();
+        $command->shouldReceive('ask')->with('users.name.en translation (updating):', 'nil')->andReturn('name');
+        $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users.name']);

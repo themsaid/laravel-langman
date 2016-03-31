@@ -50,7 +50,7 @@ class TransCommand extends Command
     private $manager;
 
     /**
-     * Array of files grouped by filename.
+     * Array of requested file in different languages.
      *
      * @var array
      */
@@ -126,6 +126,8 @@ class TransCommand extends Command
     }
 
     /**
+     * Fill a translation key in all languages.
+     *
      * @return void
      */
     private function fillKey()
@@ -133,8 +135,17 @@ class TransCommand extends Command
         $values = [];
 
         foreach ($this->manager->languages() as $languageKey) {
+            $languageContent = (array) include $this->files[$languageKey];
+
             $values[$languageKey] = $this->ask(
-                sprintf('%s.%s.%s translation:', $this->fileName, $this->key, $languageKey)
+                sprintf(
+                    '%s.%s.%s translation%s:',
+                    $this->fileName,
+                    $this->key,
+                    $languageKey,
+                    isset($languageContent[$this->key]) ? ' (updating)' : ''
+                ),
+                $languageContent[$this->key] ?? ''
             );
         }
 
