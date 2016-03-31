@@ -44,4 +44,75 @@ class ManagerTest extends TestCase
 
         $this->assertEquals(['en', 'nl', 'sp'], $manager->languages());
     }
+
+    public function testCreateFileIfNotExisting()
+    {
+        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+
+        $this->createTempFiles([
+            'en' => [],
+            'sp' => [],
+            'nl' => ['user' => '__UN_TOUCHED__'],
+        ]);
+
+        $manager->createFile('user');
+
+        $this->assertFileExists($this->app['config']['langman.path'].'/en/user.php');
+        $this->assertFileExists($this->app['config']['langman.path'].'/sp/user.php');
+        $this->assertEquals('__UN_TOUCHED__', file_get_contents($this->app['config']['langman.path'].'/nl/user.php'));
+    }
+
+    public function testWriteFile()
+    {
+        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => ""],
+            'nl' => ['users' => ""],
+        ]);
+
+        $filePath = $this->app['config']['langman.path'].'/en/user.php';
+
+        $values = [
+            'name' => 'name',
+            'age' => 'age'
+        ];
+
+        $manager->writeFile($filePath, $values);
+
+        $this->assertEquals($values, (array) include $filePath);
+    }
+
+    public function testFillTranslationLineThatDoesNotExistYet()
+    {
+        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return [];"],
+            'nl' => ['users' => "<?php return [];"],
+        ]);
+
+        $manager->fillKey('users', 'name', ['en' => 'name', 'nl' => 'naam']);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+
+        $this->assertEquals('name', $enFile['name']);
+        $this->assertEquals('naam', $nlFile['name']);
+    }
+
+    public function testUpdatesTranslationLineThatExists()
+    {
+        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return ['name' => 'nil'];"],
+        ]);
+
+        $manager->fillKey('users', 'name', ['en' => 'name']);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+
+        $this->assertEquals('name', $enFile['name']);
+    }
 }

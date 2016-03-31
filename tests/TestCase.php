@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Console\Kernel;
-
 abstract class TestCase extends Orchestra\Testbench\TestCase
 {
     protected $consoleOutput;
@@ -30,6 +28,15 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
                 file_put_contents(__DIR__.'/temp/'.$lang.'/'.$file.'.php', $content);
             }
         }
+    }
+
+    public function resolveApplicationConsoleKernel($app)
+    {
+        $app->singleton('artisan', function ($app) {
+            return new \Illuminate\Console\Application($app, $app['events'], $app->version());
+        });
+
+        $app->singleton('Illuminate\Contracts\Console\Kernel', Kernel::class);
     }
 
     public function consoleOutput()

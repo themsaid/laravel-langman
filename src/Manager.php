@@ -2,6 +2,7 @@
 
 namespace Themsaid\LangMan;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
@@ -65,5 +66,66 @@ class Manager
         return array_map(function ($directory) {
             return str_replace($this->path.'/', '', $directory);
         }, $this->disk->directories($this->path));
+    }
+
+    /**
+     * Create a file for all languages if does not exist already.
+     *
+     * @param $fileName
+     * @return void
+     */
+    public function createFile($fileName)
+    {
+        foreach ($this->languages() as $languageKey) {
+            $file = $this->path."/{$languageKey}/{$fileName}.php";
+            if (! $this->disk->exists($file)) {
+                file_put_contents($file, "<?php \n");
+            }
+        }
+    }
+
+    /**
+     * Fills a translation line for the given key.
+     *
+     * @param string $fileName
+     * @param string $key
+     * @param array $values
+     * @return void
+     */
+    public function fillKey(string $fileName, string $key, array $values)
+    {
+        foreach ($values as $languageKey => $value) {
+            try {
+                $filePath = $this->path."/{$languageKey}/{$fileName}.php";
+
+                $fileContent = (array) include $filePath;
+            } catch (\ErrorException $e) {
+                throw new FileNotFoundException('File not found: '.$filePath);
+            }
+
+            $fileContent[$key] = $value;
+
+            $this->writeFile($filePath, $fileContent);
+        }
+    }
+
+    /**
+     * Write a language file from array.
+     *
+     * @param string $filePath
+     * @param array $translations
+     * @return void
+     */
+    public function writeFile(string $filePath, array $translations)
+    {
+        $content = "<?php \n\n return [";
+
+        foreach ($translations as $key => $value) {
+            $content .= "'{$key}' => '{$value}',";
+        }
+
+        $content .= "\n];";
+
+        file_put_contents($filePath, $content);
     }
 }
