@@ -4,11 +4,6 @@ use Mockery as m;
 
 class ManagerTest extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('langman.path', __DIR__.'/temp');
-    }
-
     public function testFilesMethod()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];

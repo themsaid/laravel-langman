@@ -2,11 +2,6 @@
 
 class FindCommandTest extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('langman.path', __DIR__.'/temp');
-    }
-
     public function testCommandErrorOnFilesNotFound()
     {
         array_map('unlink', glob(__DIR__.'/temp/*/*'));

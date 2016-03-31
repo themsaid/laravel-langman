@@ -2,11 +2,6 @@
 
 class ShowCommandTest extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('langman.path', __DIR__.'/temp');
-    }
-
     public function testCommandErrorOnFileNotFound()
     {
         $this->createTempFiles();

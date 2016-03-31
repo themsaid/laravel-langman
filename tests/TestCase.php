@@ -9,9 +9,17 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         return [\Themsaid\Langman\LangmanServiceProvider::class];
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('langman.path', __DIR__.'/temp');
+    }
+
     public function setUp()
     {
         parent::setUp();
+
+        array_map('unlink', glob(__DIR__.'/temp/*/*'));
+        array_map('rmdir', glob(__DIR__.'/temp/*'));
     }
 
     public function tearDown()

@@ -5,11 +5,6 @@ use Themsaid\Langman\Manager;
 
 class TransCommandTest extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('langman.path', __DIR__.'/temp');
-    }
-
     public function testCommandErrorOutputOnMissingKey()
     {
         $this->createTempFiles();

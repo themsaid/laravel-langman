@@ -95,9 +95,8 @@ class Manager
     public function fillKey(string $fileName, string $key, array $values)
     {
         foreach ($values as $languageKey => $value) {
+            $filePath = $this->path."/{$languageKey}/{$fileName}.php";
             try {
-                $filePath = $this->path."/{$languageKey}/{$fileName}.php";
-
                 $fileContent = (array) include $filePath;
             } catch (\ErrorException $e) {
                 throw new FileNotFoundException('File not found: '.$filePath);
