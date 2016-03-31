@@ -1,6 +1,6 @@
 <?php
 
-namespace Themsaid\LangMan;
+namespace Themsaid\Langman;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;

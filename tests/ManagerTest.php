@@ -11,7 +11,7 @@ class ManagerTest extends TestCase
 
     public function testFilesMethod()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['user' => '', 'category' => ''],
@@ -34,7 +34,7 @@ class ManagerTest extends TestCase
 
     public function testLanguagesMethod()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => [],
@@ -47,7 +47,7 @@ class ManagerTest extends TestCase
 
     public function testCreateFileIfNotExisting()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => [],
@@ -64,7 +64,7 @@ class ManagerTest extends TestCase
 
     public function testWriteFile()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => ""],
@@ -85,7 +85,7 @@ class ManagerTest extends TestCase
 
     public function testFillTranslationLineThatDoesNotExistYet()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => "<?php return [];"],
@@ -103,7 +103,7 @@ class ManagerTest extends TestCase
 
     public function testUpdatesTranslationLineThatExists()
     {
-        $manager = $this->app[\Themsaid\LangMan\Manager::class];
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => "<?php return ['name' => 'nil'];"],

@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Themsaid\\LangMan\\": "src"
+            "Themsaid\\Langman\\": "src"
         },
         "classmap": [
             "tests"

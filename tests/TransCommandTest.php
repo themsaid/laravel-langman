@@ -1,7 +1,7 @@
 <?php
 
 use Mockery as m;
-use Themsaid\LangMan\Manager;
+use Themsaid\Langman\Manager;
 
 class TransCommandTest extends TestCase
 {
@@ -35,7 +35,7 @@ class TransCommandTest extends TestCase
         $this->createTempFiles(['en' => []]);
 
         $manager = $this->app[Manager::class];
-        $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[confirm]', [$manager]);
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(false);
 
         $this->app['artisan']->add($command);
@@ -49,7 +49,7 @@ class TransCommandTest extends TestCase
         $this->createTempFiles(['en' => []]);
 
         $manager = $this->app[Manager::class];
-        $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[confirm]', [$manager]);
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(true);
 
         $this->app['artisan']->add($command);
@@ -66,7 +66,7 @@ class TransCommandTest extends TestCase
         ]);
 
         $manager = $this->app[Manager::class];
-        $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[ask]', [$manager]);
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
         $command->shouldReceive('ask')->with('users.name.en translation:', '')->andReturn('name');
         $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');
@@ -88,7 +88,7 @@ class TransCommandTest extends TestCase
         ]);
 
         $manager = $this->app[Manager::class];
-        $command = m::mock('\Themsaid\LangMan\Commands\TransCommand[ask]', [$manager]);
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
         $command->shouldReceive('ask')->with('users.name.en translation (updating):', 'nil')->andReturn('name');
         $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');

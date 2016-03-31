@@ -1,9 +1,9 @@
 <?php
 
-namespace Themsaid\LangMan\Commands;
+namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
-use Themsaid\LangMan\Manager;
+use Themsaid\Langman\Manager;
 
 class TransCommand extends Command
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Themsaid\LangMan\Commands;
+namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Themsaid\Langman\Manager;
 use Illuminate\Support\Str;
-use Themsaid\LangMan\Manager;
 
 class FindCommand extends Command
 {
