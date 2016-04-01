@@ -96,3 +96,13 @@ php artisan langman:remove users.name
 ```
 
 It'll remove that key from all language files.
+
+## Notes
+
+`langman:missing`, `langman:translate`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
+removed, so I recommend you backup your files.
+
+## Web interface
+
+If you want a web interface to manage your language files instead, I recommend [Laravel 5 Translation Manager](https://github.com/barryvdh/laravel-translation-manager)
+by [Barry vd. Heuvel](https://github.com/barryvdh).
