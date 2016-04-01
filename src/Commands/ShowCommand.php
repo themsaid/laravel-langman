@@ -93,7 +93,7 @@ class ShowCommand extends Command
         $output = [];
 
         foreach ($this->files as $language => $file) {
-            foreach ($filesContent[$language] =(array) include $file as $key => $value) {
+            foreach ($filesContent[$language] = $this->manager->getFileContent($file) as $key => $value) {
                 if (! $this->shouldShowKey($key)) {
                     continue;
                 }

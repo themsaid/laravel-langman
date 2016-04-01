@@ -9,14 +9,25 @@ use Illuminate\Support\Collection;
 class Manager
 {
     /**
+     * The Filesystem instance.
+     *
      * @var Filesystem
      */
     private $disk;
 
     /**
+     * The path to the language files.
+     *
      * @var string
      */
     private $path;
+
+    /**
+     * the paths to the views files.
+     *
+     * @var array
+     */
+    private $viewsPaths;
 
     /**
      * Manager constructor.
@@ -24,10 +35,11 @@ class Manager
      * @param Filesystem $disk
      * @param string $path
      */
-    public function __construct(Filesystem $disk, string $path)
+    public function __construct(Filesystem $disk, string $path, array $viewsPaths)
     {
         $this->disk = $disk;
         $this->path = $path;
+        $this->viewsPaths = $viewsPaths;
     }
 
     /**
@@ -152,14 +164,58 @@ class Manager
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function getFileContent($filePath) : array
+    public function getFileContent($filePath) : array
     {
         try {
-            $fileContent = (array) include $filePath;
-
-            return $fileContent;
+            return (array) include $filePath;
         } catch (\ErrorException $e) {
             throw new FileNotFoundException('File not found: '.$filePath);
         }
+    }
+
+    /**
+     * Collect all translation keys from views files.
+     *
+     * @return array
+     */
+    public function collectFromViews() : array
+    {
+        $output = [];
+
+        /*
+         * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
+         *
+         * https://github.com/barryvdh/laravel-translation-manager/blob/master/src/Manager.php
+         */
+        $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
+
+        $pattern =
+            // See http://regexr.com/392hu
+            "(".implode('|', $functions).")". // Must start with one of the functions
+            "\(". // Match opening parentheses
+            "[\'\"]". // Match " or '
+            "(". // Start a new group to match:
+            "[a-zA-Z0-9_-]+". // Must start with group
+            "([.][^\1)]+)+". // Be followed by one or more items/keys
+            ")". // Close group
+            "[\'\"]". // Closing quote
+            "[\),]"  // Close parentheses or new parameter
+        ;
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($this->disk->allFiles($this->viewsPaths) as $file) {
+            if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
+                foreach ($matches[2] as $key) {
+                    try {
+                        list($fileName, $keyName) = explode('.', $key);
+                    } catch (\ErrorException $e) {
+                        continue;
+                    }
+                    $output[$fileName][] = $keyName;
+                }
+            }
+        }
+
+        return $output;
     }
 }

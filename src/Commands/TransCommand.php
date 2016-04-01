@@ -169,7 +169,7 @@ class TransCommand extends Command
         $values = [];
 
         foreach ($languages as $languageKey) {
-            $languageContent = (array) include $this->files[$languageKey];
+            $languageContent = $this->manager->getFileContent($this->files[$languageKey]);
 
             $values[$languageKey] = $this->ask(
                 sprintf(

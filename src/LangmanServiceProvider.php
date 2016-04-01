@@ -24,7 +24,8 @@ class LangmanServiceProvider extends ServiceProvider
         $this->app->bind(Manager::class, function () {
             return new Manager(
                 new Filesystem(),
-                $this->app['config']['langman.path']
+                $this->app['config']['langman.path'],
+                $this->app['config']['views.paths']
             );
         });
 
@@ -34,6 +35,7 @@ class LangmanServiceProvider extends ServiceProvider
             \Themsaid\Langman\Commands\TransCommand::class,
             \Themsaid\Langman\Commands\MissingCommand::class,
             \Themsaid\Langman\Commands\RemoveCommand::class,
+            \Themsaid\Langman\Commands\SyncCommand::class,
         ]);
     }
 }

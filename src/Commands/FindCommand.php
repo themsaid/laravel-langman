@@ -85,7 +85,7 @@ class FindCommand extends Command
 
         foreach ($this->files as $fileName => $fileLanguages) {
             foreach ($fileLanguages as $languageKey => $filePath) {
-                $lines = $filesContent[$languageKey] = (array) include $filePath;
+                $lines = $filesContent[$languageKey] = $this->manager->getFileContent($filePath);
 
                 foreach ($lines as $key => $line) {
                     if (Str::contains($line, $this->argument('keyword'))) {

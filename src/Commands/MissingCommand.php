@@ -120,7 +120,7 @@ class MissingCommand extends Command
         // Here we collect the file results
         foreach ($files as $fileName => $languageFiles) {
             foreach ($languageFiles as $languageKey => $filePath) {
-                $filesResults[$fileName][$languageKey] = (array) include $filePath;
+                $filesResults[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
             }
         }
 

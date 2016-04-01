@@ -130,4 +130,28 @@ class ManagerTest extends TestCase
 
         $this->assertEquals('name', $enFile['name']);
     }
+
+    public function testFindTranslationsInViews()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        array_map('unlink', glob(__DIR__.'/views_temp/users/index.blade.php'));
+        array_map('rmdir', glob(__DIR__.'/views_temp/users'));
+        array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
+
+        file_put_contents(__DIR__.'/views_temp/users.blade.php', '{{ trans(\'users.name\') }} {{ trans(\'users.age\') }}');;
+        mkdir(__DIR__.'/views_temp/users');
+        file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.city') }}");;
+
+        $results = $manager->collectFromViews();
+
+        array_map('unlink', glob(__DIR__.'/views_temp/users/index.blade.php'));
+        array_map('rmdir', glob(__DIR__.'/views_temp/users'));
+        array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
+
+        $this->assertArrayHasKey('users', $results);
+        $this->assertContains('name', $results['users']);
+        $this->assertContains('age', $results['users']);
+        $this->assertContains('city', $results['users']);
+    }
 }
