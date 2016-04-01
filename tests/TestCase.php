@@ -12,7 +12,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('langman.path', __DIR__.'/temp');
-        $app['config']->set('views.paths', [__DIR__.'/views_temp']);
+        $app['config']->set('view.paths', [__DIR__.'/views_temp']);
     }
 
     public function setUp()
