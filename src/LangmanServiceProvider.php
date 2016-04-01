@@ -2,8 +2,8 @@
 
 namespace Themsaid\Langman;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Filesystem\Filesystem;
 
 class LangmanServiceProvider extends ServiceProvider
 {
