@@ -6,8 +6,11 @@ return [
      * Path to the language directories
      * --------------------------------------------------------------------------
      *
-     * The path to the directory that holds the language files.
+     * This option determines the path to the languages directory, it's where
+     * the package will be looking for translation files. These files are
+     * usually located in resources/lang but you may change that.
      *
      */
-    'path' => resource_path('lang')
+
+    'path' => resource_path('lang'),
 ];
