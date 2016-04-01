@@ -12,11 +12,11 @@ class MissingCommandTest extends TestCase
         $this->createTempFiles([
             'en' => [
                 'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",
-                'product' => "<?php\n return ['color' => 'color'];",
+                'product' => "<?php\n return ['color' => 'color', 'size' => 'size'];",
             ],
             'nl' => [
-                'user' => "<?php\n return ['name' => 'Naam'];",
-                'product' => "<?php\n return ['name' => 'Naam'];",
+                'user' => "<?php\n return ['name' => 'Naam', ];",
+                'product' => "<?php\n return ['name' => 'Naam', 'size' => ''];",
             ],
         ]);
 
@@ -24,6 +24,7 @@ class MissingCommandTest extends TestCase
         $command->shouldReceive('ask')->with('user.age.nl translation: (Hint: en = "Age")', '')->andReturn('fill_age');
         $command->shouldReceive('ask')->with('product.name.en translation: (Hint: nl = "Naam")', '')->andReturn('fill_name');
         $command->shouldReceive('ask')->with('product.color.nl translation: (Hint: en = "color")', '')->andReturn('fill_color');
+        $command->shouldReceive('ask')->with('product.size.nl translation: (Hint: )', '')->andReturn('fill_size');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:missing');
@@ -35,5 +36,6 @@ class MissingCommandTest extends TestCase
         $this->assertEquals('fill_age', $userNlFile['age']);
         $this->assertEquals('fill_name', $productENFile['name']);
         $this->assertEquals('fill_color', $productNlFile['color']);
+        $this->assertEquals('fill_size', $productNlFile['size']);
     }
 }

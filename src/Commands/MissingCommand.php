@@ -124,12 +124,27 @@ class MissingCommand extends Command
             }
         }
 
+        $values = array_dot($filesResults);
+
+        $emptyValues = array_filter($values, function ($value) {
+            return $value == '';
+        });
+
+        foreach ($emptyValues as $dottedValue => $emptyValue) {
+            list($fileName, $languageKey, $key) = explode('.', $dottedValue);
+
+            $missing[] = [
+                'key' => implode('.', [$fileName, $key, $languageKey]),
+                'hint' => "",
+            ];
+        }
+
         // Array of keys indexed by fileName.key, those keys we looked
         // at before so we save them in order for us to not look
         // at them again in a different language iteration.
         $searched = [];
 
-        foreach (array_dot($filesResults) as $key => $value) {
+        foreach ($values as $key => $value) {
             list($fileName, $key, $languageKey) = explode('.', $key);
 
             if (isset($searched["{$fileName}.{$key}"])) {
