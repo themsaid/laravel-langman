@@ -28,7 +28,7 @@ php artisan vendor:publish --provider="Themsaid\Langman\LangmanServiceProvider"
 
 ## Usage
 
-### Show lines of a translation file
+### Showing lines of a translation file
 
 ```
 php artisan langman:show users
@@ -55,18 +55,18 @@ Brings only the translation of the `name` key in all languages.
 php artisan langman:show users.nam -c
 ```
 
-Brings only the translation lines with keys matching the given key via close match, so searching for `nam` brings vlaues for
-keys like (name, username, branch_name_required, etc...).
+Brings only the translation lines with keys matching the given key via close match, so searching for `nam` brings values for
+keys like (`name`, `username`, `branch_name_required`, etc...).
 
 In the table returned by this command, if a translation is missing it'll be marked in red.
 
-### Find translation
+### Finding a translation line
 
 ```
 php artisan langman:find 'log in first'
 ```
 
-You get a table of language lines where any of the values match the given phrase by close match.
+You get a table of language lines where any of the values matches the given phrase by close match.
 
 ### Search for missing translations
 
@@ -75,9 +75,9 @@ php artisan langman:missing
 ```
 
 It'll look into your language files, collect all the lines that has missing values in any of the languages, prompt
-asking you to give a translation for each key, and finally save the given values to the database.
+asking you to give a translation for each key, and finally save the given values to the files.
 
-### Translate a key
+### Translating a key
 
 ```
 php artisan langman:translate users.name
@@ -89,7 +89,7 @@ for the given language's value.
 
 This command will add a new key if not existing, and updates the key if it is already there.
 
-### Remove a key
+### Removing a key
 
 ```
 php artisan langman:remove users.name
