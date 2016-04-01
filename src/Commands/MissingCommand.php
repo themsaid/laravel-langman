@@ -100,7 +100,7 @@ class MissingCommand extends Command
 
     /**
      * Get an array of keys that have missing values with a hint
-     * from another language translation file.
+     * from another language translation file if possible.
      *
      * ex: [ ['key' => 'product.color.nl', 'hint' => 'en = "color"'] ]
      *
@@ -130,6 +130,7 @@ class MissingCommand extends Command
             return $value == '';
         });
 
+        // Adding all keys that has values = ''
         foreach ($emptyValues as $dottedValue => $emptyValue) {
             list($fileName, $languageKey, $key) = explode('.', $dottedValue);
 
@@ -144,6 +145,8 @@ class MissingCommand extends Command
         // at them again in a different language iteration.
         $searched = [];
 
+        // Now we add keys that exists in a language but missing in
+        // any other languages.
         foreach ($values as $key => $value) {
             list($fileName, $key, $languageKey) = explode('.', $key);
 
