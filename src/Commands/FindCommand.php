@@ -100,9 +100,16 @@ class FindCommand extends Command
         // in a close match, we collect the values for the rest of the
         // languages for the found keys to complete the table view.
         foreach ($output as $key => $values) {
+            $original = [];
+
             foreach ($allLanguages as $languageKey) {
-                $output[$key][$languageKey] = $values[$languageKey] ?? $filesContent[$languageKey][$key] ?? '';
+                $original[$languageKey] = $values[$languageKey] ?? $filesContent[$languageKey][$key] ?? '';
             }
+
+            // Sort the language values based on language name
+            ksort($original);
+
+            $output[$key] = array_merge(['key' => $key], $original);
         }
 
         return array_values($output);
