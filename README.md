@@ -8,7 +8,6 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 
 <img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
 
-
 </p>
 
 ## Installation
