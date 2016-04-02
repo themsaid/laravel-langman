@@ -55,6 +55,8 @@ class MissingCommand extends Command
      */
     public function handle()
     {
+        $this->info("Looking for missing translations...");
+
         $languages = $this->manager->languages();
 
         $missing = $this->getMissing($languages);
@@ -68,7 +70,7 @@ class MissingCommand extends Command
 
             $input[$fileName][$key][$languageKey] = $value;
 
-            $this->info("{$dottedKey} was set to \"{$value}\" successfully.");
+            $this->line("\"<fg=yellow>{$dottedKey}</>\" was set to \"<fg=yellow>{$value}</>\" successfully.");
         }
 
         foreach ($input as $fileName => $values) {
@@ -77,6 +79,8 @@ class MissingCommand extends Command
                 $values
             );
         }
+
+        $this->info("Done!");
     }
 
     /**

@@ -48,6 +48,8 @@ class SyncCommand extends Command
      */
     public function handle()
     {
+        $this->info("Reading translation keys from views...");
+
         $translationFiles = $this->manager->files();
 
         // An array of all translation keys as found in views files.
@@ -63,7 +65,7 @@ class SyncCommand extends Command
             }
         }
 
-        $this->info("Reading translation keys from views is done.");
+        $this->info("Done!");
     }
 
     /**
@@ -82,7 +84,7 @@ class SyncCommand extends Command
         foreach (array_diff($keys, array_keys($fileContent)) as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
-            $this->info("{$fileName}.{$missingKey}.{$languageKey} was added.");
+            $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
         }
 
         $this->manager->fillKeys(
