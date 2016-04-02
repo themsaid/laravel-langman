@@ -85,12 +85,11 @@ class FindCommand extends Command
 
         foreach ($this->files as $fileName => $fileLanguages) {
             foreach ($fileLanguages as $languageKey => $filePath) {
-                $lines = $filesContent[$languageKey] = $this->manager->getFileContent($filePath);
+                $lines = $filesContent[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
 
                 foreach ($lines as $key => $line) {
                     if (! is_array($line) && Str::contains($line, $this->argument('keyword'))) {
-                        $output[$key]['key'] = $fileName.'.'.$key;
-                        $output[$key][$languageKey] = "<bg=yellow;fg=black>{$line}</>";
+                        $output[$fileName.'.'.$key][$languageKey] = "<bg=yellow;fg=black>{$line}</>";
                     }
                 }
             }
@@ -99,17 +98,19 @@ class FindCommand extends Command
         // Now that we collected all values that matches the keyword argument
         // in a close match, we collect the values for the rest of the
         // languages for the found keys to complete the table view.
-        foreach ($output as $key => $values) {
+        foreach ($output as $fullKey => $values) {
+            list($fileName, $key) = explode('.', $fullKey);
+
             $original = [];
 
             foreach ($allLanguages as $languageKey) {
-                $original[$languageKey] = $values[$languageKey] ?? $filesContent[$languageKey][$key] ?? '';
+                $original[$languageKey] = $values[$languageKey] ?? $filesContent[$fileName][$languageKey][$key] ?? '';
             }
 
             // Sort the language values based on language name
             ksort($original);
 
-            $output[$key] = array_merge(['key' => $key], $original);
+            $output[$fullKey] = array_merge(['key' => $fullKey], $original);
         }
 
         return array_values($output);
