@@ -109,7 +109,7 @@ class Manager
         foreach ($values as $languageKey => $value) {
             $filePath = $this->path."/{$languageKey}/{$fileName}.php";
 
-            $fileContent = $this->getFileContent($filePath);
+            $fileContent = $this->getFileContent($filePath, true);
 
             $fileContent[$key] = $value;
 
@@ -167,7 +167,7 @@ class Manager
      */
     public function getFileContent($filePath, $createIfNotExists = false) : array
     {
-        if ($createIfNotExists) {
+        if ($createIfNotExists && ! $this->disk->exists($filePath)) {
             if (! $this->disk->exists($directory = $this->disk->dirname($filePath))) {
                 mkdir($directory, true);
             }
