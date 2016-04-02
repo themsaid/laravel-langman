@@ -97,21 +97,30 @@ class Manager
     }
 
     /**
-     * Fills a translation line for the given key.
+     * Fills translation lines for given keys in different languages.
+     *
+     * ex. for $keys = ['name' => ['en' => 'name', 'nl' => 'naam']
      *
      * @param string $fileName
-     * @param string $key
-     * @param array $values
+     * @param array $keys
      * @return void
      */
-    public function fillKey(string $fileName, string $key, array $values)
+    public function fillKeys(string $fileName, array $keys)
     {
-        foreach ($values as $languageKey => $value) {
-            $filePath = $this->path."/{$languageKey}/{$fileName}.php";
+        $appends = [];
 
+        foreach ($keys as $key => $values) {
+            foreach ($values as $languageKey => $value) {
+                $filePath = $this->path."/{$languageKey}/{$fileName}.php";
+
+                $appends[$filePath][$key] = addslashes($value);
+            }
+        }
+
+        foreach ($appends as $filePath => $values) {
             $fileContent = $this->getFileContent($filePath, true);
 
-            $fileContent[$key] = addslashes($value);
+            $fileContent = array_merge($fileContent, $values);
 
             $this->writeFile($filePath, $fileContent);
         }

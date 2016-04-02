@@ -138,6 +138,24 @@ class ManagerTest extends TestCase
         $this->assertArrayHasKey('age', $nlFile);
     }
 
+    public function testFillTranslationLinesThatDoesNotExistYet()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return [];"],
+            'nl' => ['users' => "<?php return [];"],
+        ]);
+
+        $manager->fillKeys('users', ['name' => ['en' => 'name', 'nl' => 'naam']]);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+
+        $this->assertEquals('name', $enFile['name']);
+        $this->assertEquals('naam', $nlFile['name']);
+    }
+
     public function testFillTranslationLineThatDoesNotExistYet()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
@@ -147,7 +165,7 @@ class ManagerTest extends TestCase
             'nl' => ['users' => "<?php return [];"],
         ]);
 
-        $manager->fillKey('users', 'name', ['en' => 'name', 'nl' => 'naam']);
+        $manager->fillKeys('users', ['name' => ['en' => 'name', 'nl' => 'naam']]);
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
         $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
@@ -164,7 +182,7 @@ class ManagerTest extends TestCase
             'en' => ['users' => "<?php return ['name' => 'nil'];"],
         ]);
 
-        $manager->fillKey('users', 'name', ['en' => 'name']);
+        $manager->fillKeys('users', ['name' => ['en' => 'name']]);
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
 

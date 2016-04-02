@@ -75,14 +75,15 @@ class SyncCommand extends Command
      */
     private function fillMissingKeys(array $keys, $fileName, array $fileContent, $languageKey)
     {
-        $missingKeys = array_diff($keys, array_keys($fileContent));
+        $missingKeys = [];
 
-        foreach ($missingKeys as $missingKey) {
-            $this->manager->fillKey(
-                $fileName,
-                $missingKey,
-                [$languageKey => '']
-            );
+        foreach (array_diff($keys, array_keys($fileContent)) as $missingKey) {
+            $missingKeys[$missingKey] = [$languageKey => ''];
         }
+
+        $this->manager->fillKeys(
+            $fileName,
+            $missingKeys
+        );
     }
 }

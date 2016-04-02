@@ -61,16 +61,21 @@ class MissingCommand extends Command
 
         $values = $this->collectValues($missing);
 
+        $input = [];
+
         foreach ($values as $dottedKey => $value) {
             list($fileName, $key, $languageKey) = explode('.', $dottedKey);
 
-            $this->manager->fillKey(
-                $fileName,
-                $key,
-                [$languageKey => $value]
-            );
+            $input[$fileName][$key][$languageKey] = $value;
 
-            $this->info("{$fileName}.{$key}.{$languageKey} was set to \"{$value}\" successfully.");
+            $this->info("{$dottedKey} was set to \"{$value}\" successfully.");
+        }
+
+        foreach ($input as $fileName => $values) {
+            $this->manager->fillKeys(
+                $fileName,
+                $values
+            );
         }
     }
 
