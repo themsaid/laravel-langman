@@ -103,13 +103,20 @@ class ShowCommand extends Command
             }
         }
 
-        // Now that we collected all values that matches the keyword argument
-        // in a close match, we collect the values for the rest of the
-        // languages for the found keys to complete the table view.
+        // Now that we collected all existing values, we are going to
+        // fill the missing ones with emptiness indicators to
+        // balance the table structure & alert developers.
         foreach ($output as $key => $values) {
+            $original = [];
+
             foreach ($allLanguages as $languageKey) {
-                $output[$key][$languageKey] = $values[$languageKey] ?? '<bg=red>  MISSING  </>';
+                $original[$languageKey] = $values[$languageKey] ?? '<bg=red>  MISSING  </>';
             }
+
+            // Sort the language values based on language name
+            ksort($original);
+
+            $output[$key] = array_merge(['key' => $key], $original);
         }
 
         return array_values($output);
