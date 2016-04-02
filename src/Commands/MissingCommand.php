@@ -92,9 +92,9 @@ class MissingCommand extends Command
         foreach ($missing as $missingKey) {
             $values[$missingKey['key']] = $this->ask(
                 sprintf(
-                    '%s translation: (Hint: %s)',
+                    '%s translation:%s',
                     $missingKey['key'],
-                    $missingKey['hint']
+                    ($hint = $missingKey['hint']) ? " (Hint: $hint)" : ''
                 ),
                 ''
             );
