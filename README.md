@@ -1,4 +1,4 @@
-# Laravel Langman
+<h1 align="center">Laravel Langman</h`>
 
 <p align="center">
 <img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
