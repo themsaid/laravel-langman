@@ -116,7 +116,7 @@ class ShowCommand extends Command
             // Sort the language values based on language name
             ksort($original);
 
-            $output[$key] = array_merge(['key' => $key], $original);
+            $output[$key] = array_merge(['key' => "<fg=yellow>$key</>"], $original);
         }
 
         return array_values($output);

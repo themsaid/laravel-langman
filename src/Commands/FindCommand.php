@@ -110,7 +110,7 @@ class FindCommand extends Command
             // Sort the language values based on language name
             ksort($original);
 
-            $output[$fullKey] = array_merge(['key' => $fullKey], $original);
+            $output[$fullKey] = array_merge(['key' => "<fg=yellow>$fullKey</>"], $original);
         }
 
         return array_values($output);
