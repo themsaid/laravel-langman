@@ -45,11 +45,15 @@ You get:
 +---------+---------------+-------------+
 ```
 
+---
+
 ```
 php artisan langman:show users.name
 ```
 
 Brings only the translation of the `name` key in all languages.
+
+---
 
 ```
 php artisan langman:show users.nam -c
@@ -68,14 +72,23 @@ php artisan langman:find 'log in first'
 
 You get a table of language lines where any of the values matches the given phrase by close match.
 
-### Search for missing translations
+### Search view files for missing translations
+
+```
+php artisan langman:sync
+```
+
+This command will look into your view files and find all translation keys that are not covered in your translation files, after
+that it appends those keys to the files with a value equal to an empty string.
+
+### Fill missing translations
 
 ```
 php artisan langman:missing
 ```
 
-It'll look into your language files, collect all the lines that has missing values in any of the languages, prompt
-asking you to give a translation for each key, and finally save the given values to the files.
+It'll collect all the keys that are missing in any of the languages or has values equals to an empty string, prompt
+asking you to give a translation for each, and finally save the given values to the files.
 
 ### Translating a key
 
@@ -99,7 +112,7 @@ It'll remove that key from all language files.
 
 ## Notes
 
-`langman:missing`, `langman:translate`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
+`langman:sync`, `langman:missing`, `langman:translate`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
 removed, so I recommend you backup your files.
 
 ## Web interface
