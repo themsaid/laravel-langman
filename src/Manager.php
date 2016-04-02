@@ -113,14 +113,16 @@ class Manager
             foreach ($values as $languageKey => $value) {
                 $filePath = $this->path."/{$languageKey}/{$fileName}.php";
 
-                $appends[$filePath][$key] = addslashes($value);
+                $appends[$filePath][$key] = $value;
             }
         }
 
         foreach ($appends as $filePath => $values) {
             $fileContent = $this->getFileContent($filePath, true);
 
-            $fileContent = array_merge($fileContent, $values);
+            $fileContent = array_map(function ($value) {
+                return addslashes($value);
+            }, array_merge($fileContent, $values));
 
             $this->writeFile($filePath, $fileContent);
         }
