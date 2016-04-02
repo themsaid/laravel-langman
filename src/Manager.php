@@ -164,11 +164,21 @@ class Manager
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFileContent($filePath) : array
+    public function getFileContent($filePath, $createIfNotExists = false) : array
     {
         try {
             return (array) include $filePath;
         } catch (\ErrorException $e) {
+            if ($createIfNotExists) {
+                if (! $this->disk->exists($directory = $this->disk->dirname($filePath))) {
+                    mkdir($directory, true);
+                }
+
+                file_put_contents($filePath, "<?php\n\nreturn [];");
+
+                return [];
+            }
+
             throw new FileNotFoundException('File not found: '.$filePath);
         }
     }

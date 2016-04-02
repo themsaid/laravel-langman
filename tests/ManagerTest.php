@@ -78,6 +78,46 @@ class ManagerTest extends TestCase
         $this->assertEquals($values, (array) include $filePath);
     }
 
+    public function testGetFileContentReadsContent()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return ['_content_'];"],
+        ]);
+
+        $filePath = $this->app['config']['langman.path'].'/en/users.php';
+
+        $this->assertContains('_content_', $manager->getFileContent($filePath));
+    }
+
+    /**
+     * @expectedException Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function testGetFileContentThrowsExceptionIfNotFound()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles();
+
+        $filePath = $this->app['config']['langman.path'].'/en/users.php';
+
+        $manager->getFileContent($filePath);
+    }
+
+    public function testGetFileContentCreatesFileIfNeeded()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles();
+
+        $filePath = $this->app['config']['langman.path'].'/en/users.php';
+
+        $manager->getFileContent($filePath, true);
+
+        $this->assertEquals([], (array) include $filePath);
+    }
+
     public function testRemoveTranslationLineFromAllFiles()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
