@@ -51,17 +51,19 @@ class SyncCommand extends Command
         $translationFiles = $this->manager->files();
 
         // An array of all translation keys as found in views files.
-        $allTranslationKeys = $this->manager->collectFromViews();
+        $allViewsKeys = $this->manager->collectFromViews();
 
         foreach ($translationFiles as $fileName => $languages) {
             foreach ($languages as $languageKey => $path) {
                 $fileContent = $this->manager->getFileContent($path);
 
-                if (isset($allTranslationKeys[$fileName])) {
-                    $this->fillMissingKeys($allTranslationKeys[$fileName], $fileName, $fileContent, $languageKey);
+                if (isset($allViewsKeys[$fileName])) {
+                    $this->fillMissingKeys($allViewsKeys[$fileName], $fileName, $fileContent, $languageKey);
                 }
             }
         }
+
+        $this->info("Reading translation keys from views is done.");
     }
 
     /**
@@ -79,6 +81,8 @@ class SyncCommand extends Command
 
         foreach (array_diff($keys, array_keys($fileContent)) as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
+
+            $this->info("{$fileName}.{$missingKey}.{$languageKey} was added.");
         }
 
         $this->manager->fillKeys(
