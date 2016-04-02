@@ -2,10 +2,11 @@
 
 <p align="center">
 <img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
-</p>
 
 Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
 translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
+
+</p>
 
 ## Installation
 
