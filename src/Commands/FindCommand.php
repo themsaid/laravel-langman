@@ -88,7 +88,7 @@ class FindCommand extends Command
                 $lines = $filesContent[$languageKey] = $this->manager->getFileContent($filePath);
 
                 foreach ($lines as $key => $line) {
-                    if (Str::contains($line, $this->argument('keyword'))) {
+                    if (! is_array($line) && Str::contains($line, $this->argument('keyword'))) {
                         $output[$key]['key'] = $fileName.'.'.$key;
                         $output[$key][$languageKey] = "<bg=yellow;fg=black>{$line}</>";
                     }
