@@ -233,6 +233,11 @@ class Manager
                     } catch (\ErrorException $e) {
                         continue;
                     }
+
+                    if (isset($output[$fileName]) && in_array($keyName, $output[$fileName])) {
+                        continue;
+                    }
+
                     $output[$fileName][] = $keyName;
                 }
             }
