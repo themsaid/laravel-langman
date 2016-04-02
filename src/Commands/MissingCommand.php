@@ -95,8 +95,7 @@ class MissingCommand extends Command
                     '%s translation:%s',
                     $missingKey['key'],
                     ($hint = $missingKey['hint']) ? " (Hint: $hint)" : ''
-                ),
-                ''
+                )
             );
         }
 
