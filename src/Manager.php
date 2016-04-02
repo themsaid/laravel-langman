@@ -111,7 +111,7 @@ class Manager
 
             $fileContent = $this->getFileContent($filePath, true);
 
-            $fileContent[$key] = $value;
+            $fileContent[$key] = addslashes($value);
 
             $this->writeFile($filePath, $fileContent);
         }
