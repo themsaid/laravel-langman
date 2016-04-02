@@ -3,3 +3,8 @@ language: php
 php:
   - 7.0
   - hhvm
+
+sudo: false
+
+install:
+  - travis_retry composer install --no-interaction --prefer-source
