@@ -8,6 +8,10 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 
 <img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
 
+[![Build Status](https://travis-ci.org/themsaid/laravel-langman.svg?branch=master)](https://travis-ci.org/themsaid/laravel-langman)
+[![Latest Stable Version](https://poser.pugx.org/themsaid/laravel-langman/v/stable.svg)](https://packagist.org/packages/themsaid/laravel-langman)
+[![Total Downloads](https://poser.pugx.org/themsaid/laravel-langman/d/total.svg)](https://packagist.org/packages/themsaid/laravel-langman)
+[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
 </p>
 
 ## Installation
