@@ -86,7 +86,7 @@ class ShowCommand extends Command
      *
      * @return array
      */
-    private function tableRows() : array
+    private function tableRows()
     {
         $allLanguages = $this->manager->languages();
 
@@ -110,7 +110,7 @@ class ShowCommand extends Command
             $original = [];
 
             foreach ($allLanguages as $languageKey) {
-                $original[$languageKey] = $values[$languageKey] ?? '<bg=red>  MISSING  </>';
+                $original[$languageKey] = isset($values[$languageKey]) ? $values[$languageKey] : '<bg=red>  MISSING  </>';
             }
 
             // Sort the language values based on language name
@@ -159,7 +159,7 @@ class ShowCommand extends Command
      * @param $key
      * @return bool
      */
-    private function shouldShowKey($key) : bool
+    private function shouldShowKey($key)
     {
         if ($this->key) {
             if (! $this->option('close') && $key != $this->key) {

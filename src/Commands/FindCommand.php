@@ -75,7 +75,7 @@ class FindCommand extends Command
      *
      * @return array
      */
-    private function tableRows() : array
+    private function tableRows()
     {
         $allLanguages = $this->manager->languages();
 
@@ -104,7 +104,10 @@ class FindCommand extends Command
             $original = [];
 
             foreach ($allLanguages as $languageKey) {
-                $original[$languageKey] = $values[$languageKey] ?? $filesContent[$fileName][$languageKey][$key] ?? '';
+                $original[$languageKey] =
+                    isset($values[$languageKey])
+                        ? $values[$languageKey]
+                        : isset($filesContent[$fileName][$languageKey][$key]) ? $filesContent[$fileName][$languageKey][$key] : '';
             }
 
             // Sort the language values based on language name

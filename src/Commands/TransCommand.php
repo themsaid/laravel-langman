@@ -92,7 +92,7 @@ class TransCommand extends Command
      *
      * @return boolean
      */
-    private function parseKey() : bool
+    private function parseKey()
     {
         try {
             list($this->fileName, $this->key, $this->languageKey) = explode('.', $this->argument('key'));
@@ -163,7 +163,7 @@ class TransCommand extends Command
      * @param $languages
      * @return array
      */
-    private function collectValues($languages) : array
+    private function collectValues($languages)
     {
         $values = [];
 
@@ -178,7 +178,7 @@ class TransCommand extends Command
                     $languageKey,
                     isset($languageContent[$this->key]) ? ' (updating)' : ''
                 ),
-                $languageContent[$this->key] ?? ''
+                isset($languageContent[$this->key]) ? $languageContent[$this->key] : ''
             );
         }
 

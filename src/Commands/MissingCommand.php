@@ -89,7 +89,7 @@ class MissingCommand extends Command
      * @param array $missing
      * @return array
      */
-    private function collectValues(array $missing) : array
+    private function collectValues(array $missing)
     {
         $values = [];
 
@@ -115,7 +115,7 @@ class MissingCommand extends Command
      * @param array $languages
      * @return array
      */
-    private function getMissing(array $languages) : array
+    private function getMissing(array $languages)
     {
         $files = $this->manager->files();
 

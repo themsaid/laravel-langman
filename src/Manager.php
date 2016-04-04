@@ -73,7 +73,7 @@ class Manager
      *
      * @return array
      */
-    public function languages() : array
+    public function languages()
     {
         return array_map(function ($directory) {
             return str_replace($this->path.'/', '', $directory);
@@ -176,7 +176,7 @@ class Manager
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFileContent($filePath, $createIfNotExists = false) : array
+    public function getFileContent($filePath, $createIfNotExists = false)
     {
         if ($createIfNotExists && ! $this->disk->exists($filePath)) {
             if (! $this->disk->exists($directory = $this->disk->dirname($filePath))) {
@@ -200,7 +200,7 @@ class Manager
      *
      * @return array
      */
-    public function collectFromViews() : array
+    public function collectFromViews()
     {
         $output = [];
 
