@@ -148,6 +148,7 @@ class ShowCommand extends Command
         try {
             list($this->file, $this->key) = explode('.', $this->argument('key'));
         } catch (\ErrorException $e) {
+            $this->file = $this->argument('key');
             // If explosion resulted 1 array item then it's the file, we
             // leave the key as null.
         }
