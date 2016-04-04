@@ -2,8 +2,6 @@
 
 namespace Themsaid\Langman\Commands;
 
-use Themsaid\Langman\Manager;
-
 class FindCommand extends BaseCommand
 {
     /**
@@ -21,32 +19,11 @@ class FindCommand extends BaseCommand
     protected $description = 'Find key with values matching the keyword.';
 
     /**
-     * The Languages manager instance.
-     *
-     * @var \Themsaid\LangMan\Manager
-     */
-    private $manager;
-
-    /**
      * Array of files grouped by filename.
      *
      * @var array
      */
     protected $files;
-
-    /**
-     * ListCommand constructor.
-     *
-     * @param \Themsaid\LangMan\Manager $manager
-     *
-     * @return void
-     */
-    public function __construct(Manager $manager)
-    {
-        parent::__construct();
-
-        $this->manager = $manager;
-    }
 
     /**
      * Execute the console command.
@@ -97,10 +74,7 @@ class FindCommand extends BaseCommand
         // in a close match, we collect the values for the rest of the
         // languages for the found keys to complete the table view.
         foreach ($output as $fullKey => $values) {
-            //list($fileName, $key) = explode('.', $fullKey);
-            $keyParts = explode('.', $fullKey);
-            $fileName = array_pop($keyParts);
-            $key      = implode('.', $keyParts);
+            list($fileName, $key) = $this->getFileAndKey($fullKey);
 
             $original = [];
 
