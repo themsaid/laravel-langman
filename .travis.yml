@@ -11,11 +11,5 @@ sudo: true
 
 install:
   - travis_retry composer install --no-interaction --prefer-source
-
-script:
-  - if [ "$TRAVIS_PHP_VERSION" != "5.5.9" ] && [ "$TRAVIS_PHP_VERSION" != "5.5" ] && [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then vendor/bin/phpunit; fi
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then vendor/bin/phpunit --coverage-clover build/logs/clover.xml; fi
-
-after_script:
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
+  - chmod -R 777 tests/temp
+  - chmod -R 777 tests/views_temp
