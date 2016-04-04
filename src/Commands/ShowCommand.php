@@ -2,9 +2,12 @@
 
 namespace Themsaid\Langman\Commands;
 
+use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Themsaid\Langman\Manager;
 
-class ShowCommand extends BaseCommand
+class ShowCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -19,6 +22,13 @@ class ShowCommand extends BaseCommand
      * @var string
      */
     protected $description = 'Show language lines for a given file or key.';
+
+    /**
+     * The Languages manager instance.
+     *
+     * @var \Themsaid\LangMan\Manager
+     */
+    private $manager;
 
     /**
      * Filename to read from.
@@ -40,6 +50,18 @@ class ShowCommand extends BaseCommand
      * @var array
      */
     protected $files;
+
+    /**
+     * ListCommand constructor.
+     *
+     * @param \Themsaid\LangMan\Manager $manager
+     */
+    public function __construct(Manager $manager)
+    {
+        parent::__construct();
+
+        $this->manager = $manager;
+    }
 
     /**
      * Execute the console command.
@@ -69,19 +91,22 @@ class ShowCommand extends BaseCommand
 
         $output = [];
 
-        foreach ($this->files as $language => $file) {
-            foreach ($filesContent[$language] = $this->manager->getFileContent($file) as $key => $value) {
+        $filesContent = [];
+
+        foreach ($this->files as $languageKey => $file) {
+            foreach ($filesContent[$languageKey] = Arr::dot($this->manager->getFileContent($file)) as $key => $value) {
                 if (! $this->shouldShowKey($key)) {
                     continue;
                 }
 
-                $output = $this->getLanguageValues($output, $key, $language, $value);
+                $output[$key]['key'] = $key;
+                $output[$key][$languageKey] = $value;
             }
         }
 
-        // Now that we collected all existing values, we are going to
-        // fill the missing ones with emptiness indicators to
-        // balance the table structure & alert developers.
+        // Now that we have collected all existing values, we are going to fill the
+        // missing ones with emptiness indicators to balance the table structure
+        // and alert developers so that they can take proper actions.
         foreach ($output as $key => $values) {
             $original = [];
 
@@ -121,14 +146,11 @@ class ShowCommand extends BaseCommand
      */
     private function parseKey()
     {
-        try {
-            list($this->file, $this->key) = explode('.', $this->argument('key'));
-        } catch (\ErrorException $e) {
-            $this->file = $this->argument('key');
-            // If explosion resulted 1 array item then it's the file, we
-            // leave the key as null.
-            $this->file = $this->argument('key');
-        }
+        $parts = explode('.', $this->argument('key'), 2);
+
+        $this->file = $parts[0];
+
+        $this->key = isset($parts[1]) ? $parts[1] : null;
     }
 
     /**

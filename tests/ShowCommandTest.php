@@ -25,6 +25,20 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/age(?:.*)Age(?:.*)|(?: *)|/', $this->consoleOutput());
     }
 
+    public function testCommandOutputForFileWithNestedKeys()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['name' => ['first' => 'first', 'last' => 'last']];"],
+            'sp' => ['user' => "<?php\n return ['name' => ['first' => 'firstsp']];"],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/name.first(?:.*)first(?:.*)firstsp/', $this->consoleOutput());
+        $this->assertRegExp('/name.last(?:.*)last/', $this->consoleOutput());
+    }
+
     public function testCommandOutputForKey()
     {
         $this->createTempFiles([
@@ -38,6 +52,33 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
         $this->assertNotContains('age', $this->consoleOutput());
         $this->assertNotContains('uname', $this->consoleOutput());
+    }
+
+    public function testCommandOutputForNestedKey()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['age' => 'age', 'name' => ['first' => 'first', 'last' => 'last']];"],
+            'nl' => ['user' => "<?php\n return ['name' => ['first' => 'firstnl', 'last' => 'lastnl']];"],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name.first']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/name.first(?:.*)first(?:.*)firstnl/', $this->consoleOutput());
+        $this->assertNotContains('name.last', $this->consoleOutput());
+        $this->assertNotContains('age', $this->consoleOutput());
+    }
+
+    public function testCommandOutputForParentKeyOfANestedKey()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['age' => 'age', 'name' => ['first' => 'first', 'last' => 'last']];"],
+            'nl' => ['user' => "<?php\n return ['name' => ['first' => 'firstnl', 'last' => 'lastnl']];"],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name']);
+
+        $this->assertNotContains('name', $this->consoleOutput());
     }
 
     public function testCommandOutputForKeyOnCloseMatch()
