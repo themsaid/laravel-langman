@@ -2,7 +2,6 @@
 
 namespace Themsaid\Langman\Commands;
 
-use Themsaid\Langman\Manager;
 use Illuminate\Support\Str;
 
 class ShowCommand extends BaseCommand
@@ -36,33 +35,11 @@ class ShowCommand extends BaseCommand
     protected $key;
 
     /**
-     * The Languages manager instance.
-     *
-     * @var \Themsaid\LangMan\Manager
-     */
-    private $manager;
-
-    /**
      * Array of requested file in different languages.
      *
      * @var array
      */
     protected $files;
-
-
-    /**
-     * ListCommand constructor.
-     *
-     * @param \Themsaid\LangMan\Manager $manager
-     *
-     * @return void
-     */
-    public function __construct(Manager $manager)
-    {
-        parent::__construct();
-
-        $this->manager = $manager;
-    }
 
     /**
      * Execute the console command.
