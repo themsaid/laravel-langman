@@ -100,8 +100,8 @@ asking you to give a translation for each, and finally save the given values to 
 ### Translating a key
 
 ```
-php artisan langman:translate users.name
-php artisan langman:translate users.name.en
+php artisan langman:trans users.name
+php artisan langman:trans users.name.en
 ```
 
 In the first case it'll ask you to give a translation for the given key in all languages, in the second case it'll ask you only
@@ -119,7 +119,7 @@ It'll remove that key from all language files.
 
 ## Notes
 
-`langman:sync`, `langman:missing`, `langman:translate`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
+`langman:sync`, `langman:missing`, `langman:trans`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
 removed, so I recommend you backup your files.
 
 ## Web interface
