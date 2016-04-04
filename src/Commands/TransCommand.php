@@ -90,12 +90,16 @@ class TransCommand extends Command
     /**
      * Parse the given key argument.
      *
-     * @return boolean
+     * @return bool
      */
     private function parseKey()
     {
         try {
-            list($this->fileName, $this->key, $this->languageKey) = explode('.', $this->argument('key'));
+            $parts = explode('.', $this->argument('key'));
+
+            $this->fileName = $parts[0];
+            $this->key = $parts[1];
+            $this->languageKey = $parts[2];
         } catch (\ErrorException $e) {
             if (! $this->key) {
                 $this->error('Could not recognize the key you want to translate.');

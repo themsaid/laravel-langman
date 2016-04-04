@@ -79,7 +79,7 @@ class Manager
             return str_replace($this->path.'/', '', $directory);
         }, $this->disk->directories($this->path));
 
-        asort($languages);
+        sort($languages);
 
         return $languages;
     }
@@ -217,16 +217,16 @@ class Manager
 
         $pattern =
             // See http://regexr.com/392hu
-            "(".implode('|', $functions).")". // Must start with one of the functions
-            "\(". // Match opening parentheses
-            "[\'\"]". // Match " or '
-            "(". // Start a new group to match:
-            "[a-zA-Z0-9_-]+". // Must start with group
-            "([.][^\1)]+)+". // Be followed by one or more items/keys
-            ")". // Close group
-            "[\'\"]". // Closing quote
+            '('.implode('|', $functions).')'.// Must start with one of the functions
+            "\(".// Match opening parentheses
+            "[\'\"]".// Match " or '
+            '('.// Start a new group to match:
+            '[a-zA-Z0-9_-]+'.// Must start with group
+            "([.][^\1)]+)+".// Be followed by one or more items/keys
+            ')'.// Close group
+            "[\'\"]".// Closing quote
             "[\),]"  // Close parentheses or new parameter
-        ;
+;
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->disk->allFiles($this->viewsPaths) as $file) {
