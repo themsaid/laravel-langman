@@ -2,11 +2,9 @@
 
 namespace Themsaid\Langman\Commands;
 
-use Illuminate\Console\Command;
 use Themsaid\Langman\Manager;
-use Illuminate\Support\Str;
 
-class FindCommand extends Command
+class FindCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -40,6 +38,7 @@ class FindCommand extends Command
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
+     *
      * @return void
      */
     public function __construct(Manager $manager)
@@ -88,9 +87,8 @@ class FindCommand extends Command
                 $lines = $filesContent[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
 
                 foreach ($lines as $key => $line) {
-                    if (! is_array($line) && Str::contains($line, $this->argument('keyword'))) {
-                        $output[$fileName.'.'.$key][$languageKey] = "<bg=yellow;fg=black>{$line}</>";
-                    }
+                    $key    = $fileName . '.' . $key;
+                    $output = $this->searchLanguageFiles($output, $key, $fileName, $languageKey, $line);
                 }
             }
         }
@@ -99,7 +97,10 @@ class FindCommand extends Command
         // in a close match, we collect the values for the rest of the
         // languages for the found keys to complete the table view.
         foreach ($output as $fullKey => $values) {
-            list($fileName, $key) = explode('.', $fullKey);
+            //list($fileName, $key) = explode('.', $fullKey);
+            $keyParts = explode('.', $fullKey);
+            $fileName = array_pop($keyParts);
+            $key      = implode('.', $keyParts);
 
             $original = [];
 
@@ -107,7 +108,7 @@ class FindCommand extends Command
                 $original[$languageKey] =
                     isset($values[$languageKey])
                         ? $values[$languageKey]
-                        : isset($filesContent[$fileName][$languageKey][$key]) ? $filesContent[$fileName][$languageKey][$key] : '';
+                        : array_get($filesContent, "$fileName.$languageKey.$key", '');
             }
 
             // Sort the language values based on language name
