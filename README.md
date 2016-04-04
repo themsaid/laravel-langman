@@ -12,8 +12,6 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 
 ## Installation
 
-You'll need PHP 7.0+ to run this tool.
-
 Begin by installing the package through Composer. Run the following command in your terminal:
 
 ```
