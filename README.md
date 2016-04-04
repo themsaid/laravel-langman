@@ -7,13 +7,13 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 <br>
 
 <img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
-</p>
 
 <a href="https://travis-ci.org/themsaid/laravel-langman"><img src="https://travis-ci.org/themsaid/laravel-langman.svg?branch=master" alt="Build Status"></a>
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/d/total.svg" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/license.svg" alt="License"></a>
 
+</p>
 ## Installation
 
 Begin by installing the package through Composer. Run the following command in your terminal:
