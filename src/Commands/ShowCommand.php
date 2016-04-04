@@ -50,7 +50,6 @@ class ShowCommand extends Command
      */
     protected $files;
 
-
     /**
      * ListCommand constructor.
      *
