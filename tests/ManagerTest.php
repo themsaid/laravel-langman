@@ -68,7 +68,7 @@ class ManagerTest extends TestCase
         $filePath = $this->app['config']['langman.path'].'/en/user.php';
 
         $values = [
-            'name' => 'name',
+            'name' => ['first' => 'first', 'last' => ['last1' => '1', 'last2' => 2]],
             'age' => 'age',
         ];
 

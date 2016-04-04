@@ -163,13 +163,33 @@ class Manager
     {
         $content = "<?php \n\nreturn [";
 
-        foreach ($translations as $key => $value) {
-            $content .= "\n    '{$key}' => '{$value}',";
-        }
+        $content .= $this->stringLineMaker($translations);
 
         $content .= "\n];";
 
         file_put_contents($filePath, $content);
+    }
+
+    /**
+     * Write the lines of the inner array of the language file.
+     *
+     * @param $array
+     * @return string
+     */
+    private function stringLineMaker($array, $prepend = '')
+    {
+        $output = '';
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = $this->stringLineMaker($value, $prepend.'    ');
+                $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
+            } else {
+                $output .= "\n{$prepend}    '{$key}' => '{$value}',";
+            }
+        }
+
+        return $output;
     }
 
     /**
@@ -226,7 +246,7 @@ class Manager
             ')'.// Close group
             "[\'\"]".// Closing quote
             "[\),]"  // Close parentheses or new parameter
-;
+        ;
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->disk->allFiles($this->viewsPaths) as $file) {
