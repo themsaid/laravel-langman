@@ -35,7 +35,7 @@ class Manager
      * @param Filesystem $disk
      * @param string $path
      */
-    public function __construct(Filesystem $disk, string $path, array $viewsPaths)
+    public function __construct(Filesystem $disk, $path, array $viewsPaths)
     {
         $this->disk = $disk;
         $this->path = $path;
@@ -75,9 +75,13 @@ class Manager
      */
     public function languages()
     {
-        return array_map(function ($directory) {
+        $languages = array_map(function ($directory) {
             return str_replace($this->path.'/', '', $directory);
         }, $this->disk->directories($this->path));
+
+        asort($languages);
+
+        return $languages;
     }
 
     /**
@@ -105,7 +109,7 @@ class Manager
      * @param array $keys
      * @return void
      */
-    public function fillKeys(string $fileName, array $keys)
+    public function fillKeys($fileName, array $keys)
     {
         $appends = [];
 
@@ -135,7 +139,7 @@ class Manager
      * @param string $key
      * @return void
      */
-    public function removeKey(string $fileName, string $key)
+    public function removeKey($fileName, $key)
     {
         foreach ($this->languages() as $language) {
             $filePath = $this->path."/{$language}/{$fileName}.php";
@@ -155,7 +159,7 @@ class Manager
      * @param array $translations
      * @return void
      */
-    public function writeFile(string $filePath, array $translations)
+    public function writeFile($filePath, array $translations)
     {
         $content = "<?php \n\nreturn [";
 
