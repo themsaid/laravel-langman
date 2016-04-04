@@ -183,7 +183,7 @@ class Manager
     public function getFileContent($filePath, $createIfNotExists = false)
     {
         if ($createIfNotExists && ! $this->disk->exists($filePath)) {
-            if (! $this->disk->exists($directory = $this->disk->dirname($filePath))) {
+            if (! $this->disk->exists($directory = dirname($filePath))) {
                 mkdir($directory, true);
             }
 

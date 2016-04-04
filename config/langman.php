@@ -11,5 +11,5 @@ return [
      * usually located in resources/lang but you may change that.
      */
 
-    'path' => resource_path('lang'),
+    'path' => realpath(base_path('resources/lang')),
 ];
