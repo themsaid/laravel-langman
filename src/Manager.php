@@ -49,7 +49,7 @@ class Manager
      *
      * @return array
      */
-    public function files(): array
+    public function files()
     {
         $files = Collection::make($this->disk->allFiles($this->path));
 

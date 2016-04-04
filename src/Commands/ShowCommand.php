@@ -127,7 +127,7 @@ class ShowCommand extends Command
      *
      * @return array
      */
-    private function filesFromKey(): array
+    private function filesFromKey()
     {
         try {
             return $this->manager->files()[$this->file];
