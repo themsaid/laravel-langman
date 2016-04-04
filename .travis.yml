@@ -11,5 +11,3 @@ sudo: true
 
 install:
   - travis_retry composer install --no-interaction --prefer-source
-  - chmod -R 777 tests/temp
-  - chmod -R 777 tests/views_temp
