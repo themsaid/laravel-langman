@@ -79,7 +79,7 @@ class Manager
             return str_replace($this->path.'/', '', $directory);
         }, $this->disk->directories($this->path));
 
-        asort($languages);
+        sort($languages);
 
         return $languages;
     }

@@ -37,8 +37,6 @@ class ManagerTest extends TestCase
             'sp' => [],
         ]);
 
-        dd($manager->languages());
-
         $this->assertEquals(['en', 'nl', 'sp'], $manager->languages());
     }
 
