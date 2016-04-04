@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Themsaid\Langman\Manager;
 use Illuminate\Support\Str;
 
@@ -85,7 +86,7 @@ class FindCommand extends Command
 
         foreach ($this->files as $fileName => $fileLanguages) {
             foreach ($fileLanguages as $languageKey => $filePath) {
-                $lines = $filesContent[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
+                $lines = $filesContent[$fileName][$languageKey] = Arr::dot($this->manager->getFileContent($filePath));
 
                 foreach ($lines as $key => $line) {
                     if (! is_array($line) && Str::contains($line, $this->argument('keyword'))) {
@@ -99,7 +100,7 @@ class FindCommand extends Command
         // in a close match, we collect the values for the rest of the
         // languages for the found keys to complete the table view.
         foreach ($output as $fullKey => $values) {
-            list($fileName, $key) = explode('.', $fullKey);
+            list($fileName, $key) = explode('.', $fullKey, 2);
 
             $original = [];
 

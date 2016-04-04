@@ -29,4 +29,18 @@ class FindCommandTest extends TestCase
         $this->assertNotContains('age', $this->consoleOutput());
         $this->assertNotContains('else', $this->consoleOutput());
     }
+
+    public function testCommandOutputForFileWithNestedKeys()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['missing' => ['not_found' => 'user not found'], 'jarl_borg' => 'flying'];"],
+            'sp' => ['user' => "<?php\n return ['missing' => ['not_found' => 'sp']];"],
+        ]);
+
+        $this->artisan('langman:find', ['keyword' => 'not found']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
+        $this->assertNotContains('jarl_borg', $this->consoleOutput());
+    }
 }
