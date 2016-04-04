@@ -33,8 +33,8 @@ class ManagerTest extends TestCase
 
         $this->createTempFiles([
             'en' => [],
-            'sp' => [],
             'nl' => [],
+            'sp' => [],
         ]);
 
         $this->assertEquals(['en', 'nl', 'sp'], $manager->languages());
