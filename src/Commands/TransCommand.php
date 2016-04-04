@@ -90,7 +90,7 @@ class TransCommand extends Command
     /**
      * Parse the given key argument.
      *
-     * @return boolean
+     * @return bool
      */
     private function parseKey()
     {
@@ -100,7 +100,6 @@ class TransCommand extends Command
             $this->fileName = $parts[0];
             $this->key = $parts[1];
             $this->languageKey = $parts[2];
-
         } catch (\ErrorException $e) {
             if (! $this->key) {
                 $this->error('Could not recognize the key you want to translate.');

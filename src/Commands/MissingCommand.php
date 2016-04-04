@@ -55,7 +55,7 @@ class MissingCommand extends Command
      */
     public function handle()
     {
-        $this->info("Looking for missing translations...");
+        $this->info('Looking for missing translations...');
 
         $languages = $this->manager->languages();
 
@@ -80,7 +80,7 @@ class MissingCommand extends Command
             );
         }
 
-        $this->info("Done!");
+        $this->info('Done!');
     }
 
     /**
@@ -144,7 +144,7 @@ class MissingCommand extends Command
 
             $missing[] = [
                 'key' => implode('.', [$fileName, $key, $languageKey]),
-                'hint' => "",
+                'hint' => '',
             ];
         }
 

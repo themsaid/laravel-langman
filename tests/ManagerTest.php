@@ -1,6 +1,5 @@
 <?php
 
-use Mockery as m;
 
 class ManagerTest extends TestCase
 {
@@ -21,7 +20,7 @@ class ManagerTest extends TestCase
             'category' => [
                 'en' => __DIR__.'/temp/en/category.php',
                 'nl' => __DIR__.'/temp/nl/category.php',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $manager->files());
@@ -62,15 +61,15 @@ class ManagerTest extends TestCase
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => ['users' => ""],
-            'nl' => ['users' => ""],
+            'en' => ['users' => ''],
+            'nl' => ['users' => ''],
         ]);
 
         $filePath = $this->app['config']['langman.path'].'/en/user.php';
 
         $values = [
             'name' => 'name',
-            'age' => 'age'
+            'age' => 'age',
         ];
 
         $manager->writeFile($filePath, $values);
@@ -143,8 +142,8 @@ class ManagerTest extends TestCase
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => ['users' => "<?php return [];"],
-            'nl' => ['users' => "<?php return [];"],
+            'en' => ['users' => '<?php return [];'],
+            'nl' => ['users' => '<?php return [];'],
         ]);
 
         $manager->fillKeys('users', ['name' => ['en' => 'name', 'nl' => 'naam']]);
@@ -161,8 +160,8 @@ class ManagerTest extends TestCase
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => ['users' => "<?php return [];"],
-            'nl' => ['users' => "<?php return [];"],
+            'en' => ['users' => '<?php return [];'],
+            'nl' => ['users' => '<?php return [];'],
         ]);
 
         $manager->fillKeys('users', ['name' => ['en' => 'name', 'nl' => 'naam']]);
@@ -197,9 +196,9 @@ class ManagerTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        file_put_contents(__DIR__.'/views_temp/users.blade.php', '{{ trans(\'users.name\') }} {{ trans(\'users.age\') }}');;
+        file_put_contents(__DIR__.'/views_temp/users.blade.php', '{{ trans(\'users.name\') }} {{ trans(\'users.age\') }}');
         mkdir(__DIR__.'/views_temp/users');
-        file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.city') }}");;
+        file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.city') }}");
 
         $results = $manager->collectFromViews();
 

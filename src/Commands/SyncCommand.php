@@ -48,7 +48,7 @@ class SyncCommand extends Command
      */
     public function handle()
     {
-        $this->info("Reading translation keys from views...");
+        $this->info('Reading translation keys from views...');
 
         $translationFiles = $this->manager->files();
 
@@ -65,7 +65,7 @@ class SyncCommand extends Command
             }
         }
 
-        $this->info("Done!");
+        $this->info('Done!');
     }
 
     /**
