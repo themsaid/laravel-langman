@@ -2,11 +2,10 @@
 
 namespace Themsaid\Langman\Commands;
 
-use Illuminate\Console\Command;
 use Themsaid\Langman\Manager;
 use Illuminate\Support\Str;
 
-class ShowCommand extends Command
+class ShowCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -55,6 +54,7 @@ class ShowCommand extends Command
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
+     *
      * @return void
      */
     public function __construct(Manager $manager)
@@ -98,8 +98,7 @@ class ShowCommand extends Command
                     continue;
                 }
 
-                $output[$key]['key'] = $key;
-                $output[$key][$language] = $value;
+                $output = $this->getLanguageValues($output, $key, $language, $value);
             }
         }
 
@@ -150,6 +149,7 @@ class ShowCommand extends Command
         } catch (\ErrorException $e) {
             // If explosion resulted 1 array item then it's the file, we
             // leave the key as null.
+            $this->file = $this->argument('key');
         }
     }
 
@@ -157,6 +157,7 @@ class ShowCommand extends Command
      * Determine if the given key should exist in the output.
      *
      * @param $key
+     *
      * @return bool
      */
     private function shouldShowKey($key)
