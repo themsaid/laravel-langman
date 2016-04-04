@@ -184,7 +184,7 @@ class Manager
     {
         if ($createIfNotExists && ! $this->disk->exists($filePath)) {
             if (! $this->disk->exists($directory = dirname($filePath))) {
-                mkdir($directory, true);
+                mkdir($directory, 777, true);
             }
 
             file_put_contents($filePath, "<?php\n\nreturn [];");
