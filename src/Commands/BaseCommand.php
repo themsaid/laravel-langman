@@ -4,9 +4,31 @@ namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Themsaid\Langman\Manager;
 
 abstract class BaseCommand extends Command
 {
+    /**
+     * The Languages manager instance.
+     *
+     * @var \Themsaid\LangMan\Manager
+     */
+    protected $manager;
+
+    /**
+     * ListCommand constructor.
+     *
+     * @param \Themsaid\LangMan\Manager $manager
+     *
+     * @return void
+     */
+    public function __construct(Manager $manager)
+    {
+        parent::__construct();
+
+        $this->manager = $manager;
+    }
+
     /**
      * Generate strings for language values that could be arrays or strings.
      *
@@ -66,5 +88,44 @@ abstract class BaseCommand extends Command
         }
 
         return $output;
+    }
+
+    /**
+     * Get a file name and a key from a full key value.
+     *
+     * @param $fullKey
+     *
+     * @return array
+     */
+    protected function getFileAndKey($fullKey)
+    {
+        $keyParts = explode('.', $fullKey);
+        $fileName = array_pop($keyParts);
+        $key      = implode('.', $keyParts);
+
+        return [$fileName, $key];
+    }
+
+    /**
+     * Get a file name, language and a key from a full key value.
+     *
+     * @param $fullKey
+     *
+     * @return array
+     */
+    protected function getFileLanguageAndKey($fullKey)
+    {
+        $allLanguages = $this->manager->languages();
+        $keyParts     = explode('.', $fullKey);
+
+        $languageName  = head(array_intersect($keyParts, $allLanguages));
+        $languageIndex = array_search($languageName, $keyParts);
+        $languageKey   = $languageIndex ? array_pull($keyParts, $languageIndex) : null;
+
+
+        $fileName = array_shift($keyParts);
+        $key      = implode('.', $keyParts);
+
+        return [$fileName, $languageKey, $key];
     }
 }
