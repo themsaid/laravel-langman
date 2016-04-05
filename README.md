@@ -122,10 +122,13 @@ It'll remove that key from all language files.
 
 ## Notes
 
-`langman:sync`, `langman:missing`, `langman:trans`, and `langman:remove` updates your language files by writing them completely, meaning that any comments or special styling will get
-removed, so I recommend you backup your files.
+`langman:sync`, `langman:missing`, `langman:trans`, and `langman:remove` will update your language files by writing them completely, meaning that any comments or special styling will be removed, so I recommend you backup your files.
 
 ## Web interface
 
 If you want a web interface to manage your language files instead, I recommend [Laravel 5 Translation Manager](https://github.com/barryvdh/laravel-translation-manager)
 by [Barry vd. Heuvel](https://github.com/barryvdh).
+
+## TODO
+- Support nested translation lines in `langman:trans`, `langman:sync`, `langman:remove`, `langman:missing`.
+- Support vendor language files.
