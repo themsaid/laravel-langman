@@ -13,9 +13,9 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/support": "^5.1",
-        "illuminate/console": "^5.1",
-        "illuminate/filesystem": "^5.1"
+        "illuminate/support": "5.1.* || 5.2.*",
+        "illuminate/console": "5.1.* || 5.2.*",
+        "illuminate/filesystem": "5.1.* || 5.2.*"
     },
     "require-dev": {
         "phpunit/phpunit" : "^4.8 || ^5.0",
