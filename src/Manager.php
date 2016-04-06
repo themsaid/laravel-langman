@@ -95,7 +95,7 @@ class Manager
         foreach ($this->languages() as $languageKey) {
             $file = $this->path."/{$languageKey}/{$fileName}.php";
             if (! $this->disk->exists($file)) {
-                file_put_contents($file, "<?php \n");
+                file_put_contents($file, "<?php \nreturn[\n];");
             }
         }
     }
@@ -123,11 +123,9 @@ class Manager
 
         foreach ($appends as $filePath => $values) {
             $fileContent = $this->getFileContent($filePath, true);
-
             $fileContent = array_map(function ($value) {
                 return addslashes($value);
             }, array_merge($fileContent, $values));
-
             $this->writeFile($filePath, $fileContent);
         }
     }
