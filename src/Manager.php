@@ -95,7 +95,7 @@ class Manager
         foreach ($this->languages() as $languageKey) {
             $file = $this->path."/{$languageKey}/{$fileName}.php";
             if (! $this->disk->exists($file)) {
-                file_put_contents($file, "<?php \nreturn[\n];");
+                file_put_contents($file, "<?php \n\n return[];");
             }
         }
     }

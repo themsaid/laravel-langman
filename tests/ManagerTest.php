@@ -54,6 +54,7 @@ class ManagerTest extends TestCase
         $this->assertFileExists($this->app['config']['langman.path'].'/en/user.php');
         $this->assertFileExists($this->app['config']['langman.path'].'/sp/user.php');
         $this->assertEquals('__UN_TOUCHED__', file_get_contents($this->app['config']['langman.path'].'/nl/user.php'));
+        $this->assertEquals([], (array) include $this->app['config']['langman.path'].'/en/user.php');
     }
 
     public function testWriteFile()
