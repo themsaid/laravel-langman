@@ -95,11 +95,11 @@ class TransCommand extends Command
     private function parseKey()
     {
         try {
-            $parts = explode('.', $this->argument('key'));
+            preg_match('/^([^\.]*)\.([^->]*)(?:->)?(.*)?/', $this->argument('key'), $matches);
 
-            $this->fileName = $parts[0];
-            $this->key = $parts[1];
-            $this->languageKey = $parts[2];
+            $this->fileName = $matches[1];
+            $this->key = $matches[2];
+            $this->languageKey = $matches[3];
         } catch (\ErrorException $e) {
             if (! $this->key) {
                 $this->error('Could not recognize the key you want to translate.');
@@ -176,13 +176,12 @@ class TransCommand extends Command
 
             $values[$languageKey] = $this->ask(
                 sprintf(
-                    '%s.%s.%s translation%s:',
+                    '%s.%s->%s translation:',
                     $this->fileName,
                     $this->key,
-                    $languageKey,
-                    isset($languageContent[$this->key]) ? ' (updating)' : ''
+                    $languageKey
                 ),
-                isset($languageContent[$this->key]) ? $languageContent[$this->key] : ''
+                isset($languageContent[$this->key]) ? $languageContent[$this->key] : null
             );
         }
 
