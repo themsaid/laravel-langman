@@ -180,7 +180,7 @@ class ManagerTest extends TestCase
             'nl' => ['users' => '<?php return ["name" => ["first" => "nil"]];'],
         ]);
 
-        $manager->fillKeys('users', ['name->first' => ['en' => 'name', 'nl' => 'naam']]);
+        $manager->fillKeys('users', ['name.first' => ['en' => 'name', 'nl' => 'naam']]);
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
         $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';

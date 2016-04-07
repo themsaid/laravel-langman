@@ -119,11 +119,7 @@ class Manager
             foreach ($values as $languageKey => $value) {
                 $filePath = $this->path."/{$languageKey}/{$fileName}.php";
 
-                if (Str::contains($key, '->')) {
-                    Arr::set($appends[$filePath], str_replace('->', '.', $key), $value);
-                } else {
-                    $appends[$filePath][$key] = $value;
-                }
+                Arr::set($appends[$filePath], $key, $value);
             }
         }
 
