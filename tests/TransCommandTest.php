@@ -72,8 +72,8 @@ class TransCommandTest extends TestCase
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
-        $command->shouldReceive('ask')->with('users.name.en translation:', '')->andReturn('name');
-        $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');
+        $command->shouldReceive('ask')->once()->with('users.name.en translation:', '')->andReturn('name');
+        $command->shouldReceive('ask')->once()->with('users.name.nl translation:', '')->andReturn('naam');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users.name']);
@@ -94,8 +94,8 @@ class TransCommandTest extends TestCase
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
-        $command->shouldReceive('ask')->with('users.name.en translation (updating):', 'nil')->andReturn('name');
-        $command->shouldReceive('ask')->with('users.name.nl translation:', '')->andReturn('naam');
+        $command->shouldReceive('ask')->once()->with('users.name.en translation (updating):', 'nil')->andReturn('name');
+        $command->shouldReceive('ask')->once()->with('users.name.nl translation:', '')->andReturn('naam');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users.name']);
