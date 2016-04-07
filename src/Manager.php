@@ -4,7 +4,9 @@ namespace Themsaid\Langman;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class Manager
 {
@@ -117,16 +119,24 @@ class Manager
             foreach ($values as $languageKey => $value) {
                 $filePath = $this->path."/{$languageKey}/{$fileName}.php";
 
-                $appends[$filePath][$key] = $value;
+                if (Str::contains($key, '->')) {
+                    Arr::set($appends[$filePath], str_replace('->', '.', $key), $value);
+                } else {
+                    $appends[$filePath][$key] = $value;
+                }
             }
         }
 
         foreach ($appends as $filePath => $values) {
             $fileContent = $this->getFileContent($filePath, true);
-            $fileContent = array_map(function ($value) {
+
+            $newContent = array_replace_recursive($fileContent, $values);
+
+            array_walk_recursive($newContent, function ($value) {
                 return addslashes($value);
-            }, array_merge($fileContent, $values));
-            $this->writeFile($filePath, $fileContent);
+            });
+
+            $this->writeFile($filePath, $newContent);
         }
     }
 

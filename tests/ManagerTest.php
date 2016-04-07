@@ -171,6 +171,25 @@ class ManagerTest extends TestCase
         $this->assertEquals('name', $enFile['name']);
     }
 
+    public function testFillNestedTranslationLines()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => '<?php return ["class" => "class"];'],
+            'nl' => ['users' => '<?php return ["name" => ["first" => "nil"]];'],
+        ]);
+
+        $manager->fillKeys('users', ['name->first' => ['en' => 'name', 'nl' => 'naam']]);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+
+        $this->assertEquals('name', $enFile['name']['first']);
+        $this->assertEquals('class', $enFile['class']);
+        $this->assertEquals('naam', $nlFile['name']['first']);
+    }
+
     public function testFindTranslationsInViews()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
