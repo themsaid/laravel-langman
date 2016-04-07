@@ -156,24 +156,6 @@ class ManagerTest extends TestCase
         $this->assertEquals('naam', $nlFile['name']);
     }
 
-    public function testFillTranslationLineThatDoesNotExistYet()
-    {
-        $manager = $this->app[\Themsaid\Langman\Manager::class];
-
-        $this->createTempFiles([
-            'en' => ['users' => '<?php return [];'],
-            'nl' => ['users' => '<?php return [];'],
-        ]);
-
-        $manager->fillKeys('users', ['name' => ['en' => 'name', 'nl' => 'naam']]);
-
-        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
-        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
-
-        $this->assertEquals('name', $enFile['name']);
-        $this->assertEquals('naam', $nlFile['name']);
-    }
-
     public function testUpdatesTranslationLineThatExists()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
