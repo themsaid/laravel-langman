@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Themsaid\Langman\Manager;
 
 class MissingCommand extends Command
@@ -65,12 +66,12 @@ class MissingCommand extends Command
 
         $input = [];
 
-        foreach ($values as $dottedKey => $value) {
-            list($fileName, $key, $languageKey) = explode('.', $dottedKey);
+        foreach ($values as $key => $value) {
+            preg_match('/^([^\.]*)\.(.*)->(.*)/', $key, $matches);
 
-            $input[$fileName][$key][$languageKey] = $value;
+            $input[$matches[1]][$matches[2]][$matches[3]] = $value;
 
-            $this->line("\"<fg=yellow>{$dottedKey}</>\" was set to \"<fg=yellow>{$value}</>\" successfully.");
+            $this->line("\"<fg=yellow>{$key}</>\" was set to \"<fg=yellow>{$value}</>\" successfully.");
         }
 
         foreach ($input as $fileName => $values) {
@@ -94,12 +95,8 @@ class MissingCommand extends Command
         $values = [];
 
         foreach ($missing as $missingKey) {
-            $values[$missingKey['key']] = $this->ask(
-                sprintf(
-                    '%s translation:%s',
-                    $missingKey['key'],
-                    ($hint = $missingKey['hint']) ? " (Hint: $hint)" : ''
-                )
+            $values[$missingKey] = $this->ask(
+                "{$missingKey} translation"
             );
         }
 
@@ -132,7 +129,7 @@ class MissingCommand extends Command
             }
         }
 
-        $values = array_dot($filesResults);
+        $values = Arr::dot($filesResults);
 
         $emptyValues = array_filter($values, function ($value) {
             return $value == '';
@@ -140,34 +137,29 @@ class MissingCommand extends Command
 
         // Adding all keys that has values = ''
         foreach ($emptyValues as $dottedValue => $emptyValue) {
-            list($fileName, $languageKey, $key) = explode('.', $dottedValue);
+            list($fileName, $languageKey, $key) = explode('.', $dottedValue, 3);
 
-            $missing[] = [
-                'key' => implode('.', [$fileName, $key, $languageKey]),
-                'hint' => '',
-            ];
+            $missing[] = "{$fileName}.{$key}->{$languageKey}";
         }
 
-        // Array of keys indexed by fileName.key, those keys we looked
-        // at before so we save them in order for us to not look
-        // at them again in a different language iteration.
+        // Array of keys indexed by fileName.key, those are the keys we looked
+        // at before so we save them in order for us to not look at them
+        // again in a different language iteration.
         $searched = [];
 
-        // Now we add keys that exists in a language but missing in
-        // any other languages.
+        // Now we add keys that exist in a language but missing in any of the
+        // other languages. Those keys combined with ones with values = ''
+        // will be sent to the console user to fill and save in disk.
         foreach ($values as $key => $value) {
-            list($fileName, $key, $languageKey) = explode('.', $key);
+            list($fileName, $languageKey, $key) = explode('.', $key, 3);
 
-            if (isset($searched["{$fileName}.{$key}"])) {
+            if (in_array("{$fileName}.{$key}", $searched)) {
                 continue;
             }
 
             foreach ($languages as $languageName) {
-                if (! isset($filesResults[$fileName][$languageName][$languageKey])) {
-                    $missing[] = [
-                        'key' => implode('.', [$fileName, $languageKey, $languageName]),
-                        'hint' => "{$key} = \"{$value}\"",
-                    ];
+                if (Arr::get($filesResults, "{$fileName}.{$languageName}.{$key}") === null) {
+                    $missing[] = "{$fileName}.{$key}->{$languageName}";
                 }
             }
 
