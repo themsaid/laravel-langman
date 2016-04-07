@@ -150,7 +150,7 @@ class Manager
 
             $fileContent = $this->getFileContent($filePath);
 
-            unset($fileContent[$key]);
+            Arr::forget($fileContent, $key);
 
             $this->writeFile($filePath, $fileContent);
         }

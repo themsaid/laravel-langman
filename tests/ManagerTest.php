@@ -138,6 +138,28 @@ class ManagerTest extends TestCase
         $this->assertArrayHasKey('age', $nlFile);
     }
 
+    public function testRemoveNestedTranslationLineFromAllFiles()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return ['name'=> ['f' => '1', 's' => 2], 'age' => 'b'];"],
+            'nl' => ['users' => "<?php return ['name'=> ['f' => 'nl1', 's'=> 'nl2'], 'age' => 'd'];"],
+        ]);
+
+        $manager->removeKey('users', 'name.f');
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+
+        $this->assertArrayHasKey('name', $enFile);
+        $this->assertArrayNotHasKey('f', $enFile['name']);
+        $this->assertArrayHasKey('age', $enFile);
+        $this->assertArrayHasKey('name', $nlFile);
+        $this->assertArrayNotHasKey('f', $nlFile['name']);
+        $this->assertArrayHasKey('age', $nlFile);
+    }
+
     public function testFillTranslationLinesThatDoesNotExistYet()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
