@@ -10,7 +10,7 @@ class SyncCommandTest extends TestCase
 
         file_put_contents(__DIR__.'/views_temp/user.blade.php', '{{ trans(\'user.name\') }} {{ trans(\'user.age\') }}');
         mkdir(__DIR__.'/views_temp/user');
-        file_put_contents(__DIR__.'/views_temp/user/index.blade.php', "{{ trans('user.city') }}");
+        file_put_contents(__DIR__.'/views_temp/user/index.blade.php', "{{ trans('user.city') }} {{ trans('user.code.initial') }}");
 
         $this->createTempFiles([
             'en' => ['user' => "<?php\n return ['name' => 'Name'];"],
@@ -22,12 +22,14 @@ class SyncCommandTest extends TestCase
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNlFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
 
-        $this->assertArrayHasKey('name', $userENFile, 'en');
-        $this->assertArrayHasKey('age', $userENFile, 'en');
-        $this->assertArrayHasKey('city', $userENFile, 'en');
-        $this->assertArrayHasKey('name', $userNlFile, 'nl');
-        $this->assertArrayHasKey('age', $userNlFile, 'nl');
-        $this->assertArrayHasKey('city', $userNlFile, 'nl');
+        $this->assertArrayHasKey('name', $userENFile);
+        $this->assertArrayHasKey('initial', $userENFile['code']);
+        $this->assertArrayHasKey('age', $userENFile);
+        $this->assertArrayHasKey('city', $userENFile);
+        $this->assertArrayHasKey('name', $userNlFile);
+        $this->assertArrayHasKey('initial', $userNlFile['code']);
+        $this->assertArrayHasKey('age', $userNlFile);
+        $this->assertArrayHasKey('city', $userNlFile);
 
         array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));

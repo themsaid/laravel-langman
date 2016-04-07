@@ -257,7 +257,7 @@ class Manager
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches[2] as $key) {
                     try {
-                        list($fileName, $keyName) = explode('.', $key);
+                        list($fileName, $keyName) = explode('.', $key, 2);
                     } catch (\ErrorException $e) {
                         continue;
                     }
