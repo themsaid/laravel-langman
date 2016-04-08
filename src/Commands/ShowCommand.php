@@ -163,6 +163,10 @@ class ShowCommand extends Command
     private function shouldShowKey($key)
     {
         if ($this->key) {
+            if (Str::contains($key, '.') && Str::startsWith($key, $this->key)) {
+                return true;
+            }
+
             if (! $this->option('close') && $key != $this->key) {
                 return false;
             }

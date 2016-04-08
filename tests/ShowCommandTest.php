@@ -69,7 +69,7 @@ class ShowCommandTest extends TestCase
         $this->assertNotContains('age', $this->consoleOutput());
     }
 
-    public function testCommandOutputForParentKeyOfANestedKey()
+    public function testCommandOutputForSearchingParentKey()
     {
         $this->createTempFiles([
             'en' => ['user' => "<?php\n return ['age' => 'age', 'name' => ['first' => 'first', 'last' => 'last']];"],
@@ -78,7 +78,10 @@ class ShowCommandTest extends TestCase
 
         $this->artisan('langman:show', ['key' => 'user.name']);
 
-        $this->assertNotContains('name', $this->consoleOutput());
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/name.first(?:.*)first(?:.*)firstnl/', $this->consoleOutput());
+        $this->assertRegExp('/name.last(?:.*)last(?:.*)lastnl/', $this->consoleOutput());
+        $this->assertNotContains('age', $this->consoleOutput());
     }
 
     public function testCommandOutputForKeyOnCloseMatch()
