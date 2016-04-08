@@ -89,9 +89,13 @@ class Manager
             return basename($directory);
         }, $this->disk->directories($this->path));
 
+        $languages = array_filter($languages, function ($directory) {
+            return $directory != 'vendor';
+        });
+
         sort($languages);
 
-        return $languages;
+        return Arr::except($languages, ['vendor']);
     }
 
     /**
