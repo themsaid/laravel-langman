@@ -176,7 +176,7 @@ class TransCommand extends Command
 
             $values[$languageKey] = $this->ask(
                 sprintf(
-                    '%s.%s:%s translation:',
+                    '<fg=yellow>%s.%s:%s</> translation',
                     $this->fileName,
                     $this->key,
                     $languageKey
