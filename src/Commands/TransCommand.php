@@ -95,7 +95,7 @@ class TransCommand extends Command
     private function parseKey()
     {
         try {
-            preg_match('/^([^\.]*)\.([^->]*)(?:->)?(.*)?/', $this->argument('key'), $matches);
+            preg_match('/^([^\.]*)\.([^\:]*)(?:\:)?(.*)?/', $this->argument('key'), $matches);
 
             $this->fileName = $matches[1];
             $this->key = $matches[2];
@@ -157,7 +157,7 @@ class TransCommand extends Command
         );
 
         foreach ($values as $languageKey => $value) {
-            $this->line("<fg=yellow>{$this->fileName}.{$this->key}->{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
+            $this->line("<fg=yellow>{$this->fileName}.{$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
         }
     }
 
@@ -176,7 +176,7 @@ class TransCommand extends Command
 
             $values[$languageKey] = $this->ask(
                 sprintf(
-                    '%s.%s->%s translation:',
+                    '%s.%s:%s translation:',
                     $this->fileName,
                     $this->key,
                     $languageKey

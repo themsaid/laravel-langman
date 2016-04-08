@@ -67,7 +67,7 @@ class MissingCommand extends Command
         $input = [];
 
         foreach ($values as $key => $value) {
-            preg_match('/^([^\.]*)\.(.*)->(.*)/', $key, $matches);
+            preg_match('/^([^\.]*)\.(.*):(.*)/', $key, $matches);
 
             $input[$matches[1]][$matches[2]][$matches[3]] = $value;
 
@@ -139,7 +139,7 @@ class MissingCommand extends Command
         foreach ($emptyValues as $dottedValue => $emptyValue) {
             list($fileName, $languageKey, $key) = explode('.', $dottedValue, 3);
 
-            $missing[] = "{$fileName}.{$key}->{$languageKey}";
+            $missing[] = "{$fileName}.{$key}:{$languageKey}";
         }
 
         // Array of keys indexed by fileName.key, those are the keys we looked
@@ -159,7 +159,7 @@ class MissingCommand extends Command
 
             foreach ($languages as $languageName) {
                 if (Arr::get($filesResults, "{$fileName}.{$languageName}.{$key}") === null) {
-                    $missing[] = "{$fileName}.{$key}->{$languageName}";
+                    $missing[] = "{$fileName}.{$key}:{$languageName}";
                 }
             }
 

@@ -73,6 +73,11 @@ class Manager
             });
         });
 
+        // Hide files from "vendor" directory for now
+        $filesByFile = $filesByFile->filter(function ($value, $key) {
+            return ! Str::contains($key, ':');
+        });
+
         return $filesByFile->toArray();
     }
 
