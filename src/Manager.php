@@ -86,7 +86,7 @@ class Manager
     public function languages()
     {
         $languages = array_map(function ($directory) {
-            return str_replace($this->path.'/', '', $directory);
+            return basename($directory);
         }, $this->disk->directories($this->path));
 
         sort($languages);
