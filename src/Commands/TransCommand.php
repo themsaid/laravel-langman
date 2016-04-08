@@ -157,7 +157,7 @@ class TransCommand extends Command
         );
 
         foreach ($values as $languageKey => $value) {
-            $this->info("{$this->fileName}.{$this->key}.{$languageKey} was set to \"{$value}\" successfully.");
+            $this->line("<fg=yellow>{$this->fileName}.{$this->key}->{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
         }
     }
 
