@@ -10,6 +10,7 @@ class ManagerTest extends TestCase
         $this->createTempFiles([
             'en' => ['user' => '', 'category' => ''],
             'nl' => ['user' => '', 'category' => ''],
+//            'vendor' => ['package' => ['en' => ['user' => '', 'category' => ''], 'nl' => ['user' => '', 'category' => '']]],
         ]);
 
         $expected = [
