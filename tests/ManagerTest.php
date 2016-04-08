@@ -10,7 +10,7 @@ class ManagerTest extends TestCase
         $this->createTempFiles([
             'en' => ['user' => '', 'category' => ''],
             'nl' => ['user' => '', 'category' => ''],
-//            'vendor' => ['package' => ['en' => ['user' => '', 'category' => ''], 'nl' => ['user' => '', 'category' => '']]],
+            'vendor' => ['package' => ['en' => ['user' => '', 'product' => ''], 'sp' => ['user' => '', 'product' => '']]],
         ]);
 
         $expected = [
@@ -21,6 +21,14 @@ class ManagerTest extends TestCase
             'category' => [
                 'en' => __DIR__.'/temp/en/category.php',
                 'nl' => __DIR__.'/temp/nl/category.php',
+            ],
+            'package::product' => [
+                'en' => __DIR__.'/temp/vendor/package/en/product.php',
+                'sp' => __DIR__.'/temp/vendor/package/sp/product.php',
+            ],
+            'package::user' => [
+                'en' => __DIR__.'/temp/vendor/package/en/user.php',
+                'sp' => __DIR__.'/temp/vendor/package/sp/user.php',
             ],
         ];
 

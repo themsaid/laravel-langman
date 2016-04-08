@@ -6,6 +6,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class Manager
 {
@@ -55,10 +56,18 @@ class Manager
         $files = Collection::make($this->disk->allFiles($this->path));
 
         $filesByFile = $files->groupBy(function ($file) {
-            return $file->getBasename('.'.$file->getExtension());
+            $fileName = $file->getBasename('.'.$file->getExtension());
+
+            if (Str::contains($file->getPath(), 'vendor')) {
+                preg_match('/([^\/]*)\/([^\/]*)\/([^\/]*).php$/', $file->getRealPath(), $matches);
+
+                return "{$matches[1]}::{$matches[3]}";
+            } else {
+                return $fileName;
+            }
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
-                return str_replace($this->path.'/', '', $file->getPath());
+                return basename($file->getPath());
             })->map(function ($file) {
                 return $file->getRealPath();
             });
