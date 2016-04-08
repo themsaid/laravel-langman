@@ -56,7 +56,7 @@ class RemoveCommand extends Command
     public function handle()
     {
         try {
-            list($file, $key) = explode('.', $this->argument('key'));
+            list($file, $key) = explode('.', $this->argument('key'), 2);
         } catch (\ErrorException $e) {
             $this->error('Could not recognize the key you want to translate.');
 

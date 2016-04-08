@@ -30,4 +30,58 @@ class RemoveCommandTest extends TestCase
         $this->assertArrayNotHasKey('name', $userENFile);
         $this->assertArrayNotHasKey('name', $userNLFile);
     }
+
+    public function testRemovesNestedKeys()
+    {
+        $manager = $this->app[Manager::class];
+
+        $this->createTempFiles([
+            'en' => [
+                'user' => "<?php\n return ['name' => ['f'=>1,'l'=>2], 'age' => 'Age'];",
+            ],
+            'nl' => [
+                'user' => "<?php\n return ['name' => ['f'=>1,'l'=>2]];",
+            ],
+        ]);
+
+        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command->shouldReceive('confirm')->once()->andReturn(true);
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:remove', ['key' => 'user.name.f']);
+
+        $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
+        $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
+
+        $this->assertArrayHasKey('name', $userENFile);
+        $this->assertArrayHasKey('name', $userNLFile);
+        $this->assertArrayNotHasKey('f', $userENFile['name']);
+        $this->assertArrayNotHasKey('f', $userNLFile['name']);
+    }
+
+    public function testRemovesParentOfNestedKeys()
+    {
+        $manager = $this->app[Manager::class];
+
+        $this->createTempFiles([
+            'en' => [
+                'user' => "<?php\n return ['name' => ['f'=>1,'l'=>2], 'age' => 'Age'];",
+            ],
+            'nl' => [
+                'user' => "<?php\n return ['name' => ['f'=>1,'l'=>2]];",
+            ],
+        ]);
+
+        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command->shouldReceive('confirm')->once()->andReturn(true);
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:remove', ['key' => 'user.name']);
+
+        $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
+        $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
+
+        $this->assertArrayNotHasKey('name', $userENFile);
+        $this->assertArrayNotHasKey('name', $userNLFile);
+    }
 }
