@@ -22,13 +22,13 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with('user.age->nl translation')->andReturn('fill_age');
-        $command->shouldReceive('ask')->once()->with('product.name->en translation')->andReturn('fill_name');
-        $command->shouldReceive('ask')->once()->with('product.color->nl translation')->andReturn('fill_color');
-        $command->shouldReceive('ask')->once()->with('product.size->nl translation')->andReturn('fill_size');
-        $command->shouldReceive('ask')->once()->with('missing.missing.id->nl translation')->andReturn('fill_missing_id');
-        $command->shouldReceive('ask')->once()->with('missing.missing.price->en translation')->andReturn('fill_missing_price');
-        $command->shouldReceive('ask')->once()->with('missing.missing.price->nl translation')->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with('user.age:nl translation')->andReturn('fill_age');
+        $command->shouldReceive('ask')->once()->with('product.name:en translation')->andReturn('fill_name');
+        $command->shouldReceive('ask')->once()->with('product.color:nl translation')->andReturn('fill_color');
+        $command->shouldReceive('ask')->once()->with('product.size:nl translation')->andReturn('fill_size');
+        $command->shouldReceive('ask')->once()->with('missing.missing.id:nl translation')->andReturn('fill_missing_id');
+        $command->shouldReceive('ask')->once()->with('missing.missing.price:en translation')->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with('missing.missing.price:nl translation')->andReturn('fill_missing_price');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:missing');
