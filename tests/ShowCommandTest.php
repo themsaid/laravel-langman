@@ -25,6 +25,20 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/age(?:.*)Age(?:.*)|(?: *)|/', $this->consoleOutput());
     }
 
+    public function testCommandOutputForPackageFile()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['weight' => 'weight'];", 'category' => ''],
+            'nl' => ['user' => '', 'category' => ''],
+            'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['name' => 'name'];"], 'sp' => ['file' => "<?php\n return ['name' => 'something'];"]]],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'package::file']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/name(?:.*)name(?:.*)something/', $this->consoleOutput());
+    }
+
     public function testCommandOutputForFileWithNestedKeys()
     {
         $this->createTempFiles([

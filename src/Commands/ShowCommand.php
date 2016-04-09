@@ -151,6 +151,18 @@ class ShowCommand extends Command
         $this->file = $parts[0];
 
         $this->key = isset($parts[1]) ? $parts[1] : null;
+
+        if (Str::contains($this->file, '::')) {
+            try {
+                $parts = explode('::', $this->file);
+
+                $this->manager->setPathToVendorPackage($parts[0]);
+            } catch (\ErrorException $e) {
+                $this->error('Could not recognize the package.');
+
+                return;
+            }
+        }
     }
 
     /**
