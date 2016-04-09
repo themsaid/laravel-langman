@@ -34,6 +34,22 @@ class TransCommandTest extends TestCase
         $this->artisan('langman:trans', ['key' => 'users.name']);
     }
 
+    public function testCommandAsksForConfirmationToCreatePackageFileIfNotFound()
+    {
+        $this->createTempFiles([
+            'vendor' => ['package' => ['en' => [], 'sp' => []]],
+        ]);
+
+        $manager = $this->app[Manager::class];
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[confirm]', [$manager]);
+        $command->shouldReceive('confirm')->once()->andReturn(true);
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:trans', ['key' => 'package::file.name']);
+
+        $this->assertFileNotExists($this->app['config']['langman.path'].'/vendor/package/en/file.php');
+    }
+
     public function testCommandExitsWhenFileNotFoundAndConfirmationFalse()
     {
         $this->createTempFiles(['en' => []]);
@@ -80,6 +96,26 @@ class TransCommandTest extends TestCase
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
         $nlFile = (array) include $this->app['config']['langman.path'].'/nl/users.php';
+        $this->assertEquals('name', $enFile['name']);
+        $this->assertEquals('naam', $nlFile['name']);
+    }
+
+    public function testCommandAsksForValuePerLanguageForPackageAndWriteToFile()
+    {
+        $this->createTempFiles([
+            'vendor' => ['package' => ['en' => ['users' => "<?php\n return [];"], 'sp' => ['users' => "<?php\n return [];"]]],
+        ]);
+
+        $manager = $this->app[Manager::class];
+        $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
+        $command->shouldReceive('ask')->once()->with('/users\.name:en/', null)->andReturn('name');
+        $command->shouldReceive('ask')->once()->with('/users\.name:sp/', null)->andReturn('naam');
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:trans', ['key' => 'package::users.name']);
+
+        $enFile = (array) include $this->app['config']['langman.path'].'/vendor/package/en/users.php';
+        $nlFile = (array) include $this->app['config']['langman.path'].'/vendor/package/sp/users.php';
         $this->assertEquals('name', $enFile['name']);
         $this->assertEquals('naam', $nlFile['name']);
     }

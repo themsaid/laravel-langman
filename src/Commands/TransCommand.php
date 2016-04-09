@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Themsaid\Langman\Manager;
 
 class TransCommand extends Command
@@ -27,6 +28,13 @@ class TransCommand extends Command
      * @var string
      */
     protected $fileName;
+
+    /**
+     * The name of the package.
+     *
+     * @var string
+     */
+    protected $packageName;
 
     /**
      * The name of the only language we're going to alter its file.
@@ -108,6 +116,20 @@ class TransCommand extends Command
             }
         }
 
+        if (Str::contains($this->fileName, '::')) {
+            try {
+                $parts = explode('::', $this->fileName);
+
+                $this->manager->setPathToVendorPackage($parts[0]);
+
+                $this->packageName = $parts[0];
+            } catch (\ErrorException $e) {
+                $this->error('Could not recognize the package.');
+
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -152,7 +174,7 @@ class TransCommand extends Command
         $values = $this->collectValues($languages);
 
         $this->manager->fillKeys(
-            $this->fileName,
+            str_replace($this->packageName.'::', '', $this->fileName),
             [$this->key => $values]
         );
 
