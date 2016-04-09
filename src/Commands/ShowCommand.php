@@ -14,7 +14,7 @@ class ShowCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:show {key} {--c|close}';
+    protected $signature = 'langman:show {key} {--c|close} {--lang=}';
 
     /**
      * The name and signature of the console command.
@@ -52,6 +52,13 @@ class ShowCommand extends Command
     protected $files;
 
     /**
+     * Array of selected languages.
+     *
+     * @var array
+     */
+    protected $languages;
+
+    /**
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
@@ -74,8 +81,14 @@ class ShowCommand extends Command
 
         $this->files = $this->filesFromKey();
 
+        $this->languages = $this->manager->languages();
+        
+        if($this->option('lang') != null){
+            $this->languages = explode(',',$this->option('lang'));
+        }
+
         $this->table(
-            array_merge(['key'], $this->manager->languages()),
+            array_merge(['key'], $this->languages),
             $this->tableRows()
         );
     }
@@ -87,8 +100,6 @@ class ShowCommand extends Command
      */
     private function tableRows()
     {
-        $allLanguages = $this->manager->languages();
-
         $output = [];
 
         $filesContent = [];
@@ -110,7 +121,7 @@ class ShowCommand extends Command
         foreach ($output as $key => $values) {
             $original = [];
 
-            foreach ($allLanguages as $languageKey) {
+            foreach ($this->languages as $languageKey) {
                 $original[$languageKey] = isset($values[$languageKey]) ? $values[$languageKey] : '<bg=red>  MISSING  </>';
             }
 
