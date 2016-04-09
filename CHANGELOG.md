@@ -1,3 +1,7 @@
+## v1.2.1 (2016-04-09)
+- Fix bug with creating vendor language files
+- Add the ability to pick specific languages to show in `langman:show`
+
 ## v1.2.0 (2016-04-09)
 - Fix bugs on windows os.
 - Support nested language keys.
