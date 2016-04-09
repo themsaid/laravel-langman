@@ -96,7 +96,7 @@ class MissingCommand extends Command
 
         foreach ($missing as $missingKey) {
             $values[$missingKey] = $this->ask(
-                "{$missingKey} translation"
+                "<fg=yellow>{$missingKey}</> translation"
             );
         }
 
