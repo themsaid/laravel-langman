@@ -43,4 +43,19 @@ class FindCommandTest extends TestCase
         $this->assertRegExp('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
         $this->assertNotContains('jarl_borg', $this->consoleOutput());
     }
+
+    public function testCommandOutputForPackage()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['weight' => 'weight'];", 'category' => ''],
+            'nl' => ['user' => '', 'category' => ''],
+            'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
+        ]);
+
+        $this->artisan('langman:find', ['keyword' => 'not found', '--package' => 'package']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
+        $this->assertNotContains('weight', $this->consoleOutput());
+    }
 }

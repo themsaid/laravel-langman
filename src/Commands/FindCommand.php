@@ -14,7 +14,7 @@ class FindCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:find {keyword}';
+    protected $signature = 'langman:find {keyword} {--package : Vendor Package name to search within.}';
 
     /**
      * The name and signature of the console command.
@@ -57,6 +57,10 @@ class FindCommand extends Command
      */
     public function handle()
     {
+        if ($package = $this->option('package')) {
+            $this->manager->setPathToVendorPackage($package);
+        }
+
         $this->files = $this->manager->files();
 
         if (empty($this->files)) {

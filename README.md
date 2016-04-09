@@ -6,7 +6,7 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 <br>
 <br>
 
-<img src="http://s30.postimg.org/ni241hhpd/ezgif_com_resize.gif">
+<img src="http://s15.postimg.org/3lfrbeg7t/langman_2.gif">
 <br>
 <a href="https://travis-ci.org/themsaid/laravel-langman"><img src="https://travis-ci.org/themsaid/laravel-langman.svg?branch=master" alt="Build Status"></a>
 <a href="https://styleci.io/repos/55088784"><img src="https://styleci.io/repos/55088784/shield?style=flat" alt="StyleCI"></a>
@@ -23,7 +23,7 @@ Begin by installing the package through Composer. Run the following command in y
 $ composer require themsaid/laravel-langman
 ```
 
-Once done, add the following in the providers array of `config/app.php`:
+Once done, add the following line in your providers array of `config/app.php`:
 
 ```php
 Themsaid\Langman\LangmanServiceProvider::class
@@ -66,6 +66,14 @@ Brings only the translation of the `name` key in all languages.
 ---
 
 ```
+php artisan langman:show users.name.first
+```
+
+Brings the translation of a nested key.
+
+---
+
+```
 php artisan langman:show users.nam -c
 ```
 
@@ -104,7 +112,7 @@ asking you to give a translation for each, and finally save the given values to 
 
 ```
 php artisan langman:trans users.name
-php artisan langman:trans users.name.en
+php artisan langman:trans users.name->en
 ```
 
 In the first case it'll ask you to give a translation for the given key in all languages, in the second case it'll ask you only
@@ -130,5 +138,4 @@ If you want a web interface to manage your language files instead, I recommend [
 by [Barry vd. Heuvel](https://github.com/barryvdh).
 
 ## TODO
-- Support nested translation lines in `langman:trans`, `langman:sync`, `langman:remove`, `langman:missing`.
 - Support vendor language files.

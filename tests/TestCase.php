@@ -42,7 +42,6 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
 
                     foreach ($content as $subDir => $subContent) {
                         mkdir(__DIR__.'/temp/vendor/'.$file.'/'.$subDir);
-
                         foreach ($subContent as $subFile => $subsubContent) {
                             file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'/'.$subDir.'/'.$subFile.'.php', $subsubContent);
                         }

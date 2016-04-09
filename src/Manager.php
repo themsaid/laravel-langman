@@ -73,10 +73,14 @@ class Manager
             });
         });
 
-        // Hide files from "vendor" directory for now
-        $filesByFile = $filesByFile->filter(function ($value, $key) {
-            return ! Str::contains($key, ':');
-        });
+        // If the path does not contain "vendor" then we're looking at the
+        // main language files of the application, in this case we will
+        // neglect all vendor files.
+        if (! Str::contains($this->path, 'vendor')) {
+            $filesByFile = $filesByFile->filter(function ($value, $key) {
+                return ! Str::contains($key, ':');
+            });
+        }
 
         return $filesByFile->toArray();
     }
@@ -289,5 +293,16 @@ class Manager
         }
 
         return $output;
+    }
+
+    /**
+     * Sets the path to a vendor package translation files.
+     *
+     * @param string $packageName
+     * @return void
+     */
+    public function setPathToVendorPackage($packageName)
+    {
+        $this->path = $this->path.'/vendor/'.$packageName;
     }
 }
