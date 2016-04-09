@@ -74,6 +74,14 @@ Brings the translation of a nested key.
 ---
 
 ```
+php artisan langman:show package::users.name
+```
+
+Brings the translation of a vendor package language file.
+
+---
+
+```
 php artisan langman:show users.nam -c
 ```
 
@@ -113,6 +121,7 @@ asking you to give a translation for each, and finally save the given values to 
 ```
 php artisan langman:trans users.name
 php artisan langman:trans users.name->en
+php artisan langman:trans package::users.name
 ```
 
 In the first case it'll ask you to give a translation for the given key in all languages, in the second case it'll ask you only
@@ -124,6 +133,7 @@ This command will add a new key if not existing, and updates the key if it is al
 
 ```
 php artisan langman:remove users.name
+php artisan langman:remove package::users.name
 ```
 
 It'll remove that key from all language files.
@@ -136,6 +146,3 @@ It'll remove that key from all language files.
 
 If you want a web interface to manage your language files instead, I recommend [Laravel 5 Translation Manager](https://github.com/barryvdh/laravel-translation-manager)
 by [Barry vd. Heuvel](https://github.com/barryvdh).
-
-## TODO
-- Support vendor language files.
