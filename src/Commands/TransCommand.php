@@ -144,7 +144,7 @@ class TransCommand extends Command
             return $this->manager->files()[$this->fileName];
         } catch (\ErrorException $e) {
             if ($this->confirm(sprintf('Language file %s.php not found, would you like to create it?', $this->fileName))) {
-                $this->manager->createFile($this->fileName);
+                $this->manager->createFile(str_replace($this->packageName.'::', '', $this->fileName));
             }
 
             return [];

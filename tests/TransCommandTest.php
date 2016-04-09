@@ -47,7 +47,7 @@ class TransCommandTest extends TestCase
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'package::file.name']);
 
-        $this->assertFileNotExists($this->app['config']['langman.path'].'/vendor/package/en/file.php');
+        $this->assertFileExists($this->app['config']['langman.path'].'/vendor/package/en/file.php');
     }
 
     public function testCommandExitsWhenFileNotFoundAndConfirmationFalse()
