@@ -18,7 +18,7 @@ class TransCommandTest extends TestCase
     {
         $this->createTempFiles(['en' => ['users' => '']]);
 
-        $this->artisan('langman:trans', ['key' => 'users.name:sd']);
+        $this->artisan('langman:trans', ['key' => 'users.name', '--lang' => 'sd']);
 
         $this->assertContains('Language (sd) could not be found!', $this->consoleOutput());
     }
@@ -155,7 +155,7 @@ class TransCommandTest extends TestCase
         $command->shouldReceive('ask')->once()->with('/users\.name:en/', null)->andReturn('name');
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:trans', ['key' => 'users.name:en']);
+        $this->artisan('langman:trans', ['key' => 'users.name', '--lang' => 'en']);
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
         $this->assertEquals('name', $enFile['name']);
@@ -196,7 +196,7 @@ class TransCommandTest extends TestCase
         $command->shouldReceive('ask')->once()->with('/users\.name\.first:en/', null)->andReturn('name');
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:trans', ['key' => 'users.name.first:en']);
+        $this->artisan('langman:trans', ['key' => 'users.name.first', '--lang' => 'en']);
 
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
         $this->assertEquals(['first' => 'name'], $enFile['name']);

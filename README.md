@@ -82,6 +82,14 @@ Brings the translation of a vendor package language file.
 ---
 
 ```
+php artisan langman:show users --lang=en,it
+```
+
+Brings the translation of only the "en" and "it" languages.
+
+---
+
+```
 php artisan langman:show users.nam -c
 ```
 
@@ -120,12 +128,12 @@ asking you to give a translation for each, and finally save the given values to 
 
 ```
 php artisan langman:trans users.name
-php artisan langman:trans users.name->en
+php artisan langman:trans users.name.first
+php artisan langman:trans users.name --lang=en
 php artisan langman:trans package::users.name
 ```
 
-In the first case it'll ask you to give a translation for the given key in all languages, in the second case it'll ask you only
-for the given language's value.
+Using this command you may set a language key (plain or nested) for a given group, you may also specify which language you wish to set leaving the other languages as is.
 
 This command will add a new key if not existing, and updates the key if it is already there.
 

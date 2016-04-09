@@ -13,7 +13,7 @@ class TransCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:trans {key}';
+    protected $signature = 'langman:trans {key} {--lang=}';
 
     /**
      * The name and signature of the console command.
@@ -88,6 +88,8 @@ class TransCommand extends Command
             return;
         }
 
+        $this->languageKey = $this->option('lang');
+
         if (empty($this->files = $this->filesFromKey())) {
             return;
         }
@@ -103,11 +105,10 @@ class TransCommand extends Command
     private function parseKey()
     {
         try {
-            preg_match('/^([^\.]*)\.([^\:]*)(?:\:)?(.*)?/', $this->argument('key'), $matches);
+            preg_match('/^([^\.]*)\.([^\:]*)/', $this->argument('key'), $matches);
 
             $this->fileName = $matches[1];
             $this->key = $matches[2];
-            $this->languageKey = $matches[3];
         } catch (\ErrorException $e) {
             if (! $this->key) {
                 $this->error('Could not recognize the key you want to translate.');
