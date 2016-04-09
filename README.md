@@ -106,7 +106,7 @@ php artisan langman:find 'log in first'
 
 You get a table of language lines where any of the values matches the given phrase by close match.
 
-### Search view files for missing translations
+### Searching view files for missing translations
 
 ```
 php artisan langman:sync
@@ -115,7 +115,7 @@ php artisan langman:sync
 This command will look into your view files and find all translation keys that are not covered in your translation files, after
 that it appends those keys to the files with a value equal to an empty string.
 
-### Fill missing translations
+### Filling missing translations
 
 ```
 php artisan langman:missing
