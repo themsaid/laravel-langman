@@ -25,6 +25,22 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/age(?:.*)Age(?:.*)|(?: *)|/', $this->consoleOutput());
     }
 
+    public function testCommandOutputForFileAndSpecificLanguages()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];"],
+            'nl' => ['user' => "<?php\n return ['name' => 'Naam'];"],
+            'it_lang' => ['user' => "<?php\n return ['name' => 'Nome'];"],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', '--lang' => 'en,nl']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
+        $this->assertNotContains('Nome', $this->consoleOutput());
+        $this->assertNotContains('it_lang', $this->consoleOutput());
+    }
+
     public function testCommandOutputForPackageFile()
     {
         $this->createTempFiles([

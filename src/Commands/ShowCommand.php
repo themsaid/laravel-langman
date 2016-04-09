@@ -5,6 +5,7 @@ namespace Themsaid\Langman\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Themsaid\Langman\Manager;
 
 class ShowCommand extends Command
@@ -52,7 +53,7 @@ class ShowCommand extends Command
     protected $files;
 
     /**
-     * Array of selected languages.
+     * Array of displayable languages.
      *
      * @var array
      */
@@ -81,14 +82,12 @@ class ShowCommand extends Command
 
         $this->files = $this->filesFromKey();
 
-        $this->languages = $this->manager->languages();
+        try {
+            $this->languages = $this->getLanguages();
+        } catch (InvalidArgumentException $e) {
+            $this->error($e->getMessage());
 
-        if ($this->option('lang') != null) {
-            $languages = explode(',', $this->option('lang'));
-            if (!empty($diffLangagues = array_diff($languages, $this->languages))) {
-                return $this->error('Unknown Langauges [ '.implode($diffLangagues,',').' ]');
-            }
-            $this->languages = explode(',', $this->option('lang'));
+            return;
         }
 
         $this->table(
@@ -110,11 +109,11 @@ class ShowCommand extends Command
 
         foreach ($this->files as $languageKey => $file) {
             foreach ($filesContent[$languageKey] = Arr::dot($this->manager->getFileContent($file)) as $key => $value) {
-                if (!$this->shouldShowKey($key)) {
+                if (! $this->shouldShowKey($key)) {
                     continue;
                 }
 
-                $output[$key]['key']        = $key;
+                $output[$key]['key'] = $key;
                 $output[$key][$languageKey] = $value;
             }
         }
@@ -194,15 +193,37 @@ class ShowCommand extends Command
                 return true;
             }
 
-            if (!$this->option('close') && $key != $this->key) {
+            if (! $this->option('close') && $key != $this->key) {
                 return false;
             }
 
-            if ($this->option('close') && !Str::contains($key, $this->key)) {
+            if ($this->option('close') && ! Str::contains($key, $this->key)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Get the languages to be displayed in the command output.
+     *
+     * @return array
+     */
+    private function getLanguages()
+    {
+        $allLanguages = $this->manager->languages();
+
+        if (! $this->option('lang')) {
+            return $allLanguages;
+        }
+
+        $userLanguages = explode(',', (string) $this->option('lang'));
+
+        if ($missingLanguages = array_diff($userLanguages, $allLanguages)) {
+            throw new InvalidArgumentException('Unknown Language(s) ['.implode(',', $missingLanguages).'].');
+        }
+
+        return $userLanguages;
     }
 }
