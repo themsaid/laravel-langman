@@ -6,7 +6,7 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 <br>
 <br>
 
-<img src="http://s15.postimg.org/3lfrbeg7t/langman_2.gif" alt="Laravel Langman">
+<img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
 <br>
 <a href="https://travis-ci.org/themsaid/laravel-langman"><img src="https://travis-ci.org/themsaid/laravel-langman.svg?branch=master" alt="Build Status"></a>
 <a href="https://styleci.io/repos/55088784"><img src="https://styleci.io/repos/55088784/shield?style=flat" alt="StyleCI"></a>
