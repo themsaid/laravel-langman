@@ -14,7 +14,7 @@ class ShowCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:show {key} {--c|close}';
+    protected $signature = 'langman:show {key} {--c|close} {--lang=}';
 
     /**
      * The name and signature of the console command.
@@ -52,6 +52,13 @@ class ShowCommand extends Command
     protected $files;
 
     /**
+     * Array of selected languages.
+     *
+     * @var array
+     */
+    protected $languages;
+
+    /**
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
@@ -74,8 +81,18 @@ class ShowCommand extends Command
 
         $this->files = $this->filesFromKey();
 
+        $this->languages = $this->manager->languages();
+
+        if ($this->option('lang') != null) {
+            $languages = explode(',', $this->option('lang'));
+            if (!empty($diffLangagues = array_diff($languages, $this->languages))) {
+                return $this->error('Unknown Langauges [ '.implode($diffLangagues,',').' ]');
+            }
+            $this->languages = explode(',', $this->option('lang'));
+        }
+
         $this->table(
-            array_merge(['key'], $this->manager->languages()),
+            array_merge(['key'], $this->languages),
             $this->tableRows()
         );
     }
@@ -87,19 +104,17 @@ class ShowCommand extends Command
      */
     private function tableRows()
     {
-        $allLanguages = $this->manager->languages();
-
         $output = [];
 
         $filesContent = [];
 
         foreach ($this->files as $languageKey => $file) {
             foreach ($filesContent[$languageKey] = Arr::dot($this->manager->getFileContent($file)) as $key => $value) {
-                if (! $this->shouldShowKey($key)) {
+                if (!$this->shouldShowKey($key)) {
                     continue;
                 }
 
-                $output[$key]['key'] = $key;
+                $output[$key]['key']        = $key;
                 $output[$key][$languageKey] = $value;
             }
         }
@@ -110,7 +125,7 @@ class ShowCommand extends Command
         foreach ($output as $key => $values) {
             $original = [];
 
-            foreach ($allLanguages as $languageKey) {
+            foreach ($this->languages as $languageKey) {
                 $original[$languageKey] = isset($values[$languageKey]) ? $values[$languageKey] : '<bg=red>  MISSING  </>';
             }
 
@@ -179,11 +194,11 @@ class ShowCommand extends Command
                 return true;
             }
 
-            if (! $this->option('close') && $key != $this->key) {
+            if (!$this->option('close') && $key != $this->key) {
                 return false;
             }
 
-            if ($this->option('close') && ! Str::contains($key, $this->key)) {
+            if ($this->option('close') && !Str::contains($key, $this->key)) {
                 return false;
             }
         }
