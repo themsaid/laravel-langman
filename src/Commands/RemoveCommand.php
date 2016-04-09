@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Themsaid\Langman\Manager;
 
 class RemoveCommand extends Command
@@ -58,12 +59,26 @@ class RemoveCommand extends Command
         try {
             list($file, $key) = explode('.', $this->argument('key'), 2);
         } catch (\ErrorException $e) {
-            $this->error('Could not recognize the key you want to translate.');
+            $this->error('Could not recognize the key you want to remove.');
 
             return;
         }
 
         if ($this->confirm("Are you sure you want to remove \"{$file}.{$key}\"?")) {
+            if (Str::contains($file, '::')) {
+                try {
+                    $parts = explode('::', $file);
+
+                    $this->manager->setPathToVendorPackage($parts[0]);
+
+                    $file = $parts[1];
+                } catch (\ErrorException $e) {
+                    $this->error('Could not recognize the package.');
+
+                    return;
+                }
+            }
+
             $this->manager->removeKey($file, $key);
 
             $this->info("{$file}.{$key} was removed successfully.");

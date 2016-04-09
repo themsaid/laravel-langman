@@ -84,4 +84,27 @@ class RemoveCommandTest extends TestCase
         $this->assertArrayNotHasKey('name', $userENFile);
         $this->assertArrayNotHasKey('name', $userNLFile);
     }
+
+    public function testCommandOutputForVendorPackage()
+    {
+        $manager = $this->app[Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['weight' => 'weight'];", 'category' => ''],
+            'nl' => ['user' => '', 'category' => ''],
+            'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
+        ]);
+
+        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "package::file.not_found"?')->andReturn(true);
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:remove', ['key' => 'package::file.not_found']);
+
+        $ENFile = (array) include $this->app['config']['langman.path'].'/vendor/package/en/file.php';
+        $SPFile = (array) include $this->app['config']['langman.path'].'/vendor/package/sp/file.php';
+
+        $this->assertArrayNotHasKey('name', $ENFile);
+        $this->assertArrayNotHasKey('name', $SPFile);
+    }
 }
