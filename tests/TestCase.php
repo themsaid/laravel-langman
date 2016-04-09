@@ -62,6 +62,11 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         $app->singleton('Illuminate\Contracts\Console\Kernel', Kernel::class);
     }
 
+    public function artisan($command, $parameters = [])
+    {
+        parent::artisan($command, array_merge($parameters, ['--no-interaction' => true]));
+    }
+
     public function consoleOutput()
     {
         return $this->consoleOutput ?: $this->consoleOutput = $this->app[Kernel::class]->output();
