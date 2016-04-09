@@ -25,11 +25,11 @@ class Manager
     private $path;
 
     /**
-     * the paths to the views files.
+     * the paths to the views,app files.
      *
      * @var array
      */
-    private $viewsPaths;
+    private $allFiles;
 
     /**
      * Manager constructor.
@@ -37,11 +37,11 @@ class Manager
      * @param Filesystem $disk
      * @param string $path
      */
-    public function __construct(Filesystem $disk, $path, array $viewsPaths)
+    public function __construct(Filesystem $disk, $path, array $allFiles)
     {
         $this->disk = $disk;
         $this->path = $path;
-        $this->viewsPaths = $viewsPaths;
+        $this->allFiles = $allFiles;
     }
 
     /**
@@ -274,7 +274,7 @@ class Manager
         ;
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->disk->allFiles($this->viewsPaths) as $file) {
+        foreach ($this->disk->allFiles($this->allFiles) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches[2] as $key) {
                     try {
