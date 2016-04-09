@@ -83,7 +83,7 @@ class ShowCommand extends Command
 
         $this->languages = $this->manager->languages();
         
-        if($this->option('lang') != null){
+        if($this->option('lang') != null) {
             $this->languages = explode(',',$this->option('lang'));
         }
 
