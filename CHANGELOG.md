@@ -1,3 +1,9 @@
+## v1.2.0 (2016-04-09)
+- Fix bugs on windows os.
+- Support nested language keys.
+- Support vendor package translation lines.
+- Enhance the output of commands to be more descriptive and (colorful).
+
 ## v1.1.2 (2016-04-04)
 - Added support for nested keys in the `show` and `find` commands.
 - Fixed an issue with writing language files with nested keys.
