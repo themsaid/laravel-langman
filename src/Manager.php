@@ -25,11 +25,11 @@ class Manager
     private $path;
 
     /**
-     * the paths to the views files.
+     * The paths to directories where we look for localised strings to sync.
      *
      * @var array
      */
-    private $viewsPaths;
+    private $syncPaths;
 
     /**
      * Manager constructor.
@@ -37,11 +37,11 @@ class Manager
      * @param Filesystem $disk
      * @param string $path
      */
-    public function __construct(Filesystem $disk, $path, array $viewsPaths)
+    public function __construct(Filesystem $disk, $path, array $syncPaths)
     {
         $this->disk = $disk;
         $this->path = $path;
-        $this->viewsPaths = $viewsPaths;
+        $this->syncPaths = $syncPaths;
     }
 
     /**
@@ -261,7 +261,8 @@ class Manager
         $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
 
         $pattern =
-            // See http://regexr.com/392hu
+            // See https://regex101.com/r/jS5fX0/1
+            '[^\w]'. // Must not start with any alpha numeric character or underscore
             '('.implode('|', $functions).')'.// Must start with one of the functions
             "\(".// Match opening parentheses
             "[\'\"]".// Match " or '
@@ -274,7 +275,7 @@ class Manager
         ;
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->disk->allFiles($this->viewsPaths) as $file) {
+        foreach ($this->disk->allFiles($this->syncPaths) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches[2] as $key) {
                     try {

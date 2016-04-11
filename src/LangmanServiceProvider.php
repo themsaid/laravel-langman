@@ -23,18 +23,18 @@ class LangmanServiceProvider extends ServiceProvider
 
         $this->app->bind(Manager::class, function () {
             return new Manager(
-                new Filesystem(),
+                new Filesystem,
                 $this->app['config']['langman.path'],
-                $this->app['config']['view.paths']
+                array_merge($this->app['config']['view.paths'], [$this->app['path']])
             );
         });
 
         $this->commands([
-            \Themsaid\Langman\Commands\ShowCommand::class,
-            \Themsaid\Langman\Commands\FindCommand::class,
-            \Themsaid\Langman\Commands\TransCommand::class,
             \Themsaid\Langman\Commands\MissingCommand::class,
             \Themsaid\Langman\Commands\RemoveCommand::class,
+            \Themsaid\Langman\Commands\TransCommand::class,
+            \Themsaid\Langman\Commands\ShowCommand::class,
+            \Themsaid\Langman\Commands\FindCommand::class,
             \Themsaid\Langman\Commands\SyncCommand::class,
         ]);
     }

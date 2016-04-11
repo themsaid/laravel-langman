@@ -34,5 +34,11 @@ class SyncCommandTest extends TestCase
         array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));
         array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
+
+        array_map('unlink', glob(__DIR__.'/app_temp/Http/Controllers/testController.php'));
+        array_map('unlink', glob(__DIR__.'/app_temp/Jobs/testJob.php'));
+        array_map('rmdir', glob(__DIR__.'/app_temp/Http/Controllers'));
+        array_map('rmdir', glob(__DIR__.'/app_temp/Http'));
+        array_map('rmdir', glob(__DIR__.'/app_temp/Jobs'));
     }
 }
