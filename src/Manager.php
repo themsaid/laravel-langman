@@ -25,11 +25,11 @@ class Manager
     private $path;
 
     /**
-     * the paths to the views,app files.
+     * The paths to directories where we look for localised strings to sync.
      *
      * @var array
      */
-    private $allFiles;
+    private $syncPaths;
 
     /**
      * Manager constructor.
@@ -37,11 +37,11 @@ class Manager
      * @param Filesystem $disk
      * @param string $path
      */
-    public function __construct(Filesystem $disk, $path, array $allFiles)
+    public function __construct(Filesystem $disk, $path, array $syncPaths)
     {
         $this->disk = $disk;
         $this->path = $path;
-        $this->allFiles = $allFiles;
+        $this->syncPaths = $syncPaths;
     }
 
     /**
@@ -53,7 +53,7 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->allFiles($this->path));
+        $files = Collection::make($this->disk->syncPaths($this->path));
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
@@ -274,7 +274,7 @@ class Manager
         ;
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->disk->allFiles($this->allFiles) as $file) {
+        foreach ($this->disk->allFiles($this->syncPaths) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches[2] as $key) {
                     try {
