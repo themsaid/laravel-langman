@@ -12,13 +12,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('langman.path', __DIR__.'/temp');
-        // here we put the app temp with views path , because the app_path in
-        // service porovider pass wrong app path of laravel, but we need to
-        // check if the app_temp directory exists or not
-        if (!is_dir(__DIR__.'/app_temp')) {
-            mkdir(__DIR__.'/app_temp');
-        }
-        $app['config']->set('view.paths', [__DIR__.'/views_temp',__DIR__.'/app_temp']);
+        $app['config']->set('view.paths', [__DIR__.'/views_temp']);
     }
 
     public function setUp()

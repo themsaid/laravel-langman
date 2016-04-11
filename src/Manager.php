@@ -53,7 +53,7 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->syncPaths($this->path));
+        $files = Collection::make($this->disk->allFiles($this->path));
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
