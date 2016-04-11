@@ -25,7 +25,10 @@ class LangmanServiceProvider extends ServiceProvider
             return new Manager(
                 new Filesystem(),
                 $this->app['config']['langman.path'],
-                $this->app['config']['view.paths']
+                array_merge(
+                    $this->app['config']['view.paths'],
+                    (array) app_path()
+                )
             );
         });
 
