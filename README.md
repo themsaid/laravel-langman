@@ -112,7 +112,7 @@ You get a table of language lines where any of the values matches the given phra
 php artisan langman:sync
 ```
 
-This command will look into your view files and find all translation keys that are not covered in your translation files, after
+This command will look into all files in `resources/views` and `app` and find all translation keys that are not covered in your translation files, after
 that it appends those keys to the files with a value equal to an empty string.
 
 ### Filling missing translations
