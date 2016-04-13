@@ -17,7 +17,7 @@ class FindCommandTest extends TestCase
     public function testCommandOutputForFile()
     {
         $this->createTempFiles([
-            'en' => ['user' => "<?php\n return ['not_found' => 'user not found', 'age' => 'Age'];"],
+            'en' => ['user' => "<?php\n return ['not_found' => 'User NoT fOunD', 'age' => 'Age'];"],
             'nl' => ['user' => "<?php\n return ['not_found' => 'something'];"],
             'sp' => ['user' => "<?php\n return ['else' => 'else'];"],
         ]);
@@ -25,7 +25,7 @@ class FindCommandTest extends TestCase
         $this->artisan('langman:find', ['keyword' => 'not found']);
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
-        $this->assertRegExp('/user\.not_found(?:.*)user not found(?:.*)something/', $this->consoleOutput());
+        $this->assertRegExp('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
         $this->assertNotContains('age', $this->consoleOutput());
         $this->assertNotContains('else', $this->consoleOutput());
     }
