@@ -1,3 +1,8 @@
+## v1.2.2 (2016-04-13)
+- Sync command looks for translations in the app directory as well as the views directory
+- Updated the lookup regex to match exact translation methods. e. g. `trans()` but not `othertrans()`
+- The find command is now case insensitive.
+
 ## v1.2.1 (2016-04-09)
 - Fix bug with creating vendor language files
 - Add the ability to pick specific languages to show in `langman:show`
