@@ -261,8 +261,8 @@ class Manager
         $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
 
         $pattern =
-            // See https://regex101.com/r/jS5fX0/1
-            '[^\w|>]'. // Must not start with any alpha numeric character or underscore
+            // See https://regex101.com/r/jS5fX0/2
+            '[^\w|>]'. // Must not start with any alphanum or _ or >
             '('.implode('|', $functions).')'.// Must start with one of the functions
             "\(".// Match opening parentheses
             "[\'\"]".// Match " or '
