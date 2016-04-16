@@ -149,10 +149,6 @@ class Manager
 
             $newContent = array_replace_recursive($fileContent, $values);
 
-            array_walk_recursive($newContent, function ($value) {
-                return addslashes($value);
-            });
-
             $this->writeFile($filePath, $newContent);
         }
     }
@@ -208,8 +204,11 @@ class Manager
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $value = $this->stringLineMaker($value, $prepend.'    ');
+
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
+                $value = addslashes($value);
+
                 $output .= "\n{$prepend}    '{$key}' => '{$value}',";
             }
         }
