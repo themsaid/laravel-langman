@@ -81,7 +81,7 @@ class SyncCommand extends Command
     {
         $missingKeys = [];
 
-        foreach (array_diff($keys, array_keys($fileContent)) as $missingKey) {
+        foreach (array_diff($keys, array_keys(array_dot($fileContent))) as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
             $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");

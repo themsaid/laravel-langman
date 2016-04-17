@@ -34,11 +34,34 @@ class SyncCommandTest extends TestCase
         array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));
         array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
+    }
 
-        array_map('unlink', glob(__DIR__.'/app_temp/Http/Controllers/testController.php'));
-        array_map('unlink', glob(__DIR__.'/app_temp/Jobs/testJob.php'));
-        array_map('rmdir', glob(__DIR__.'/app_temp/Http/Controllers'));
-        array_map('rmdir', glob(__DIR__.'/app_temp/Http'));
-        array_map('rmdir', glob(__DIR__.'/app_temp/Jobs'));
+    public function testCommandOutputForMissingSubKey()
+    {
+        array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
+        array_map('rmdir', glob(__DIR__.'/views_temp/user'));
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
+
+        file_put_contents(__DIR__.'/views_temp/user.blade.php', '{{ trans(\'user.name.first\') }}');
+        mkdir(__DIR__.'/views_temp/user');
+        file_put_contents(__DIR__.'/views_temp/user/index.blade.php', "{{ trans('user.name.last') }}");
+
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['name' => ['middle' => 'middle', 'first' => 'old_value']];"],
+        ]);
+
+        $this->artisan('langman:sync');
+
+        $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
+
+        $this->assertArrayHasKey('name', $userENFile);
+        $this->assertArrayHasKey('first', $userENFile['name']);
+        $this->assertEquals('old_value', $userENFile['name']['first']);
+        $this->assertArrayHasKey('last', $userENFile['name']);
+        $this->assertArrayHasKey('middle', $userENFile['name']);
+
+        array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
+        array_map('rmdir', glob(__DIR__.'/views_temp/user'));
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
     }
 }
