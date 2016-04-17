@@ -222,7 +222,7 @@ class ManagerTest extends TestCase
         $this->assertEquals('naam', $nlFile['name']['first']);
     }
 
-    public function testFindTranslationsInViews()
+    public function testFindTranslationsInProjectFiles()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
@@ -234,7 +234,7 @@ class ManagerTest extends TestCase
         mkdir(__DIR__.'/views_temp/users');
         file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.city') }}");
 
-        $results = $manager->collectFromViews();
+        $results = $manager->collectFromFiles();
 
         array_map('unlink', glob(__DIR__.'/views_temp/users/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));

@@ -250,7 +250,7 @@ class Manager
      *
      * @return array
      */
-    public function collectFromViews()
+    public function collectFromFiles()
     {
         $output = [];
 

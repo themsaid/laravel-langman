@@ -52,8 +52,8 @@ class SyncCommand extends Command
 
         $translationFiles = $this->manager->files();
 
-        // An array of all translation keys as found in views files.
-        $allViewsKeys = $this->manager->collectFromViews();
+        // An array of all translation keys as found in project files.
+        $allViewsKeys = $this->manager->collectFromFiles();
 
         foreach ($translationFiles as $fileName => $languages) {
             foreach ($languages as $languageKey => $path) {
