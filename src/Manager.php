@@ -59,9 +59,11 @@ class Manager
             $fileName = $file->getBasename('.'.$file->getExtension());
 
             if (Str::contains($file->getPath(), 'vendor')) {
-                preg_match('/([^\/]*)\/([^\/]*)\/([^\/]*).php$/', $file->getRealPath(), $matches);
+                $fileName = str_replace('.php', '', $file->getFileName());
 
-                return "{$matches[1]}::{$matches[3]}";
+                $packageName = basename(dirname($file->getPath()));
+
+                return "{$packageName}::{$fileName}";
             } else {
                 return $fileName;
             }
