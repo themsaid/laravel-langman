@@ -5,17 +5,19 @@ namespace Themsaid\Langman\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Themsaid\Langman\Manager;
+use Themsaid\Langman\DispatcherTrait;
 
 class ShowCommand extends Command
 {
+    use DispatcherTrait;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'langman:show {key} {--c|close} {--lang=}';
+    protected $signature = 'langman:show {key} {--c|close}';
 
     /**
      * The name and signature of the console command.
@@ -53,13 +55,6 @@ class ShowCommand extends Command
     protected $files;
 
     /**
-     * Array of displayable languages.
-     *
-     * @var array
-     */
-    protected $languages;
-
-    /**
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
@@ -82,18 +77,12 @@ class ShowCommand extends Command
 
         $this->files = $this->filesFromKey();
 
-        try {
-            $this->languages = $this->getLanguages();
-        } catch (InvalidArgumentException $e) {
-            $this->error($e->getMessage());
-
-            return;
-        }
-
         $this->table(
-            array_merge(['key'], $this->languages),
+            array_merge(['key'], $this->manager->languages()),
             $this->tableRows()
         );
+
+        $this->eventDispatch($this->files);
     }
 
     /**
@@ -103,6 +92,8 @@ class ShowCommand extends Command
      */
     private function tableRows()
     {
+        $allLanguages = $this->manager->languages();
+
         $output = [];
 
         $filesContent = [];
@@ -124,7 +115,7 @@ class ShowCommand extends Command
         foreach ($output as $key => $values) {
             $original = [];
 
-            foreach ($this->languages as $languageKey) {
+            foreach ($allLanguages as $languageKey) {
                 $original[$languageKey] = isset($values[$languageKey]) ? $values[$languageKey] : '<bg=red>  MISSING  </>';
             }
 
@@ -165,18 +156,6 @@ class ShowCommand extends Command
         $this->file = $parts[0];
 
         $this->key = isset($parts[1]) ? $parts[1] : null;
-
-        if (Str::contains($this->file, '::')) {
-            try {
-                $parts = explode('::', $this->file);
-
-                $this->manager->setPathToVendorPackage($parts[0]);
-            } catch (\ErrorException $e) {
-                $this->error('Could not recognize the package.');
-
-                return;
-            }
-        }
     }
 
     /**
@@ -189,10 +168,6 @@ class ShowCommand extends Command
     private function shouldShowKey($key)
     {
         if ($this->key) {
-            if (Str::contains($key, '.') && Str::startsWith($key, $this->key)) {
-                return true;
-            }
-
             if (! $this->option('close') && $key != $this->key) {
                 return false;
             }
@@ -203,27 +178,5 @@ class ShowCommand extends Command
         }
 
         return true;
-    }
-
-    /**
-     * Get the languages to be displayed in the command output.
-     *
-     * @return array
-     */
-    private function getLanguages()
-    {
-        $allLanguages = $this->manager->languages();
-
-        if (! $this->option('lang')) {
-            return $allLanguages;
-        }
-
-        $userLanguages = explode(',', (string) $this->option('lang'));
-
-        if ($missingLanguages = array_diff($userLanguages, $allLanguages)) {
-            throw new InvalidArgumentException('Unknown Language(s) ['.implode(',', $missingLanguages).'].');
-        }
-
-        return $userLanguages;
     }
 }

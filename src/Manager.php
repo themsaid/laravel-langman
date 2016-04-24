@@ -4,9 +4,7 @@ namespace Themsaid\Langman;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class Manager
 {
@@ -56,31 +54,14 @@ class Manager
         $files = Collection::make($this->disk->allFiles($this->path));
 
         $filesByFile = $files->groupBy(function ($file) {
-            $fileName = $file->getBasename('.'.$file->getExtension());
-
-            if (Str::contains($file->getPath(), 'vendor')) {
-                preg_match('/([^\/]*)\/([^\/]*)\/([^\/]*).php$/', $file->getRealPath(), $matches);
-
-                return "{$matches[1]}::{$matches[3]}";
-            } else {
-                return $fileName;
-            }
+            return $file->getBasename('.'.$file->getExtension());
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
-                return basename($file->getPath());
+                return str_replace($this->path.'/', '', $file->getPath());
             })->map(function ($file) {
                 return $file->getRealPath();
             });
         });
-
-        // If the path does not contain "vendor" then we're looking at the
-        // main language files of the application, in this case we will
-        // neglect all vendor files.
-        if (! Str::contains($this->path, 'vendor')) {
-            $filesByFile = $filesByFile->filter(function ($value, $key) {
-                return ! Str::contains($key, ':');
-            });
-        }
 
         return $filesByFile->toArray();
     }
@@ -95,16 +76,12 @@ class Manager
     public function languages()
     {
         $languages = array_map(function ($directory) {
-            return basename($directory);
+            return str_replace($this->path.'/', '', $directory);
         }, $this->disk->directories($this->path));
-
-        $languages = array_filter($languages, function ($directory) {
-            return $directory != 'vendor';
-        });
 
         sort($languages);
 
-        return Arr::except($languages, ['vendor']);
+        return $languages;
     }
 
     /**
@@ -118,7 +95,7 @@ class Manager
         foreach ($this->languages() as $languageKey) {
             $file = $this->path."/{$languageKey}/{$fileName}.php";
             if (! $this->disk->exists($file)) {
-                file_put_contents($file, "<?php \n\n return[];");
+                file_put_contents($file, "<?php \n");
             }
         }
     }
@@ -140,20 +117,18 @@ class Manager
             foreach ($values as $languageKey => $value) {
                 $filePath = $this->path."/{$languageKey}/{$fileName}.php";
 
-                Arr::set($appends[$filePath], $key, $value);
+                $appends[$filePath][$key] = $value;
             }
         }
 
         foreach ($appends as $filePath => $values) {
             $fileContent = $this->getFileContent($filePath, true);
 
-            $newContent = array_replace_recursive($fileContent, $values);
-
-            array_walk_recursive($newContent, function ($value) {
+            $fileContent = array_map(function ($value) {
                 return addslashes($value);
-            });
+            }, array_merge($fileContent, $values));
 
-            $this->writeFile($filePath, $newContent);
+            $this->writeFile($filePath, $fileContent);
         }
     }
 
@@ -171,7 +146,7 @@ class Manager
 
             $fileContent = $this->getFileContent($filePath);
 
-            Arr::forget($fileContent, $key);
+            unset($fileContent[$key]);
 
             $this->writeFile($filePath, $fileContent);
         }
@@ -278,7 +253,7 @@ class Manager
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches[2] as $key) {
                     try {
-                        list($fileName, $keyName) = explode('.', $key, 2);
+                        list($fileName, $keyName) = explode('.', $key);
                     } catch (\ErrorException $e) {
                         continue;
                     }
@@ -293,16 +268,5 @@ class Manager
         }
 
         return $output;
-    }
-
-    /**
-     * Sets the path to a vendor package translation files.
-     *
-     * @param string $packageName
-     * @return void
-     */
-    public function setPathToVendorPackage($packageName)
-    {
-        $this->path = $this->path.'/vendor/'.$packageName;
     }
 }

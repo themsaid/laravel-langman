@@ -4,9 +4,12 @@ namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Themsaid\Langman\Manager;
+use Themsaid\Langman\DispatcherTrait;
 
 class SyncCommand extends Command
 {
+    use DispatcherTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -55,15 +58,20 @@ class SyncCommand extends Command
         // An array of all translation keys as found in views files.
         $allViewsKeys = $this->manager->collectFromViews();
 
+        $filledKeys = [];
+
         foreach ($translationFiles as $fileName => $languages) {
             foreach ($languages as $languageKey => $path) {
                 $fileContent = $this->manager->getFileContent($path);
 
                 if (isset($allViewsKeys[$fileName])) {
+                    $filledKeys[$fileName][$languageKey] = $this->getDiffs($allViewsKeys[$fileName], $fileContent);
                     $this->fillMissingKeys($allViewsKeys[$fileName], $fileName, $fileContent, $languageKey);
                 }
             }
         }
+
+        $this->eventDispatch($translationFiles, $allViewsKeys, $filledKeys);
 
         $this->info('Done!');
     }
@@ -81,7 +89,7 @@ class SyncCommand extends Command
     {
         $missingKeys = [];
 
-        foreach (array_diff($keys, array_keys($fileContent)) as $missingKey) {
+        foreach ($this->getDiffs($keys, $fileContent) as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
             $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
@@ -91,5 +99,17 @@ class SyncCommand extends Command
             $fileName,
             $missingKeys
         );
+    }
+
+    /**
+     * Find the diffrent keys in view keys and translation file
+     *
+     * @param  array  $keys        Found in view files
+     * @param  array  $fileContent Translation file
+     * @return array
+     */
+    private function getDiffs(array $keys, array $fileContent)
+    {
+        return array_diff($keys, array_keys($fileContent));
     }
 }

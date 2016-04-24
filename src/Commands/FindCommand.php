@@ -4,17 +4,20 @@ namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Themsaid\Langman\Manager;
 use Illuminate\Support\Str;
+use Themsaid\Langman\Manager;
+use Themsaid\Langman\DispatcherTrait;
 
 class FindCommand extends Command
 {
+    use DispatcherTrait;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'langman:find {keyword} {--package : Vendor Package name to search within.}';
+    protected $signature = 'langman:find {keyword}';
 
     /**
      * The name and signature of the console command.
@@ -57,10 +60,6 @@ class FindCommand extends Command
      */
     public function handle()
     {
-        if ($package = $this->option('package')) {
-            $this->manager->setPathToVendorPackage($package);
-        }
-
         $this->files = $this->manager->files();
 
         if (empty($this->files)) {
@@ -68,11 +67,12 @@ class FindCommand extends Command
         }
 
         $languages = $this->manager->languages();
-
         $this->table(
             array_merge(['key'], $languages),
             $this->tableRows()
         );
+
+        $this->eventDispatch($this->files, $languages);
     }
 
     /**

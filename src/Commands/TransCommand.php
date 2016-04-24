@@ -3,17 +3,19 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Themsaid\Langman\Manager;
+use Themsaid\Langman\DispatcherTrait;
 
 class TransCommand extends Command
 {
+    use DispatcherTrait;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'langman:trans {key} {--lang=}';
+    protected $signature = 'langman:trans {key}';
 
     /**
      * The name and signature of the console command.
@@ -28,13 +30,6 @@ class TransCommand extends Command
      * @var string
      */
     protected $fileName;
-
-    /**
-     * The name of the package.
-     *
-     * @var string
-     */
-    protected $packageName;
 
     /**
      * The name of the only language we're going to alter its file.
@@ -88,13 +83,13 @@ class TransCommand extends Command
             return;
         }
 
-        $this->languageKey = $this->option('lang');
-
         if (empty($this->files = $this->filesFromKey())) {
             return;
         }
 
         $this->fillKey();
+
+        $this->eventDispatch($this->argument('key'), $this->files);
     }
 
     /**
@@ -105,27 +100,14 @@ class TransCommand extends Command
     private function parseKey()
     {
         try {
-            preg_match('/^([^\.]*)\.([^\:]*)/', $this->argument('key'), $matches);
+            $parts = explode('.', $this->argument('key'));
 
-            $this->fileName = $matches[1];
-            $this->key = $matches[2];
+            $this->fileName = $parts[0];
+            $this->key = $parts[1];
+            $this->languageKey = $parts[2];
         } catch (\ErrorException $e) {
             if (! $this->key) {
                 $this->error('Could not recognize the key you want to translate.');
-
-                return false;
-            }
-        }
-
-        if (Str::contains($this->fileName, '::')) {
-            try {
-                $parts = explode('::', $this->fileName);
-
-                $this->manager->setPathToVendorPackage($parts[0]);
-
-                $this->packageName = $parts[0];
-            } catch (\ErrorException $e) {
-                $this->error('Could not recognize the package.');
 
                 return false;
             }
@@ -145,7 +127,7 @@ class TransCommand extends Command
             return $this->manager->files()[$this->fileName];
         } catch (\ErrorException $e) {
             if ($this->confirm(sprintf('Language file %s.php not found, would you like to create it?', $this->fileName))) {
-                $this->manager->createFile(str_replace($this->packageName.'::', '', $this->fileName));
+                $this->manager->createFile($this->fileName);
             }
 
             return [];
@@ -175,12 +157,12 @@ class TransCommand extends Command
         $values = $this->collectValues($languages);
 
         $this->manager->fillKeys(
-            str_replace($this->packageName.'::', '', $this->fileName),
+            $this->fileName,
             [$this->key => $values]
         );
 
         foreach ($values as $languageKey => $value) {
-            $this->line("<fg=yellow>{$this->fileName}.{$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
+            $this->info("{$this->fileName}.{$this->key}.{$languageKey} was set to \"{$value}\" successfully.");
         }
     }
 
@@ -199,12 +181,13 @@ class TransCommand extends Command
 
             $values[$languageKey] = $this->ask(
                 sprintf(
-                    '<fg=yellow>%s.%s:%s</> translation',
+                    '%s.%s.%s translation%s:',
                     $this->fileName,
                     $this->key,
-                    $languageKey
+                    $languageKey,
+                    isset($languageContent[$this->key]) ? ' (updating)' : ''
                 ),
-                isset($languageContent[$this->key]) ? $languageContent[$this->key] : null
+                isset($languageContent[$this->key]) ? $languageContent[$this->key] : ''
             );
         }
 
