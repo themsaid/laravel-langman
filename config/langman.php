@@ -12,4 +12,14 @@ return [
      */
 
     'path' => realpath(base_path('resources/lang')),
+
+    /*
+     * --------------------------------------------------------------------------
+     * Show the event trigged logs on console runtime
+     * --------------------------------------------------------------------------
+     *
+     * This option determines the trigged show event after all that running the
+     * commands.
+     */
+    'show_events' => true
 ];
