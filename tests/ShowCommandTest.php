@@ -128,4 +128,17 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/username(?:.*)uname(?:.*)|(?: *)|/', $this->consoleOutput());
         $this->assertNotContains('age', $this->consoleOutput());
     }
+
+    public function test_ignore_attributes_and_keys_with_empty_arrays()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['name' => 'Name'];"],
+            'nl' => ['user' => "<?php\n return ['name' => []];"],
+        ]);
+        
+        $this->artisan('langman:show', ['key' => 'user']);
+        
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/name(?:.*)Name(?:.*)MISSING/', $this->consoleOutput());
+    }
 }
