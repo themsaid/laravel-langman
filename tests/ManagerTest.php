@@ -33,9 +33,9 @@ class ManagerTest extends TestCase
 //            ],
         ];
 
-        if(stristr(PHP_OS, 'win') !== false){
+        if (stristr(PHP_OS, 'win') !== false) {
             foreach ($expected as $keys => $value) {
-                foreach($expected[$keys] as $key => $content){
+                foreach ($expected[$keys] as $key => $content) {
                     $expected[$keys][$key] = str_replace('/', '\\', $content);
                 }
             }
