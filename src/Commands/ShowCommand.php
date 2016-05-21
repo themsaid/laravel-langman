@@ -117,7 +117,6 @@ class ShowCommand extends Command
                     $output[$key]['key'] = $key;
                     $output[$key][$languageKey] = $value;
                 }
-
             }
         }
 
