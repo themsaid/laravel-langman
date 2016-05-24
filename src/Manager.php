@@ -79,12 +79,29 @@ class Manager
         // main language files of the application, in this case we will
         // neglect all vendor files.
         if (! Str::contains($this->path, 'vendor')) {
-            $filesByFile = $filesByFile->filter(function ($value, $key) {
-                return ! Str::contains($key, ':');
-            });
+            $filesByFile = $this->neglectVendorFiles($filesByFile);
         }
 
-        return $filesByFile->toArray();
+        return $filesByFile;
+    }
+
+    /**
+     * Nelgect all vendor files.
+     *
+     * @param $filesByFile Collection
+     * @return array
+     */
+    private function neglectVendorFiles($filesByFile)
+    {
+        $return = [];
+
+        foreach ($filesByFile->toArray() as $key => $value) {
+            if (! Str::contains($key, ':')) {
+                $return[$key] = $value;
+            }
+        }
+
+        return $return;
     }
 
     /**
