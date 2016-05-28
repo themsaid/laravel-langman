@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Themsaid\Langman\Manager;
 
 class SyncCommand extends Command
@@ -48,40 +49,55 @@ class SyncCommand extends Command
      */
     public function handle()
     {
-        $this->info('Reading translation keys from views...');
-
         $translationFiles = $this->manager->files();
 
-        // An array of all translation keys as found in project files.
-        $allViewsKeys = $this->manager->collectFromFiles();
+        $this->syncKeysFromFiles($translationFiles);
 
-        foreach ($translationFiles as $fileName => $languages) {
-            foreach ($languages as $languageKey => $path) {
-                $fileContent = $this->manager->getFileContent($path);
-
-                if (isset($allViewsKeys[$fileName])) {
-                    $this->fillMissingKeys($allViewsKeys[$fileName], $fileName, $fileContent, $languageKey);
-                }
-            }
-        }
+        $this->syncKeysBetweenLanguages($translationFiles);
 
         $this->info('Done!');
     }
 
     /**
+     * Synchronize keys found in project files but missing in languages.
+     *
+     * @param $translationFiles
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return void
+     */
+    private function syncKeysFromFiles($translationFiles)
+    {
+        $this->info('Reading translation keys from files...');
+
+        // An array of all translation keys as found in project files.
+        $allKeysInFiles = $this->manager->collectFromFiles();
+
+        foreach ($translationFiles as $fileName => $languages) {
+            foreach ($languages as $languageKey => $path) {
+                $fileContent = $this->manager->getFileContent($path);
+
+                if (isset($allKeysInFiles[$fileName])) {
+                    $missingKeys = array_diff($allKeysInFiles[$fileName], array_keys(array_dot($fileContent)));
+
+                    $this->fillMissingKeys($fileName, $missingKeys, $languageKey);
+                }
+            }
+        }
+    }
+
+    /**
      * Fill the missing keys with an empty string in the given file.
      *
-     * @param array $keys
      * @param string $fileName
-     * @param array $fileContent
+     * @param array $foundMissingKeys
      * @param string $languageKey
      * @return void
      */
-    private function fillMissingKeys(array $keys, $fileName, array $fileContent, $languageKey)
+    private function fillMissingKeys($fileName, array $foundMissingKeys, $languageKey)
     {
         $missingKeys = [];
 
-        foreach (array_diff($keys, array_keys(array_dot($fileContent))) as $missingKey) {
+        foreach ($foundMissingKeys as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
             $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
@@ -91,5 +107,38 @@ class SyncCommand extends Command
             $fileName,
             $missingKeys
         );
+    }
+
+    /**
+     * Synchronize keys that exist in a language but not the other.
+     *
+     * @param $translationFiles
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return void
+     */
+    private function syncKeysBetweenLanguages($translationFiles)
+    {
+        $this->info('Synchronizing language files...');
+
+        $filesResults = [];
+
+        // Here we collect the file results
+        foreach ($translationFiles as $fileName => $languageFiles) {
+            foreach ($languageFiles as $languageKey => $filePath) {
+                $filesResults[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
+            }
+        }
+
+        $values = Arr::dot($filesResults);
+
+        $missing = $this->manager->getKeysExistingInALanguageButNotTheOther($values);
+
+        foreach ($missing as &$missingKey) {
+            list($file, $key) = explode('.', $missingKey, 2);
+
+            list($key, $language) = explode(':', $key, 2);
+
+            $this->fillMissingKeys($file, [$key], $language);
+        }
     }
 }
