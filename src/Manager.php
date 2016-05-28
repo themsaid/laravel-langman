@@ -324,4 +324,45 @@ class Manager
     {
         $this->path = $this->path.'/vendor/'.$packageName;
     }
+
+    /**
+     * Extract keys that exists in a language but not the other.
+     *
+     * Given a dot array of all keys in the format 'file.language.key', this
+     * method searches for keys that exist in one language but not the
+     * other and outputs an array consists of those keys.
+     *
+     * @param $values
+     * @return array
+     */
+    public function getKeysExistingInALanguageButNotTheOther($values)
+    {
+        $missing = [];
+
+        // Array of keys indexed by fileName.key, those are the keys we looked
+        // at before so we save them in order for us to not look at them
+        // again in a different language iteration.
+        $searched = [];
+
+        // Now we add keys that exist in a language but missing in any of the
+        // other languages. Those keys combined with ones with values = ''
+        // will be sent to the console user to fill and save in disk.
+        foreach ($values as $key => $value) {
+            list($fileName, $languageKey, $key) = explode('.', $key, 3);
+
+            if (in_array("{$fileName}.{$key}", $searched)) {
+                continue;
+            }
+
+            foreach ($this->languages() as $languageName) {
+                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}")) {
+                    $missing[] = "{$fileName}.{$key}:{$languageName}";
+                }
+            }
+
+            $searched[] = "{$fileName}.{$key}";
+        }
+
+        return $missing;
+    }
 }

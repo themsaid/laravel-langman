@@ -142,29 +142,7 @@ class MissingCommand extends Command
             $missing[] = "{$fileName}.{$key}:{$languageKey}";
         }
 
-        // Array of keys indexed by fileName.key, those are the keys we looked
-        // at before so we save them in order for us to not look at them
-        // again in a different language iteration.
-        $searched = [];
-
-        // Now we add keys that exist in a language but missing in any of the
-        // other languages. Those keys combined with ones with values = ''
-        // will be sent to the console user to fill and save in disk.
-        foreach ($values as $key => $value) {
-            list($fileName, $languageKey, $key) = explode('.', $key, 3);
-
-            if (in_array("{$fileName}.{$key}", $searched)) {
-                continue;
-            }
-
-            foreach ($languages as $languageName) {
-                if (Arr::get($filesResults, "{$fileName}.{$languageName}.{$key}") === null) {
-                    $missing[] = "{$fileName}.{$key}:{$languageName}";
-                }
-            }
-
-            $searched[] = "{$fileName}.{$key}";
-        }
+        $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
 
         return $missing;
     }

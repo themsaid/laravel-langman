@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Filesystem\Filesystem;
+use Mockery as m;
 
 class ManagerTest extends TestCase
 {
@@ -244,5 +246,24 @@ class ManagerTest extends TestCase
         $this->assertContains('name', $results['users']);
         $this->assertContains('age', $results['users']);
         $this->assertContains('city', $results['users']);
+    }
+
+    public function testGetKeysExistingInALanguageButNotTheOther()
+    {
+        $manager = m::mock('Themsaid\Langman\Manager[languages]', [new Filesystem(), '', []]);
+
+        $manager->shouldReceive('languages')->andReturn(['en', 'nl']);
+
+        $results = $manager->getKeysExistingInALanguageButNotTheOther([
+            'user.en.name' => 'a',
+            'user.nl.phone' => 'a',
+            'user.en.address' => 'a',
+            'user.nl.address' => 'a',
+        ]);
+
+        $this->assertContains('user.name:nl', $results);
+        $this->assertContains('user.phone:en', $results);
+        $this->assertNotContains('user.address:en', $results);
+        $this->assertNotContains('user.address:nl', $results);
     }
 }
