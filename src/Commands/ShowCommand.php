@@ -113,8 +113,10 @@ class ShowCommand extends Command
                     continue;
                 }
 
-                $output[$key]['key'] = $key;
-                $output[$key][$languageKey] = $value;
+                if (count($value)) {
+                    $output[$key]['key'] = $key;
+                    $output[$key][$languageKey] = $value;
+                }
             }
         }
 
