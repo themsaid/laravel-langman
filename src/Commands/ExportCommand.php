@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use League\Csv\Writer;
 use Themsaid\Langman\Manager;
@@ -15,7 +16,8 @@ class ExportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:export {export-to=csv}';
+    protected $signature = 'langman:export
+        {--P|path= : The location where the CSV file should be exported.}';
 
     /**
      * The name and signature of the console command.
@@ -32,6 +34,13 @@ class ExportCommand extends Command
     private $manager;
 
     /**
+     * The Languages manager instance.
+     *
+     * @var \Illuminate\Contracts\Filesystem\Filesystem
+     */
+    protected $filesystem;
+
+    /**
      * Array of files grouped by filename.
      *
      * @var array
@@ -41,14 +50,16 @@ class ExportCommand extends Command
     /**
      * ListCommand constructor.
      *
-     * @param \Themsaid\LangMan\Manager $manager
+     * @param  \Themsaid\LangMan\Manager $manager
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem
      * @return void
      */
-    public function __construct(Manager $manager)
+    public function __construct(Manager $manager, Filesystem $filesystem)
     {
         parent::__construct();
 
         $this->manager = $manager;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -58,18 +69,74 @@ class ExportCommand extends Command
      */
     public function handle()
     {
-        $csv = Writer::createFromFileObject(new \SplFileObject(storage_path('somefile.csv'), 'w'));
+        $path = $this->generateCsvFile($this->option('path'));
 
-        $header = array_merge(['Language File', 'Key'], $this->manager->languages());
+        $this->info('CSV file successfully generated in ' . $path .'.');
+    }
+
+    private function generateCsvFile($path = null)
+    {
+        $csvPath = $this->getCsvPath($path);
+
+        $csv = Writer::createFromFileObject(new \SplFileObject($csvPath, 'w'));
+
+        $header = $this->getHeaderContent();
+        $content = $this->getBodyContent();
+
         $csv->insertOne($header);
+        $csv->insertAll($content);
 
+        $csv->output();
+
+        return $csvPath;
+    }
+
+    private function getCsvPath($path)
+    {
+        $exportDir = is_null($path) ? config('langman.csv_path') : base_path($path);
+
+        if (! $this->filesystem->exists($exportDir)) {
+            $this->filesystem->makeDirectory($exportDir);
+        }
+
+        return $exportDir . '/' . $this->getDatePrefix() . '_langman.csv';
+    }
+
+    /*
+     * Get the date prefix for the CSV file.
+     *
+     * @return string
+     */
+    protected function getDatePrefix()
+    {
+        return date('Y_m_d_His');
+    }
+
+    /**
+     * Get the CSV header content.
+     *
+     * @return array
+     */
+    protected function getHeaderContent()
+    {
+        return array_merge(['Language File', 'Key'], $this->manager->languages());
+    }
+
+    /**
+     * Get the CSV rows content.
+     *
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function getBodyContent()
+    {
         $langFiles = $this->manager->files();
 
         $langArray = [];
 
         $filesContent = [];
 
-        foreach($langFiles as $langFileName => $langFilePath) {
+        foreach ($langFiles as $langFileName => $langFilePath) {
             foreach ($langFilePath as $languageKey => $file) {
                 foreach ($filesContent[$languageKey] = Arr::dot($this->manager->getFileContent($file)) as $key => $value) {
                     $langArray[$langFileName][$key]['key'] = $key;
@@ -94,18 +161,14 @@ class ExportCommand extends Command
                         } else {
                             $row[] = $langRow[$language];
                         }
-                    } catch(\ErrorException $ex) {
+                    } catch (\ErrorException $ex) {
                         $row[] = '';
                     }
                 }
                 $content[] = $row;
             }
         }
-//        dd($content);
-        $csv->insertAll($content);
 
-        $csv->output();
-
-        $this->info('CSV file generated successfully.');
+        return $content;
     }
 }
