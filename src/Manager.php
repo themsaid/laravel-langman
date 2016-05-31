@@ -365,4 +365,28 @@ class Manager
 
         return $missing;
     }
+
+    /**
+     * Get all language files content as an array grouped by their filename
+     * and their key.
+     *
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getFilesContentGroupedByFilenameAndKey()
+    {
+        $allLangs = [];
+        $filesContent = [];
+
+        foreach ($this->files() as $langFileName => $langFilePath) {
+            foreach ($langFilePath as $languageKey => $file) {
+                foreach ($filesContent[$languageKey] = Arr::dot($this->getFileContent($file)) as $key => $value) {
+                    $allLangs[$langFileName][$key]['key'] = $key;
+                    $allLangs[$langFileName][$key][$languageKey] = $value;
+                }
+            }
+        }
+
+        return $allLangs;
+    }
 }
