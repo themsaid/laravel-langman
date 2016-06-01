@@ -74,6 +74,24 @@ class ExportCommand extends Command
     }
 
     /**
+     * Generates a CSV file from translations files and putting it in
+     * the given path.
+     *
+     * @param  string|null $path
+     * @return string
+     */
+    protected function generateCsvFile($path = null)
+    {
+        $csvPath = $this->getCsvPath($path);
+
+        $userSelectedFiles = $this->filterFilesForCsvExport();
+
+        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $csvPath);
+
+        return $csvPath;
+    }
+
+    /**
      * Filter files based on user options
      *
      * @return array|string
@@ -102,24 +120,6 @@ class ExportCommand extends Command
         }
 
         return null;
-    }
-
-    /**
-     * Generates a CSV file from translations files and putting it in
-     * the given path.
-     *
-     * @param  string|null $path
-     * @return string
-     */
-    private function generateCsvFile($path = null)
-    {
-        $csvPath = $this->getCsvPath($path);
-
-        $userSelectedFiles = $this->filterFilesForCsvExport();
-
-        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $csvPath);
-
-        return $csvPath;
     }
 
     /**
@@ -164,7 +164,7 @@ class ExportCommand extends Command
      * @param  $path
      * @return string
      */
-    private function getCsvPath($path)
+    protected function getCsvPath($path)
     {
         $exportDir = is_null($path) ? config('langman.csv_path') : base_path($path);
 
