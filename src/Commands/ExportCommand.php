@@ -4,11 +4,7 @@ namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Arr;
-use League\Csv\Writer;
-use League\Csv\Reader;
 use Themsaid\Langman\Manager;
-use Illuminate\Support\Str;
 
 class ExportCommand extends Command
 {
@@ -18,7 +14,9 @@ class ExportCommand extends Command
      * @var string
      */
     protected $signature = 'langman:export
-        {--P|path= : The location where the CSV file should be exported.}';
+        {--P|path= : The location where the CSV file should be exported.}
+        {--only= : Specify the file(s) you want to export to CSV}
+        {--exclude= : File(s) you do not want to export to CSV}';
 
     /**
      * The name and signature of the console command.
@@ -76,6 +74,37 @@ class ExportCommand extends Command
     }
 
     /**
+     * Filter files based on user options
+     *
+     * @return array|string
+     */
+    protected function filterFilesForCsvExport()
+    {
+        if (! is_null($this->option('only')) && ! is_null($this->option('exclude'))) {
+            $this->error('You cannot combine --only and --exclude options. Please use one of them.');
+            exit();
+        }
+
+        $availableFiles = $this->manager->files();
+
+        if (! is_null($this->option('only'))) {
+            $onlyFiles = explode(',', $this->option('only'));
+
+            // We will only return files for those keys which a file exist for.
+            return array_intersect_key($this->manager->files(), array_combine($onlyFiles, $onlyFiles));
+        }
+
+        if (! is_null($this->option('exclude'))) {
+            $excludeFiles = explode(',', $this->option('exclude'));
+
+            // We will only return files for those keys which a file exist for.
+            return array_diff_key($this->manager->files(), array_combine($excludeFiles, $excludeFiles));
+        }
+
+        return null;
+    }
+
+    /**
      * Generates a CSV file from translations files and putting it in
      * the given path.
      *
@@ -86,7 +115,9 @@ class ExportCommand extends Command
     {
         $csvPath = $this->getCsvPath($path);
 
-        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent(), $csvPath);
+        $userSelectedFiles = $this->filterFilesForCsvExport();
+
+        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $csvPath);
 
         return $csvPath;
     }
@@ -170,9 +201,9 @@ class ExportCommand extends Command
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function getBodyContent()
+    protected function getBodyContent($files)
     {
-        $langFiles = $this->manager->getFilesContentGroupedByFilenameAndKey();
+        $langFiles = $this->manager->getFilesContentGroupedByFilenameAndKey($files);
         $content = [];
 
         foreach ($langFiles as $langFileName => $langProps) {

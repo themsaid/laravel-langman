@@ -373,12 +373,13 @@ class Manager
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFilesContentGroupedByFilenameAndKey()
+    public function getFilesContentGroupedByFilenameAndKey(array $selectedFiles = null)
     {
+        $files = is_null($selectedFiles) ? $this->files() : $selectedFiles;
         $allLangs = [];
         $filesContent = [];
 
-        foreach ($this->files() as $langFileName => $langFilePath) {
+        foreach ($files as $langFileName => $langFilePath) {
             foreach ($langFilePath as $languageKey => $file) {
                 foreach ($filesContent[$languageKey] = Arr::dot($this->getFileContent($file)) as $key => $value) {
                     $allLangs[$langFileName][$key]['key'] = $key;
