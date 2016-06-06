@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Themsaid\Langman\Manager;
 
 class RenameCommand extends Command
@@ -55,39 +56,58 @@ class RenameCommand extends Command
      */
     public function handle()
     {
-        list( $file, $key ) = explode ( '.',$this->argument('key'), 2 );
+        if ($this->areArgumentsValid ()){
+            list( $file, $key ) = explode ( '.',$this->argument('key'), 2 );
 
-        $files = $this->manager->files ()[$file];
+            $files = $this->manager->files ()[$file];
 
-        foreach ( $files as $file ) {
-            $content = $this->manager->getFileContent ( $file );
+            foreach ( $files as $file ) {
+                $content = $this->manager->getFileContent ( $file );
 
-            $oldKeyValue = array_pull ( $content, $key );
+                $oldKeyValue = array_pull ( $content, $key );
 
-            $newKey = preg_replace('/(\w+)$/i', $this->argument('as'), $key);
+                $newKey = preg_replace('/(\w+)$/i', $this->argument('as'), $key);
 
-            array_set ( $content, $newKey, $oldKeyValue );
+                array_set ( $content, $newKey, $oldKeyValue );
 
-            $this->manager->writeFile ($file , $content );
-        }
+                $this->manager->writeFile ($file , $content );
+            }
 
-        $affected = [];
+            $affected = [];
 
-        foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $references) {
-            foreach ($references as $reference) {
-                if ($reference == $this->argument('key')) {
-                    $affected[$file][] = $reference;
+            foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $references) {
+                foreach ($references as $reference) {
+                    if ($reference == $this->argument('key')) {
+                        $affected[$file][] = $reference;
+                    }
                 }
             }
+
+            $report = [];
+
+            foreach ($affected as $file => $keys) {
+                $report[] = [count($keys), $file];
+            }
+
+            $this->info("Views Files Affected");
+            $this->table(['Times', 'View File'], $report);
+        }
+    }
+
+    protected function areArgumentsValid ()
+    {
+        $areValid = true;
+
+        if ( ! Str::contains ( $this->argument ('key'), '.' ) || is_null ( $this->argument ('key') )){
+            $this->error ( "Invalid <key> argument format! Pls check and try again." );
+            $areValid = ! $areValid;
         }
 
-        $report = [];
-
-        foreach ($affected as $file => $keys) {
-            $report[] = [count($keys), $file];
+        if ( Str::contains ( $this->argument ('as'), '.' ) || is_null ( $this->argument ('key') )){
+            $this->error ( "Invalid <as> argument format! Pls check and try again." );
+            $areValid = ! $areValid;
         }
 
-        $this->info("Views Files Affected");
-        $this->table(['Times', 'View File'], $report);
+        return $areValid;
     }
 }

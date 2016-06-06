@@ -95,6 +95,21 @@ class RenameCommandTest extends TestCase
         $this->assertRegExp('/Times(?:.*)View File/', $this->consoleOutput());
         $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
         $this->assertRegExp('/2(?:.*)users\\\index\.blade\.php/', $this->consoleOutput());
-
     }
+
+    public function testThrowErrorMessageForInvalidKeyArgument (  )
+    {
+        $this->artisan ( 'langman:rename', ['key' => 'name', 'as' => 'username'] );
+        
+        $this->assertContains ( 'Invalid <key> argument format! Pls check and try again.', $this->consoleOutput () );
+    }
+
+    public function testThrowErrorMessageForInvalidAsArgument (  )
+    {
+        $this->artisan ( 'langman:rename', ['key' => 'user.name', 'as' => 'user.username'] );
+
+        $this->assertContains ( 'Invalid <as> argument format! Pls check and try again.', $this->consoleOutput () );
+    }
+    
+    
 }
