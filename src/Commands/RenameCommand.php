@@ -61,39 +61,17 @@ class RenameCommand extends Command
 
             $files = $this->manager->files ()[$file];
 
-            foreach ( $files as $file ) {
-                $content = $this->manager->getFileContent ( $file );
+            $this->changeKeyNameInAllLanguageFiles ( $files, $key );
 
-                $oldKeyValue = array_pull ( $content, $key );
-
-                $newKey = preg_replace('/(\w+)$/i', $this->argument('as'), $key);
-
-                array_set ( $content, $newKey, $oldKeyValue );
-
-                $this->manager->writeFile ($file , $content );
-            }
-
-            $affected = [];
-
-            foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $references) {
-                foreach ($references as $reference) {
-                    if ($reference == $this->argument('key')) {
-                        $affected[$file][] = $reference;
-                    }
-                }
-            }
-
-            $report = [];
-
-            foreach ($affected as $file => $keys) {
-                $report[] = [count($keys), $file];
-            }
-
-            $this->info("Views Files Affected");
-            $this->table(['Times', 'View File'], $report);
+            $this->generateReportForViewFilesAffected ( );
         }
     }
 
+    /**
+     * Check if both arguments are properly formatted.
+     *
+     * @return bool
+     */
     protected function areArgumentsValid ()
     {
         $areValid = true;
@@ -109,5 +87,81 @@ class RenameCommand extends Command
         }
 
         return $areValid;
+    }
+
+    /**
+     * Change 
+     *
+     * @param $file
+     * @param $key
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function changeKeyName ( $file, $key )
+    {
+        $content = $this->manager->getFileContent ( $file );
+
+        $oldKeyValue = array_pull ( $content, $key );
+
+        $newKey = preg_replace ( '/(\w+)$/i', $this->argument ( 'as' ), $key );
+
+        array_set ( $content, $newKey, $oldKeyValue );
+
+        $this->manager->writeFile ( $file, $content );
+    }
+
+    /**
+     * @param $files
+     * @param $key
+     * @return mixed
+     */
+    private function changeKeyNameInAllLanguageFiles ( $files, $key )
+    {
+        foreach ( $files as $file ) {
+            $this->changeKeyName ( $file, $key );
+        }
+    }
+
+    /**
+     * @param $affected
+     */
+    private function generateReportForViewFilesAffected ( )
+    {
+        $affected = $this->getOnlyViewFilesAffected ();
+
+        $rows = $this->generateReportRows ( $affected );
+
+        $this->info ( "Views Files Affected" );
+        $this->table ( [ 'Times', 'View File' ], $rows );
+    }
+
+    /**
+     * @return array
+     */
+    private function getOnlyViewFilesAffected ()
+    {
+        $affected = [ ];
+
+        foreach ( $this->manager->getAllViewFilesWithTranslations () as $file => $references ) {
+            foreach ( $references as $reference ) {
+                if ( $reference == $this->argument ( 'key' ) ) {
+                    $affected[ $file ][] = $reference;
+                }
+            }
+        }
+        return $affected;
+    }
+
+    /**
+     * @param $affected
+     * @param $report
+     * @return array
+     */
+    private function generateReportRows ( $affected )
+    {
+        $rows = [];
+        foreach ( $affected as $file => $keys ) {
+            $rows[] = [ count ( $keys ), $file ];
+        }
+        return $rows;
     }
 }
