@@ -64,6 +64,8 @@ class RenameCommand extends Command
             $this->changeKeyNameInAllLanguageFiles ( $files, $key );
 
             $this->generateReportForViewFilesAffected ( );
+
+            $this->info ( "Done!" );
         }
     }
 
@@ -126,12 +128,11 @@ class RenameCommand extends Command
      */
     private function generateReportForViewFilesAffected ( )
     {
-        $affected = $this->getOnlyViewFilesAffected ();
-
-        $rows = $this->generateReportRows ( $affected );
-
-        $this->info ( count ( $affected ) . ' views files has been affected.' );
-        $this->table ( [ 'Times', 'View File' ], $rows );
+        if ( $affected = $this->getOnlyViewFilesAffected () ){
+            $rows = $this->generateReportRows ( $affected );
+            $this->info ( count ( $affected ) . ' views files has been affected.' );
+            $this->table ( [ 'Times', 'View File' ], $rows );
+        }
     }
 
     /**
