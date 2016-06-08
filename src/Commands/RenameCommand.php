@@ -76,14 +76,14 @@ class RenameCommand extends Command
     {
         $areValid = true;
 
-        if ( ! Str::contains ( $this->argument ('key'), '.' ) || is_null ( $this->argument ('key') )){
+        if ( $this->isKeyAnArgumentValid () ){
             $this->error ( "Invalid <key> argument format! Pls check and try again." );
-            $areValid = ! $areValid;
+            $areValid = false;
         }
 
-        if ( Str::contains ( $this->argument ('as'), '.' ) || is_null ( $this->argument ('key') )){
+        if ( $this->isAsAnArgumentValid () ){
             $this->error ( "Invalid <as> argument format! Pls check and try again." );
-            $areValid = ! $areValid;
+            $areValid = false;
         }
 
         return $areValid;
@@ -163,5 +163,21 @@ class RenameCommand extends Command
             $rows[] = [ count ( $keys ), $file ];
         }
         return $rows;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isKeyAnArgumentValid ()
+    {
+        return !Str::contains ( $this->argument ( 'key' ), '.' ) || is_null ( $this->argument ( 'key' ) );
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isAsAnArgumentValid ()
+    {
+        return Str::contains ( $this->argument ( 'as' ), '.' ) || is_null ( $this->argument ( 'as' ) );
     }
 }
