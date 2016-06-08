@@ -130,7 +130,7 @@ class RenameCommand extends Command
 
         $rows = $this->generateReportRows ( $affected );
 
-        $this->info ( "Views Files Affected" );
+        $this->info ( count ( $affected ) . ' views files has been affected.' );
         $this->table ( [ 'Times', 'View File' ], $rows );
     }
 

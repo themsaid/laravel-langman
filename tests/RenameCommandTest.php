@@ -91,7 +91,7 @@ class RenameCommandTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        $this->assertContains("Views Files Affected\n", $this->consoleOutput());
+        $this->assertContains("2 views files has been affected.\n", $this->consoleOutput());
         $this->assertRegExp('/Times(?:.*)View File/', $this->consoleOutput());
         $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
         $this->assertRegExp('/2(?:.*)users\\\index\.blade\.php/', $this->consoleOutput());
