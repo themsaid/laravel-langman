@@ -56,16 +56,16 @@ class RenameCommand extends Command
      */
     public function handle()
     {
-        if ($this->areArgumentsValid ()){
-            list( $file, $key ) = explode ( '.',$this->argument('key'), 2 );
+        if ($this->areArgumentsValid()) {
+            list($file, $key) = explode('.',$this->argument('key'), 2);
 
-            $files = $this->manager->files ()[$file];
+            $files = $this->manager->files()[$file];
 
-            $this->changeKeyNameInAllLanguageFiles ( $files, $key );
+            $this->changeKeyNameInAllLanguageFiles($files, $key);
 
-            $this->generateReportForViewFilesAffected ( );
+            $this->generateReportForViewFilesAffected();
 
-            $this->info ( "Done!" );
+            $this->info("Done!");
         }
     }
 
@@ -74,17 +74,17 @@ class RenameCommand extends Command
      *
      * @return bool
      */
-    protected function areArgumentsValid ()
+    protected function areArgumentsValid()
     {
         $areValid = true;
 
-        if ( $this->isKeyAnArgumentValid () ){
-            $this->error ( "Invalid <key> argument format! Pls check and try again." );
+        if (!$this->isKeyAnArgumentValid()) {
+            $this->error("Invalid <key> argument format! Pls check and try again.");
             $areValid = false;
         }
 
-        if ( $this->isAsAnArgumentValid () ){
-            $this->error ( "Invalid <as> argument format! Pls check and try again." );
+        if (!$this->isAsAnArgumentValid()) {
+            $this->error("Invalid <as> argument format! Pls check and try again.");
             $areValid = false;
         }
 
@@ -98,17 +98,17 @@ class RenameCommand extends Command
      * @param $key
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function changeKeyName ( $file, $key )
+    private function changeKeyName($file, $key)
     {
-        $content = $this->manager->getFileContent ( $file );
+        $content = $this->manager->getFileContent($file);
 
-        $oldKeyValue = array_pull ( $content, $key );
+        $oldKeyValue = array_pull($content, $key);
 
-        $newKey = preg_replace ( '/(\w+)$/i', $this->argument ( 'as' ), $key );
+        $newKey = preg_replace('/(\w+)$/i', $this->argument('as'), $key);
 
-        array_set ( $content, $newKey, $oldKeyValue );
+        array_set($content, $newKey, $oldKeyValue);
 
-        $this->manager->writeFile ( $file, $content );
+        $this->manager->writeFile($file, $content);
     }
 
     /**
@@ -116,35 +116,35 @@ class RenameCommand extends Command
      * @param $key
      * @return mixed
      */
-    private function changeKeyNameInAllLanguageFiles ( $files, $key )
+    private function changeKeyNameInAllLanguageFiles($files, $key)
     {
-        foreach ( $files as $file ) {
-            $this->changeKeyName ( $file, $key );
+        foreach ($files as $file) {
+            $this->changeKeyName($file, $key);
         }
     }
 
     /**
      * @param $affected
      */
-    private function generateReportForViewFilesAffected ( )
+    private function generateReportForViewFilesAffected()
     {
-        if ( $affected = $this->getOnlyViewFilesAffected () ){
-            $rows = $this->generateReportRows ( $affected );
-            $this->info ( count ( $affected ) . ' views files has been affected.' );
-            $this->table ( [ 'Times', 'View File' ], $rows );
+        if ($affected = $this->getOnlyViewFilesAffected()) {
+            $rows = $this->generateReportRows($affected);
+            $this->info(count($affected) . ' views files has been affected.');
+            $this->table([ 'Times', 'View File' ], $rows);
         }
     }
 
     /**
      * @return array
      */
-    private function getOnlyViewFilesAffected ()
+    private function getOnlyViewFilesAffected()
     {
         $affected = [ ];
 
-        foreach ( $this->manager->getAllViewFilesWithTranslations () as $file => $references ) {
-            foreach ( $references as $reference ) {
-                if ( $reference == $this->argument ( 'key' ) ) {
+        foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $references) {
+            foreach ($references as $reference) {
+                if ($reference == $this->argument('key')) {
                     $affected[ $file ][] = $reference;
                 }
             }
@@ -157,11 +157,11 @@ class RenameCommand extends Command
      * @param $report
      * @return array
      */
-    private function generateReportRows ( $affected )
+    private function generateReportRows($affected)
     {
         $rows = [];
-        foreach ( $affected as $file => $keys ) {
-            $rows[] = [ count ( $keys ), $file ];
+        foreach ($affected as $file => $keys) {
+            $rows[] = [ count($keys), $file ];
         }
         return $rows;
     }
@@ -169,16 +169,16 @@ class RenameCommand extends Command
     /**
      * @return bool
      */
-    protected function isKeyAnArgumentValid ()
+    protected function isKeyAnArgumentValid()
     {
-        return !Str::contains ( $this->argument ( 'key' ), '.' ) || is_null ( $this->argument ( 'key' ) );
+        return Str::contains($this->argument('key'), '.') && !is_null($this->argument('key'));
     }
 
     /**
      * @return bool
      */
-    protected function isAsAnArgumentValid ()
+    protected function isAsAnArgumentValid()
     {
-        return Str::contains ( $this->argument ( 'as' ), '.' ) || is_null ( $this->argument ( 'as' ) );
+        return !Str::contains($this->argument('as'), '.') && !is_null($this->argument('as'));
     }
 }

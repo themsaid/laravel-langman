@@ -290,7 +290,7 @@ class Manager
         return $translationKeys;
     }
 
-    public function getAllViewFilesWithTranslations( )
+    public function getAllViewFilesWithTranslations()
     {
         /*
          * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>

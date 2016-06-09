@@ -4,56 +4,56 @@ use Themsaid\Langman\Manager;
 
 class RenameCommandTest extends TestCase
 {
-    public function testRenameAKeyValue ()
+    public function testRenameAKeyValue()
     {
-        $this->createTempFiles ([
+        $this->createTempFiles([
             'en' => ['user' => "<?php\n return['mobile' => 'Mobile'];"],
         ]);
         $expectedValues = ['contact' => 'Mobile'];
 
-        $this->artisan ( 'langman:rename', ['key' => 'user.mobile', 'as' => 'contact'] );
+        $this->artisan('langman:rename', ['key' => 'user.mobile', 'as' => 'contact']);
 
         $newValue = (array) include $this->app['config']['langman.path'].'/en/user.php';
-        $this->assertEquals ( $expectedValues, $newValue );
+        $this->assertEquals($expectedValues, $newValue);
     }
 
-    public function testRenameAKeyValueForAllLanguages (  )
+    public function testRenameAKeyValueForAllLanguages()
     {
-        $this->createTempFiles ([
+        $this->createTempFiles([
             'en' => ['user' => "<?php\n return['mobile' => 'Mobile'];"],
             'es' => ['user' => "<?php\n return['mobile' => 'Movil'];"],
         ]);
         $expectedValueEN = ['contact' => 'Mobile'];
         $expectedValueES = ['contact' => 'Movil'];
 
-        $this->artisan ( 'langman:rename', ['key' => 'user.mobile', 'as' => 'contact'] );
+        $this->artisan('langman:rename', ['key' => 'user.mobile', 'as' => 'contact']);
 
-        $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
-        $newValueES = (array) include $this->app['config']['langman.path'].'/es/user.php';
-        $this->assertEquals ( $expectedValueEN, $newValueEN );
-        $this->assertEquals ( $expectedValueES, $newValueES );
+        $newValueEN =(array) include $this->app['config']['langman.path'].'/en/user.php';
+        $newValueES =(array) include $this->app['config']['langman.path'].'/es/user.php';
+        $this->assertEquals($expectedValueEN, $newValueEN);
+        $this->assertEquals($expectedValueES, $newValueES);
     }
 
-    public function testRenameANestedKeyValueForAllLanguages (  )
+    public function testRenameANestedKeyValueForAllLanguages()
     {
-        $this->createTempFiles ([
+        $this->createTempFiles([
             'en' => ['user' => "<?php\n return['contact' => ['cellphone' => 'Mobile']];"],
             'es' => ['user' => "<?php\n return['contact' => ['cellphone' => 'Movil']];"],
         ]);
         $expectedValueEN = ['contact' => ['mobile' => 'Mobile']];
         $expectedValueES = ['contact' => ['mobile' => 'Movil']];
 
-        $this->artisan ( 'langman:rename', ['key' => 'user.contact.cellphone', 'as' => 'mobile'] );
+        $this->artisan('langman:rename', ['key' => 'user.contact.cellphone', 'as' => 'mobile']);
 
-        $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
-        $newValueES = (array) include $this->app['config']['langman.path'].'/es/user.php';
-        $this->assertEquals ( $expectedValueEN, $newValueEN );
-        $this->assertEquals ( $expectedValueES, $newValueES );
+        $newValueEN =(array) include $this->app['config']['langman.path'].'/en/user.php';
+        $newValueES =(array) include $this->app['config']['langman.path'].'/es/user.php';
+        $this->assertEquals($expectedValueEN, $newValueEN);
+        $this->assertEquals($expectedValueES, $newValueES);
     }
 
-    public function testRenameOfANestedKeyValueForAllLanguagesInAnyDepth (  )
+    public function testRenameOfANestedKeyValueForAllLanguagesInAnyDepth()
     {
-        $this->createTempFiles ([
+        $this->createTempFiles([
             'en' => ['user' => "<?php\n return['contact' => ['mobile' => 'Mobile', 'others' => ['msn' => 'E-mail']]];"],
             'es' => ['user' => "<?php\n return['contact' => ['mobile' => 'Movil', 'others' => ['msn' => 'Correo electronico']]];"],
         ]);
@@ -61,19 +61,19 @@ class RenameCommandTest extends TestCase
         $expectedValueEN = ['contact' => ['mobile' => 'Mobile', 'others' => ['mail' => 'E-mail']]];
         $expectedValueES = ['contact' => ['mobile' => 'Movil', 'others' => ['mail' => 'Correo electronico']]];
 
-        $this->artisan ( 'langman:rename', ['key' => 'user.contact.others.msn', 'as' => 'mail'] );
+        $this->artisan('langman:rename', ['key' => 'user.contact.others.msn', 'as' => 'mail']);
 
-        $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
-        $newValueES = (array) include $this->app['config']['langman.path'].'/es/user.php';
-        $this->assertEquals ( $expectedValueEN, $newValueEN );
-        $this->assertEquals ( $expectedValueES, $newValueES );
+        $newValueEN =(array) include $this->app['config']['langman.path'].'/en/user.php';
+        $newValueES =(array) include $this->app['config']['langman.path'].'/es/user.php';
+        $this->assertEquals($expectedValueEN, $newValueEN);
+        $this->assertEquals($expectedValueES, $newValueES);
     }
 
-    public function testRenameCommandShowViewFilesAffectedForTheChange( )
+    public function testRenameCommandShowViewFilesAffectedForTheChange()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
-        $this->createTempFiles ([
+        $this->createTempFiles([
             'en' => ['users' => "<?php\n return['name' => 'Name'];"],
         ]);
 
@@ -85,7 +85,7 @@ class RenameCommandTest extends TestCase
         mkdir(__DIR__.'/views_temp/users');
         file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.name') }} {{ trans('users.city') }} {{ trans('users.name') }}");
 
-        $this->artisan ( 'langman:rename', ['key' => 'users.name', 'as' => 'username'] );
+        $this->artisan('langman:rename', ['key' => 'users.name', 'as' => 'username']);
 
         array_map('unlink', glob(__DIR__.'/views_temp/users/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
@@ -94,21 +94,21 @@ class RenameCommandTest extends TestCase
         $this->assertContains("2 views files has been affected.\n", $this->consoleOutput());
         $this->assertRegExp('/Times(?:.*)View File/', $this->consoleOutput());
         $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
-        $this->assertRegExp('/2(?:.*)users\\\index\.blade\.php/', $this->consoleOutput());
+        $this->assertRegExp('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
     }
 
-    public function testThrowErrorMessageForInvalidKeyArgument (  )
+    public function testThrowErrorMessageForInvalidKeyArgument()
     {
-        $this->artisan ( 'langman:rename', ['key' => 'name', 'as' => 'username'] );
+        $this->artisan('langman:rename', ['key' => 'name', 'as' => 'username']);
         
-        $this->assertContains ( 'Invalid <key> argument format! Pls check and try again.', $this->consoleOutput () );
+        $this->assertContains('Invalid <key> argument format! Pls check and try again.', $this->consoleOutput());
     }
 
-    public function testThrowErrorMessageForInvalidAsArgument (  )
+    public function testThrowErrorMessageForInvalidAsArgument()
     {
-        $this->artisan ( 'langman:rename', ['key' => 'user.name', 'as' => 'user.username'] );
+        $this->artisan('langman:rename', ['key' => 'user.name', 'as' => 'user.username']);
 
-        $this->assertContains ( 'Invalid <as> argument format! Pls check and try again.', $this->consoleOutput () );
+        $this->assertContains('Invalid <as> argument format! Pls check and try again.', $this->consoleOutput());
     }
     
     
