@@ -110,6 +110,4 @@ class RenameCommandTest extends TestCase
 
         $this->assertContains('Invalid <as> argument format! Pls check and try again.', $this->consoleOutput());
     }
-    
-    
 }

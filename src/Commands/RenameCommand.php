@@ -57,7 +57,7 @@ class RenameCommand extends Command
     public function handle()
     {
         if ($this->areArgumentsValid()) {
-            list($file, $key) = explode('.',$this->argument('key'), 2);
+            list($file, $key) = explode('.', $this->argument('key'), 2);
 
             $files = $this->manager->files()[$file];
 
@@ -92,7 +92,7 @@ class RenameCommand extends Command
     }
 
     /**
-     * Change 
+     * Change
      *
      * @param $file
      * @param $key
