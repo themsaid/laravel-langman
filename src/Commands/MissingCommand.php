@@ -128,7 +128,7 @@ class MissingCommand extends Command
 
             $filePath = $this->manager->files()[$file][config('app.locale')];
 
-            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";            
+            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";
         } catch (\Exception $e) {
             return "Sorry. File Language not exists for default locale.";
         }
