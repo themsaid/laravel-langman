@@ -13,7 +13,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:missing';
+    protected $signature = 'langman:missing {--default}';
 
     /**
      * The name and signature of the console command.
@@ -95,12 +95,45 @@ class MissingCommand extends Command
         $values = [];
 
         foreach ($missing as $missingKey) {
+            // var_dump($this->getDefaultValueFor($missingKey));
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation"
+                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValueFor($missingKey)
             );
         }
 
         return $values;
+    }
+
+    /**
+    * Get default value for the current translation request.
+    * @param string $missingKey
+    * @return mixed
+    */
+    private function getDefaultValue($missingKey)
+    {
+        return $this->option('default') ? $this->getTranslationInDefaultLocaleFor($missingKey) : null;
+    }
+
+    /**
+    * Get translation in default locale for given key
+    * @param string $missingKey
+    * @return string
+    */
+    private function getTranslationInDefaultLocaleFor($missingKey)
+    {
+        try {
+
+            list($langKey, $lang) = explode(':', $missingKey);
+
+            list($file, $key) = explode('.', $langKey);
+
+            $filePath = $this->manager->files()[$file][config('app.locale')];
+
+            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";
+            
+        } catch (\Exception $e) {
+            return "Sorry. File Language not exists for default locale.";
+        }
     }
 
     /**
