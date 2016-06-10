@@ -122,15 +122,13 @@ class MissingCommand extends Command
     private function getTranslationInDefaultLocaleFor($missingKey)
     {
         try {
-
             list($langKey, $lang) = explode(':', $missingKey);
 
             list($file, $key) = explode('.', $langKey);
 
             $filePath = $this->manager->files()[$file][config('app.locale')];
 
-            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";
-            
+            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";            
         } catch (\Exception $e) {
             return "Sorry. File Language not exists for default locale.";
         }
