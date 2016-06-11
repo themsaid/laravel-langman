@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Themsaid\Langman\Manager;
 
@@ -13,14 +14,14 @@ class RenameCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:rename {key} {as}';
+    protected $signature = 'langman:rename {oldKey} {newKey}';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $description = 'Remove the given key from all language files.';
+    protected $description = 'Rename the given key.';
 
     /**
      * The Languages manager instance.
@@ -56,129 +57,90 @@ class RenameCommand extends Command
      */
     public function handle()
     {
-        if ($this->areArgumentsValid()) {
-            list($file, $key) = explode('.', $this->argument('key'), 2);
+        $this->renameKey();
 
-            $files = $this->manager->files()[$file];
+        $this->listFilesContainingOldKey();
 
-            $this->changeKeyNameInAllLanguageFiles($files, $key);
-
-            $this->generateReportForViewFilesAffected();
-
-            $this->info("Done!");
-        }
+        $this->info("Done!");
     }
 
     /**
-     * Check if both arguments are properly formatted.
+     * Rename the given oldKey to the newKey.
      *
-     * @return bool
+     * @return void
      */
-    protected function areArgumentsValid()
+    private function renameKey()
     {
-        $areValid = true;
+        list($file, $key) = explode('.', $this->argument('oldKey'), 2);
 
-        if (!$this->isKeyAnArgumentValid()) {
-            $this->error("Invalid <key> argument format! Pls check and try again.");
-            $areValid = false;
+        $files = $this->manager->files()[$file];
+
+        $newKey = preg_replace('/(\w+)$/i', $this->argument('newKey'), $key);
+
+        $currentValues = [];
+
+        foreach ($files as $languageKey => $filePath) {
+            $content = Arr::dot($this->manager->getFileContent($filePath));
+
+            $currentValues[$languageKey] = isset($content[$key]) ? $content[$key] : '';
         }
 
-        if (!$this->isAsAnArgumentValid()) {
-            $this->error("Invalid <as> argument format! Pls check and try again.");
-            $areValid = false;
-        }
+        $this->manager->removeKey($file, $key);
 
-        return $areValid;
+        $this->manager->fillKeys(
+            $file,
+            [$newKey => $currentValues]
+        );
     }
 
     /**
-     * Change
+     * Show a table with application files containing the old key.
      *
-     * @param $file
-     * @param $key
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return void
      */
-    private function changeKeyName($file, $key)
+    private function listFilesContainingOldKey()
     {
-        $content = $this->manager->getFileContent($file);
+        if ($files = $this->getFilesContainingOldKey()) {
+            $this->info('Renamed key was found in '.count($files).' file(s).');
 
-        $oldKeyValue = array_pull($content, $key);
-
-        $newKey = preg_replace('/(\w+)$/i', $this->argument('as'), $key);
-
-        array_set($content, $newKey, $oldKeyValue);
-
-        $this->manager->writeFile($file, $content);
-    }
-
-    /**
-     * @param $files
-     * @param $key
-     * @return mixed
-     */
-    private function changeKeyNameInAllLanguageFiles($files, $key)
-    {
-        foreach ($files as $file) {
-            $this->changeKeyName($file, $key);
+            $this->table(['Encounters', 'File'], $this->getTableRows($files));
         }
     }
 
     /**
-     * @param $affected
-     */
-    private function generateReportForViewFilesAffected()
-    {
-        if ($affected = $this->getOnlyViewFilesAffected()) {
-            $rows = $this->generateReportRows($affected);
-            $this->info(count($affected) . ' views files has been affected.');
-            $this->table([ 'Times', 'View File' ], $rows);
-        }
-    }
-
-    /**
+     * Get an array of application files containing the old key.
+     *
      * @return array
      */
-    private function getOnlyViewFilesAffected()
+    private function getFilesContainingOldKey()
     {
-        $affected = [ ];
+        $affectedFiles = [];
 
-        foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $references) {
-            foreach ($references as $reference) {
-                if ($reference == $this->argument('key')) {
-                    $affected[ $file ][] = $reference;
+        foreach ($this->manager->getAllViewFilesWithTranslations() as $file => $keys) {
+            foreach ($keys as $key) {
+                if ($key == $this->argument('oldKey')) {
+                    $affectedFiles[$file][] = $key;
                 }
             }
         }
-        return $affected;
+
+        return $affectedFiles;
     }
 
     /**
-     * @param $affected
-     * @param $report
+     * Get table rows for the list of files containing the old key.
+     *
+     * @param array $files
      * @return array
      */
-    private function generateReportRows($affected)
+    private function getTableRows($files)
     {
         $rows = [];
-        foreach ($affected as $file => $keys) {
-            $rows[] = [ count($keys), $file ];
+
+        foreach ($files as $file => $keys) {
+            $rows[] = [count($keys), $file];
         }
+
         return $rows;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isKeyAnArgumentValid()
-    {
-        return Str::contains($this->argument('key'), '.') && !is_null($this->argument('key'));
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isAsAnArgumentValid()
-    {
-        return !Str::contains($this->argument('as'), '.') && !is_null($this->argument('as'));
     }
 }
