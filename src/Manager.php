@@ -265,6 +265,8 @@ class Manager
     /**
      * Collect all translation keys from views files.
      *
+     * e.g. ['users' => ['city', 'name', 'phone']]
+     *
      * @return array
      */
     public function collectFromFiles()
@@ -290,6 +292,13 @@ class Manager
         return $translationKeys;
     }
 
+    /**
+     * Get found translation lines found per file.
+     *
+     * e.g. ['users.blade.php' => ['users.name'], 'users/index.blade.php' => ['users.phone', 'users.city']]
+     *
+     * @return array
+     */
     public function getAllViewFilesWithTranslations()
     {
         /*
