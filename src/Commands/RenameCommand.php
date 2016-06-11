@@ -61,7 +61,7 @@ class RenameCommand extends Command
 
         $this->listFilesContainingOldKey();
 
-        $this->info("Done!");
+        $this->info('The key at '.$this->argument('oldKey').' was renamed to'.$this->argument('newKey').' successfully!');
     }
 
     /**
@@ -79,9 +79,15 @@ class RenameCommand extends Command
             return;
         }
 
-        $files = $this->manager->files()[$file];
+        if (Str::contains($this->argument('newKey'), '.')) {
+            $this->error('Please provide the new key must not contain a dot.');
+
+            return;
+        }
 
         $newKey = preg_replace('/(\w+)$/i', $this->argument('newKey'), $key);
+
+        $files = $this->manager->files()[$file];
 
         $currentValues = [];
 
