@@ -269,8 +269,29 @@ class Manager
      */
     public function collectFromFiles()
     {
-        $output = [];
+        $translationKeys = [];
 
+        foreach ($this->getAllViewFilesWithTranslations() as $file => $matches) {
+            foreach ($matches as $key) {
+                try {
+                    list($fileName, $keyName) = explode('.', $key, 2);
+                } catch (\ErrorException $e) {
+                    continue;
+                }
+
+                if (isset($translationKeys[$fileName]) && in_array($keyName, $translationKeys[$fileName])) {
+                    continue;
+                }
+
+                $translationKeys[$fileName][] = $keyName;
+            }
+        }
+
+        return $translationKeys;
+    }
+
+    public function getAllViewFilesWithTranslations()
+    {
         /*
          * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
          *
@@ -292,26 +313,16 @@ class Manager
             "[\),]"  // Close parentheses or new parameter
         ;
 
+        $allMatches = [];
+
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->disk->allFiles($this->syncPaths) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
-                foreach ($matches[2] as $key) {
-                    try {
-                        list($fileName, $keyName) = explode('.', $key, 2);
-                    } catch (\ErrorException $e) {
-                        continue;
-                    }
-
-                    if (isset($output[$fileName]) && in_array($keyName, $output[$fileName])) {
-                        continue;
-                    }
-
-                    $output[$fileName][] = $keyName;
-                }
+                $allMatches[$file->getRelativePathname()] = $matches[2];
             }
         }
 
-        return $output;
+        return $allMatches;
     }
 
     /**
