@@ -71,7 +71,13 @@ class RenameCommand extends Command
      */
     private function renameKey()
     {
-        list($file, $key) = explode('.', $this->argument('oldKey'), 2);
+        try {
+            list($file, $key) = explode('.', $this->argument('key'), 2);
+        } catch (\ErrorException $e) {
+            $this->error('Could not recognize the key you want to rename.');
+
+            return;
+        }
 
         $files = $this->manager->files()[$file];
 
