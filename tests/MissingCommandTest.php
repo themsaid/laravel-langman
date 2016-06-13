@@ -22,7 +22,6 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('getDefaultValueFor')->times(7)->with(m::any())->andReturn(null);
         $command->shouldReceive('ask')->once()->with('/user\.age:nl/', null)->andReturn('fill_age');
         $command->shouldReceive('ask')->once()->with('/product\.name:en/', null)->andReturn('fill_name');
         $command->shouldReceive('ask')->once()->with('/product\.color:nl/', null)->andReturn('fill_color');
@@ -51,7 +50,10 @@ class MissingCommandTest extends TestCase
 
     public function testAllowSeeTranslationInDefaultLanguage()
     {
+        $manager = $this->app[Manager::class];
+
         $this->app['config']->set('app.locale', 'en');
+
         $this->createTempFiles([
             'en' => [
                 'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",
@@ -60,18 +62,21 @@ class MissingCommandTest extends TestCase
                 'user' => "<?php\n return ['name' => 'Naam'];",
             ],
         ]);
-        $manager = $this->app[Manager::class];
+
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('getDefaultValueFor')->once()->with('/user\.age/')->andReturn('en:Age');
         $command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', '/en:Age/');
+
         $this->app['artisan']->add($command);
 
         $this->artisan('langman:missing', ['--default' => true]);
     }
 
-    public function testThrowDefaultMessageWhenLanguageFileIsNotFound()
+    public function testShowsNoDefaultWhenDefaultLanguageFileIsNotFound()
     {
+        $manager = $this->app[Manager::class];
+
         $this->app['config']->set('app.locale', 'es');
+
         $this->createTempFiles([
             'en' => [
                 'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",
@@ -80,10 +85,10 @@ class MissingCommandTest extends TestCase
                 'user' => "<?php\n return ['name' => 'Naam'];",
             ],
         ]);
-        $manager = $this->app[Manager::class];
+
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('getDefaultValueFor')->once()->with('/user\.age/')->andReturn("Sorry. File Language not exists for default locale.");
-        $command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', '/Sorry\. File Language not exists for default locale\./');
+        $command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', null);
+
         $this->app['artisan']->add($command);
 
         $this->artisan('langman:missing', ['--default' => true]);

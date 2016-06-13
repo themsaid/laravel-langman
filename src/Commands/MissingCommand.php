@@ -95,9 +95,8 @@ class MissingCommand extends Command
         $values = [];
 
         foreach ($missing as $missingKey) {
-            // var_dump($this->getDefaultValueFor($missingKey));
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValueFor($missingKey)
+                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValue($missingKey)
             );
         }
 
@@ -105,32 +104,27 @@ class MissingCommand extends Command
     }
 
     /**
-    * Get default value for the current translation request.
-    * @param string $missingKey
-    * @return mixed
-    */
+     * Get translation in default locale for the given key.
+     *
+     * @param string $missingKey
+     * @return string
+     */
     private function getDefaultValue($missingKey)
     {
-        return $this->option('default') ? $this->getTranslationInDefaultLocaleFor($missingKey) : null;
-    }
+        if (! $this->option('default')) {
+            return null;
+        }
 
-    /**
-    * Get translation in default locale for given key
-    * @param string $missingKey
-    * @return string
-    */
-    private function getTranslationInDefaultLocaleFor($missingKey)
-    {
         try {
-            list($langKey, $lang) = explode(':', $missingKey);
+            $missingKey = explode(':', $missingKey)[0];
 
-            list($file, $key) = explode('.', $langKey);
+            list($file, $key) = explode('.', $missingKey);
 
             $filePath = $this->manager->files()[$file][config('app.locale')];
 
-            return config('app.locale') . ":{$this->manager->getFileContent($filePath)[$key]}";
+            return config('app.locale').":{$this->manager->getFileContent($filePath)[$key]}";
         } catch (\Exception $e) {
-            return "Sorry. File Language not exists for default locale.";
+            return null;
         }
     }
 
