@@ -61,7 +61,7 @@ class RenameCommand extends Command
 
         $this->listFilesContainingOldKey();
 
-        $this->info('The key at '.$this->argument('oldKey').' was renamed to'.$this->argument('newKey').' successfully!');
+        $this->info('The key at '.$this->argument('oldKey').' was renamed to '.$this->argument('newKey').' successfully!');
     }
 
     /**
