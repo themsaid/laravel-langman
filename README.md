@@ -146,6 +146,14 @@ php artisan langman:remove package::users.name
 
 It'll remove that key from all language files.
 
+### Renaming a key
+
+```
+php artisan langman:rename users.name full_name
+```
+
+This will rename `users.name` to be `users.full_name`, the console will output a list of files where the key used to exist.
+
 ## Notes
 
 `langman:sync`, `langman:missing`, `langman:trans`, and `langman:remove` will update your language files by writing them completely, meaning that any comments or special styling will be removed, so I recommend you backup your files.
