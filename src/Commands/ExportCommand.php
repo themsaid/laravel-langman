@@ -103,23 +103,18 @@ class ExportCommand extends Command
             exit();
         }
 
-        $availableFiles = $this->manager->files();
+        $onlyFiles = [];
 
         if (! is_null($this->option('only'))) {
-            $onlyFiles = explode(',', $this->option('only'));
-
-            // We will only return files for those keys which a file exist for.
-            return array_intersect_key($this->manager->files(), array_combine($onlyFiles, $onlyFiles));
+            $onlyFiles = array_keys($this->manager->files(explode(',', $this->option('only'))));
         }
 
         if (! is_null($this->option('exclude'))) {
             $excludeFiles = explode(',', $this->option('exclude'));
-
-            // We will only return files for those keys which a file exist for.
-            return array_diff_key($this->manager->files(), array_combine($excludeFiles, $excludeFiles));
+            $onlyFiles = array_diff(array_keys($this->manager->files()), $excludeFiles);
         }
 
-        return null;
+        return $onlyFiles;
     }
 
     /**

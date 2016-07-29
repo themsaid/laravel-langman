@@ -51,7 +51,7 @@ class Manager
      *
      * @return array
      */
-    public function files()
+    public function files($fileNames = [])
     {
         $files = Collection::make($this->disk->allFiles($this->path));
 
@@ -80,6 +80,12 @@ class Manager
         // neglect all vendor files.
         if (! Str::contains($this->path, 'vendor')) {
             $filesByFile = $this->neglectVendorFiles($filesByFile);
+        }
+		
+		$fileNames = (array) $fileNames;
+
+        if (! empty($fileNames)) {
+            return array_intersect_key($filesByFile, array_combine($fileNames, $fileNames));
         }
 
         return $filesByFile;
@@ -373,9 +379,10 @@ class Manager
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFilesContentGroupedByFilenameAndKey(array $selectedFiles = null)
+    public function getFilesContentGroupedByFilenameAndKey($selectedFiles = [])
     {
-        $files = is_null($selectedFiles) ? $this->files() : $selectedFiles;
+		$files = $this->files((array) $selectedFiles);
+
         $allLangs = [];
         $filesContent = [];
 

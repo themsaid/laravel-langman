@@ -26,7 +26,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     {
         parent::tearDown();
 
-        exec('rm -rf '.__DIR__.'/temp/*');
+//        exec('rm -rf '.__DIR__.'/temp/*');
 
         $this->consoleOutput = '';
     }
