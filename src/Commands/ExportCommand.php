@@ -14,16 +14,16 @@ class ExportCommand extends Command
      * @var string
      */
     protected $signature = 'langman:export
-        {--P|path= : The location where the CSV file should be exported.}
-        {--only= : Specify the file(s) you want to export to CSV}
-        {--exclude= : File(s) you do not want to export to CSV}';
+        {--P|path= : The location where the exported file should be exported.}
+        {--only= : Specify the file(s) you want to export to Excel}
+        {--exclude= : File(s) you do not want to export to Excel}';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $description = 'Generates a CSV file from your language files';
+    protected $description = 'Generates a Excel file from your language files';
 
     /**
      * The Languages manager instance.
@@ -68,27 +68,27 @@ class ExportCommand extends Command
      */
     public function handle()
     {
-        $path = $this->generateCsvFile($this->option('path'));
+        $path = $this->generateExcelFile($this->option('path'));
 
-        $this->info('CSV file successfully generated in ' . $path .'.');
+        $this->info('Excel file successfully generated in ' . $path .'.');
     }
 
     /**
-     * Generates a CSV file from translations files and putting it in
+     * Generates an Excel file from translations files and putting it in
      * the given path.
      *
      * @param  string|null $path
      * @return string
      */
-    protected function generateCsvFile($path = null)
+    protected function generateExcelFile($path = null)
     {
-        $csvPath = $this->getCsvPath($path);
+        $filePath = $this->getFilePath($path);
 
-        $userSelectedFiles = $this->filterFilesForCsvExport();
+        $userSelectedFiles = $this->filterFilesForExport();
 
-        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $csvPath);
+        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $filePath);
 
-        return $csvPath;
+        return $filePath;
     }
 
     /**
@@ -96,7 +96,7 @@ class ExportCommand extends Command
      *
      * @return array|string
      */
-    protected function filterFilesForCsvExport()
+    protected function filterFilesForExport()
     {
         if (! is_null($this->option('only')) && ! is_null($this->option('exclude'))) {
             $this->error('You cannot combine --only and --exclude options. Please use one of them.');
@@ -159,7 +159,7 @@ class ExportCommand extends Command
      * @param  $path
      * @return string
      */
-    protected function getCsvPath($path)
+    protected function getFilePath($path)
     {
         $exportDir = is_null($path) ? config('langman.csv_path') : base_path($path);
 
