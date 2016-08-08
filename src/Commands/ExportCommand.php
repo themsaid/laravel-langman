@@ -33,13 +33,6 @@ class ExportCommand extends Command
     private $manager;
 
     /**
-     * The Languages manager instance.
-     *
-     * @var \Illuminate\Contracts\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * Array of files grouped by filename.
      *
      * @var array
@@ -53,12 +46,11 @@ class ExportCommand extends Command
      * @param  \Illuminate\Contracts\Filesystem\Filesystem
      * @return void
      */
-    public function __construct(Manager $manager, Filesystem $filesystem)
+    public function __construct(Manager $manager)
     {
         parent::__construct();
 
         $this->manager = $manager;
-        $this->filesystem = $filesystem;
     }
 
     /**
@@ -135,37 +127,14 @@ class ExportCommand extends Command
             ->setSubject('Laravel Langman Exported Language File')
             ->setCreator('Laravel Langman');
 
+        $rowNumber = 1;
         foreach ($content as $record) {
-            dd($record);
+            $excelObj->getActiveSheet()->fromArray($record, '', 'A'. $rowNumber);
+            $rowNumber++;
         }
 
         $writer = \PHPExcel_IOFactory::createWriter($excelObj, 'Excel2007');
         $writer->save($filepath);
-//
-//        $writer = new PHPExcel();
-//        $writer->save($filepath);
-//        $file = fopen($filepath, 'w');
-//        $csvText = '';
-//
-//        foreach($content as $csvRecord) {
-//            // Fields containing line breaks (CRLF), double quotes, and commas should be
-//            // enclosed in double-quotes. We need this to escape commas and other
-//            // special CSV characters.
-//            $csvRecord = array_map(function($element) {
-//                return '"' . $element . '"';
-//            }, $csvRecord);
-//
-//            // Here we create a CSV record from an array record.
-//            $csvText .= implode(',', $csvRecord) . "\n";
-//        }
-//
-//        // These lines handle encoding issues. They make sure that a CSV file
-//        // is properly rendered in most of the CSV reader tools.
-//        mb_convert_encoding($csvText, 'UTF-16LE', 'UTF-8');
-//        fprintf($file, "\xEF\xBB\xBF");
-//
-//        fputs($file, $csvText);
-//        fclose($file);
     }
 
     /**
@@ -176,17 +145,17 @@ class ExportCommand extends Command
      */
     protected function getFilePath($path)
     {
-        $exportDir = is_null($path) ? config('langman.csv_path') : base_path($path);
+        $exportDir = is_null($path) ? config('langman.exports_path') : base_path($path);
 
-        if (! $this->filesystem->exists($exportDir)) {
-            $this->filesystem->makeDirectory($exportDir);
+        if (! file_exists($exportDir)) {
+            mkdir($exportDir, 0755);
         }
 
         return $exportDir . '/' . $this->getDatePrefix() . '_langman.xlsx';
     }
 
     /*
-     * Get the date prefix for the CSV file.
+     * Get the date prefix for the Excel file.
      *
      * @return string
      */
@@ -196,7 +165,7 @@ class ExportCommand extends Command
     }
 
     /**
-     * Get the CSV header content.
+     * Get the Excel header content.
      *
      * @return array
      */
@@ -206,7 +175,7 @@ class ExportCommand extends Command
     }
 
     /**
-     * Get the CSV rows content.
+     * Get the Excel body content from language files.
      *
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException

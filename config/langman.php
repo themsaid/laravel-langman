@@ -15,13 +15,13 @@ return [
 
     /*
      * --------------------------------------------------------------------------
-     * Path to the directory where CSV files should be exported
+     * Path to the directory where Excel files should be exported
      * --------------------------------------------------------------------------
      *
-     * This option determines where to put the exported CSV files. This directory
-     * must be writable by server. By default storage/langman-csv directory
+     * This option determines where to put the exported Excel files. This directory
+     * must be writable by server. By default storage/langman directory
      * will be used.
      */
 
-    'csv_path' => storage_path('langman-csv'),
+    'exports_path' => storage_path('langman-exports'),
 ];
