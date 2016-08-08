@@ -86,7 +86,7 @@ class ExportCommand extends Command
 
         $userSelectedFiles = $this->filterFilesForExport();
 
-        $this->writeContentToCsvFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $filePath);
+        $this->writeContentsToFile($this->getHeaderContent(), $this->getBodyContent($userSelectedFiles), $filePath);
 
         return $filePath;
     }
@@ -118,39 +118,54 @@ class ExportCommand extends Command
     }
 
     /**
-     * Creating a CSV file from the given content into the given file.
+     * Creating a Excel file from the given content.
      *
      * @param  $header
      * @param  $content
      * @param  $filepath
      * @return void
      */
-    protected function writeContentToCsvFile($header, $content, $filepath)
+    protected function writeContentsToFile($header, $content, $filepath)
     {
         array_unshift($content, $header);
 
-        $file = fopen($filepath, 'w');
-        $csvText = '';
+        $excelObj = new \PHPExcel();
+        $excelObj->getProperties()
+            ->setTitle('Laravel Langman Exported Language File')
+            ->setSubject('Laravel Langman Exported Language File')
+            ->setCreator('Laravel Langman');
 
-        foreach($content as $csvRecord) {
-            // Fields containing line breaks (CRLF), double quotes, and commas should be
-            // enclosed in double-quotes. We need this to escape commas and other
-            // special CSV characters.
-            $csvRecord = array_map(function($element) {
-                return '"' . $element . '"';
-            }, $csvRecord);
-
-            // Here we create a CSV record from an array record.
-            $csvText .= implode(',', $csvRecord) . "\n";
+        foreach ($content as $record) {
+            dd($record);
         }
 
-        // These lines handle encoding issues. They make sure that a CSV file
-        // is properly rendered in most of the CSV reader tools.
-        mb_convert_encoding($csvText, 'UTF-16LE', 'UTF-8');
-        fprintf($file, "\xEF\xBB\xBF");
-
-        fputs($file, $csvText);
-        fclose($file);
+        $writer = \PHPExcel_IOFactory::createWriter($excelObj, 'Excel2007');
+        $writer->save($filepath);
+//
+//        $writer = new PHPExcel();
+//        $writer->save($filepath);
+//        $file = fopen($filepath, 'w');
+//        $csvText = '';
+//
+//        foreach($content as $csvRecord) {
+//            // Fields containing line breaks (CRLF), double quotes, and commas should be
+//            // enclosed in double-quotes. We need this to escape commas and other
+//            // special CSV characters.
+//            $csvRecord = array_map(function($element) {
+//                return '"' . $element . '"';
+//            }, $csvRecord);
+//
+//            // Here we create a CSV record from an array record.
+//            $csvText .= implode(',', $csvRecord) . "\n";
+//        }
+//
+//        // These lines handle encoding issues. They make sure that a CSV file
+//        // is properly rendered in most of the CSV reader tools.
+//        mb_convert_encoding($csvText, 'UTF-16LE', 'UTF-8');
+//        fprintf($file, "\xEF\xBB\xBF");
+//
+//        fputs($file, $csvText);
+//        fclose($file);
     }
 
     /**
@@ -167,7 +182,7 @@ class ExportCommand extends Command
             $this->filesystem->makeDirectory($exportDir);
         }
 
-        return $exportDir . '/' . $this->getDatePrefix() . '_langman.csv';
+        return $exportDir . '/' . $this->getDatePrefix() . '_langman.xlsx';
     }
 
     /*
