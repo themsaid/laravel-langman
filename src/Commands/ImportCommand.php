@@ -105,7 +105,13 @@ class ImportCommand extends Command
 
     protected function readExcelFileContents($filePath)
     {
+        $excelObj = \PHPExcel_IOFactory::load($filePath);
 
+        $rows = $excelObj->getActiveSheet()->toArray('', true, true, true);
+
+        foreach ($rows as $row) {
+            dd(array_values($row));
+        }
     }
 
     protected function writeToLangFiles($data)
