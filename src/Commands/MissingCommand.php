@@ -13,7 +13,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:missing';
+    protected $signature = 'langman:missing {--default}';
 
     /**
      * The name and signature of the console command.
@@ -96,11 +96,36 @@ class MissingCommand extends Command
 
         foreach ($missing as $missingKey) {
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation"
+                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValue($missingKey)
             );
         }
 
         return $values;
+    }
+
+    /**
+     * Get translation in default locale for the given key.
+     *
+     * @param string $missingKey
+     * @return string
+     */
+    private function getDefaultValue($missingKey)
+    {
+        if (! $this->option('default')) {
+            return null;
+        }
+
+        try {
+            $missingKey = explode(':', $missingKey)[0];
+
+            list($file, $key) = explode('.', $missingKey);
+
+            $filePath = $this->manager->files()[$file][config('app.locale')];
+
+            return config('app.locale').":{$this->manager->getFileContent($filePath)[$key]}";
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
