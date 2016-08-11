@@ -14,9 +14,9 @@ class ExportCommand extends Command
      * @var string
      */
     protected $signature = 'langman:export
-        {--P|path= : The location where the exported file should be exported.}
+        {--P|path= : The location where the exported file should be saved (Default: storage/langman-exports).}
         {--only= : Specify the file(s) you want to export to Excel}
-        {--exclude= : File(s) you do not want to export to Excel}';
+        {--exclude= : Specify the file(s) you do NOT want to export to Excel}';
 
     /**
      * The name and signature of the console command.

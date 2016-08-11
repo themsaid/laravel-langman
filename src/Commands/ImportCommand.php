@@ -15,7 +15,7 @@ class ImportCommand extends Command
      * @var string
      */
     protected $signature = 'langman:import
-        {filename? : Filename inside Langman Excel directory.}
+        {filename? : Filename inside Langman Exports directory (storage/langman-exports).}
         {--P|path= : The path to Excel file relative to base path.}';
 
     /**
