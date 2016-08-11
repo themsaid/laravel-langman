@@ -81,8 +81,8 @@ class Manager
         if (! Str::contains($this->path, 'vendor')) {
             $filesByFile = $this->neglectVendorFiles($filesByFile);
         }
-		
-		$fileNames = (array) $fileNames;
+        
+        $fileNames = (array) $fileNames;
 
         if (! empty($fileNames)) {
             return array_intersect_key($filesByFile, array_combine($fileNames, $fileNames));
@@ -401,7 +401,7 @@ class Manager
      */
     public function getFilesContentGroupedByFilenameAndKey($selectedFiles = [])
     {
-		$files = $this->files((array) $selectedFiles);
+    	$files = $this->files((array) $selectedFiles);
 
         $allLangs = [];
         $filesContent = [];
