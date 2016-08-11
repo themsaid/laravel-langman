@@ -330,7 +330,7 @@ class ManagerTest extends TestCase
                     'fr' => 'French Edit User'
                 ]
             ]
-		];
+        ];
 
         $this->createTempFiles($filesList);
 
