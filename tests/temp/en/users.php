@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 return [
-    'name' => [
-        'first' => 'name',
-    ],
+	'name' => [
+		'first' => 'name',
+	],
 ];
