@@ -401,7 +401,7 @@ class Manager
      */
     public function getFilesContentGroupedByFilenameAndKey($selectedFiles = [])
     {
-    	$files = $this->files((array) $selectedFiles);
+        $files = $this->files((array) $selectedFiles);
 
         $allLangs = [];
         $filesContent = [];
