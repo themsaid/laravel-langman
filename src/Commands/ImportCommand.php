@@ -130,7 +130,8 @@ class ImportCommand extends Command
         $excelObj = \PHPExcel_IOFactory::load($filePath);
         $rows = $excelObj->getActiveSheet()->toArray('', true, true, true);
 
-        $langDirs = $this->extractLangages($rows);
+        $headerRow = array_shift($rows);
+        $langDirs = $this->extractLangages($headerRow);
 
         $groupedByDirName = [];
 
@@ -168,11 +169,9 @@ class ImportCommand extends Command
      * @param  array $rows
      * @return array
      */
-    protected function extractLangages($rows)
+    protected function extractLangages($header)
     {
-        $headerRow = array_shift($rows);
-
-        return array_values(array_slice($headerRow, 2));
+        return array_values(array_slice($header, 2));
     }
 
     /**
