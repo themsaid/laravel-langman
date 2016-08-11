@@ -34,16 +34,16 @@ class ManagerTest extends TestCase
 //                'sp' => __DIR__.'/temp/vendor/package/sp/user.php',
 //            ],
         ];
-		
-		$expectedUserOnly = [
+
+        $expectedUserOnly = [
             'user' => [
                 'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'user.php',
                 'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'user.php',
             ]
-		];
+        ];
 
         $this->assertEquals($expected, $manager->files());
-		$this->assertEquals($expectedUserOnly, $manager->files('user'));
+        $this->assertEquals($expectedUserOnly, $manager->files('user'));
     }
 
     public function testLanguagesMethod()
@@ -316,8 +316,8 @@ class ManagerTest extends TestCase
                 ]
             ]
         ];
-		
-		$expectedUserOnly = [
+
+        $expectedUserOnly = [
             'user' => [
                 'missing.not_found' => [
                     'key' => 'missing.not_found',
@@ -335,8 +335,8 @@ class ManagerTest extends TestCase
         $this->createTempFiles($filesList);
 
         $this->assertEquals($expected, $manager->getFilesContentGroupedByFilenameAndKey());
-		$this->assertEquals($expected, $manager->getFilesContentGroupedByFilenameAndKey([]));
+        $this->assertEquals($expected, $manager->getFilesContentGroupedByFilenameAndKey([]));
         $this->assertEquals($expectedUserOnly, $manager->getFilesContentGroupedByFilenameAndKey(['user']));
-        $this->assertEquals($expectedUserOnly, $manager->getFilesContentGroupedByFilenameAndKey('user'));		
+        $this->assertEquals($expectedUserOnly, $manager->getFilesContentGroupedByFilenameAndKey('user'));
     }
 }
