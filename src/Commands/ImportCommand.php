@@ -82,6 +82,11 @@ class ImportCommand extends Command
         $this->info('Import complete.');
     }
 
+    /**
+     * Gets the user choosen excel file content.
+     *
+     * @return array
+     */
     protected function getExcelFileContents()
     {
         $filePath = $this->getPathFromUserArgs();
@@ -94,6 +99,11 @@ class ImportCommand extends Command
         return $this->readExcelFileContents($filePath);
     }
 
+    /**
+     * Gets file path from user passed argument and option.
+     *
+     * @return string
+     */
     protected function getPathFromUserArgs()
     {
         if (! is_null($fileName = $this->argument('filename'))) {
@@ -108,6 +118,13 @@ class ImportCommand extends Command
         return base_path($this->option('path'));
     }
 
+    /**
+     * Reads the actual Excel file from the specified path and returns
+     * conent in an array grouped by directory and file names.
+     *
+     * @param  string $filePath
+     * @return array
+     */
     protected function readExcelFileContents($filePath)
     {
         $excelObj = \PHPExcel_IOFactory::load($filePath);
@@ -145,6 +162,12 @@ class ImportCommand extends Command
         return $groupedByDirName;
     }
 
+    /**
+     * Extract available language locales from file rows.
+     *
+     * @param  array $rows
+     * @return array
+     */
     protected function extractLangages($rows)
     {
         $headerRow = array_shift($rows);
@@ -152,6 +175,12 @@ class ImportCommand extends Command
         return array_values(array_slice($headerRow, 2));
     }
 
+    /**
+     * Write the content to language files.
+     *
+     * @param  array $data
+     * @return void
+     */
     protected function writeToLangFiles($data)
     {
         foreach ($data as $langDirName => $langDirContent) {
