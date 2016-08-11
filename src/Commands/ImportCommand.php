@@ -77,23 +77,14 @@ class ImportCommand extends Command
             exit();
         }
 
-        $this->writeToLangFiles($csvFileContents);
+        $this->writeToLangFiles($excelFileContents);
 
         $this->info('Import complete.');
     }
 
     protected function getExcelFileContents()
     {
-        if (is_null($this->option('path'))) {
-            if (is_null($fileName = $this->argument('filename'))) {
-                $this->error('No path specified.');
-                exit();
-            } else {
-                $filePath = config('langman.exports_path') .DIRECTORY_SEPARATOR. $fileName;
-            }
-        } else {
-            $filePath = base_path($this->option('path'));
-        }
+        $filePath = $this->getPathFromUserArgs();
 
         if (! file_exists($filePath)) {
             $this->error('No such file found: ' . $filePath);
@@ -103,15 +94,62 @@ class ImportCommand extends Command
         return $this->readExcelFileContents($filePath);
     }
 
+    protected function getPathFromUserArgs()
+    {
+        if (! is_null($fileName = $this->argument('filename'))) {
+            return config('langman.exports_path') . DIRECTORY_SEPARATOR . $fileName;
+        }
+
+        if (is_null($this->option('path'))) {
+            $this->error('No path specified.');
+            exit();
+        }
+
+        return base_path($this->option('path'));
+    }
+
     protected function readExcelFileContents($filePath)
     {
         $excelObj = \PHPExcel_IOFactory::load($filePath);
-
         $rows = $excelObj->getActiveSheet()->toArray('', true, true, true);
 
-        foreach ($rows as $row) {
-            dd(array_values($row));
+        $langDirs = $this->extractLangages($rows);
+
+        $groupedByDirName = [];
+
+        foreach ($langDirs as $index => $langDir) {
+            $groupedByFileNames = [];
+            $trans = [];
+            $langDirName = '';
+
+            foreach ($rows as $langRow) {
+                // Override PHPExcel's column based key array into regular numbered key array
+                $langRow = array_values($langRow);
+
+                if ($langDirName != '' && $langDirName != $langRow[0]) {
+                    $trans = [];
+                }
+
+                $langDirName = $langRow[0];
+                $langKey = $langRow[1];
+
+                $langIndex = $index+2;
+                $trans[$langKey] = $langRow[$langIndex];
+
+                $groupedByFileNames[$langDirName] = $trans;
+            }
+
+            $groupedByDirName[$langDir] = $groupedByFileNames;
         }
+
+        return $groupedByDirName;
+    }
+
+    protected function extractLangages($rows)
+    {
+        $headerRow = array_shift($rows);
+
+        return array_values(array_slice($headerRow, 2));
     }
 
     protected function writeToLangFiles($data)
