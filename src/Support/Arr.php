@@ -3,12 +3,7 @@
 namespace Themsaid\Langman\Support;
 
 use Illuminate\Support\Arr as BaseArr;
-/**
- * Created by PhpStorm.
- * User: mustafaehsan
- * Date: 6/11/16
- * Time: 9:10 PM
- */
+
 class Arr extends BaseArr
 {
     /**
