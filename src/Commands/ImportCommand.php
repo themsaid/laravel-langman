@@ -15,15 +15,15 @@ class ImportCommand extends Command
      * @var string
      */
     protected $signature = 'langman:import
-        {filename? : Filename inside Langman CSV directory}
-        {--P|path= : The location where the CSV file is located.}';
+        {filename? : Filename inside Langman Excel directory.}
+        {--P|path= : The path to Excel file relative to base path.}';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $description = 'Generates a CSV file from your language files';
+    protected $description = 'Generates your language files from an Excel file';
 
     /**
      * The Languages manager instance.
@@ -68,12 +68,12 @@ class ImportCommand extends Command
      */
     public function handle()
     {
-        $csvFileContents = $this->getCsvFileContents();
+        $excelFileContents = $this->getExcelFileContents();
 
-        $filesToBeChanged = join("\n\t", array_keys(array_first($csvFileContents)));
+        $filesToBeChanged = join("\n\t", array_keys(array_first($excelFileContents)));
 
         if (! $this->confirm("The following files will be overridden: \n\t" . $filesToBeChanged . "\nAre you sure?")) {
-            $this->line('No files changed.');
+            $this->line('No files changed. Closing.');
             exit();
         }
 
@@ -82,14 +82,14 @@ class ImportCommand extends Command
         $this->info('Import complete.');
     }
 
-    protected function getCsvFileContents()
+    protected function getExcelFileContents()
     {
         if (is_null($this->option('path'))) {
             if (is_null($fileName = $this->argument('filename'))) {
                 $this->error('No path specified.');
                 exit();
             } else {
-                $filePath = config('langman.csv_path') .DIRECTORY_SEPARATOR. $fileName;
+                $filePath = config('langman.exports_path') .DIRECTORY_SEPARATOR. $fileName;
             }
         } else {
             $filePath = base_path($this->option('path'));
@@ -100,39 +100,12 @@ class ImportCommand extends Command
             exit();
         }
 
-        return $this->readCsvFileContents($filePath);
+        return $this->readExcelFileContents($filePath);
     }
 
-    protected function readCsvFileContents($filePath)
+    protected function readExcelFileContents($filePath)
     {
-        $csv = array_map('str_getcsv', file($filePath));
 
-        // Get header content
-        $langDirs = array_slice(array_shift($csv), 2);
-
-        $groupedByDirName = [];
-
-        foreach ($langDirs as $index => $langDir) {
-            $groupedByFileNames = [];
-            $trans = [];
-            $langDirName = '';
-            foreach ($csv as $langRow) {
-                if ($langDirName != '' && $langDirName != $langRow[0]) {
-                    $trans = [];
-                }
-                $langDirName = $langRow[0];
-                $langKey = $langRow[1];
-
-                $langIndex = $index+2;
-                $trans[$langKey] = $langRow[$langIndex];
-
-                $groupedByFileNames[$langDirName] = $trans;
-            }
-
-            $groupedByDirName[$langDir] = $groupedByFileNames;
-        }
-
-        return $groupedByDirName;
     }
 
     protected function writeToLangFiles($data)
