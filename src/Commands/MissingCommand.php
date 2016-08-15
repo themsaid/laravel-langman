@@ -13,7 +13,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:missing {--default}';
+    protected $signature = 'langman:missing {--default} {--lang=}';
 
     /**
      * The name and signature of the console command.
@@ -58,7 +58,11 @@ class MissingCommand extends Command
     {
         $this->info('Looking for missing translations...');
 
-        $languages = $this->manager->languages();
+	    if ( ! $this->option('lang')) {
+		    $languages = $this->manager->languages();
+	    } else {
+		    $languages = explode(',', $this->option('lang'));
+	    }
 
         $missing = $this->getMissing($languages);
 
@@ -131,6 +135,7 @@ class MissingCommand extends Command
     /**
      * Get an array of keys that have missing values with a hint
      * from another language translation file if possible.
+     * also you can pass the languages needed to filter through
      *
      * ex: [ ['key' => 'product.color.nl', 'hint' => 'en = "color"'] ]
      *
@@ -139,7 +144,7 @@ class MissingCommand extends Command
      */
     private function getMissing(array $languages)
     {
-        $files = $this->manager->files();
+        $files = $this->manager->files($languages);
 
         // Array of content of all files indexed by fileName.languageKey
         $filesResults = [];
@@ -168,6 +173,15 @@ class MissingCommand extends Command
         }
 
         $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
+
+	    if ( ! empty($languages)) {
+		    $missing = array_where($missing, function ($key, $value) use ($languages) {
+			    list($dottedValue, $langKey) = explode(':', $value);
+			    if (in_array($langKey, $languages)) {
+				    return $value;
+			    }
+		    });
+	    }
 
         return $missing;
     }
