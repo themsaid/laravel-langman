@@ -93,4 +93,55 @@ class MissingCommandTest extends TestCase
 
         $this->artisan('langman:missing', ['--default' => true]);
     }
+
+
+	public function testAllowSeeTranslationInPassedTwoLanguages()
+	{
+		$manager = $this->app[Manager::class];
+		
+		$this->createTempFiles([
+			'en' => [
+				'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",
+			],
+			'nl' => [
+				'user' => "<?php\n return ['name' => 'Naam'];",
+			],
+			'es' => [
+				'user' => "<?php\n return ['name' => 'Nombre'];",
+			],
+
+		]);
+
+		$command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
+		$command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', null)->andReturn('fill_age');
+		$command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:es<\/> translation/', null)->andReturn('fill_age');
+
+		$this->app['artisan']->add($command);
+		$this->artisan('langman:missing', ['--lang' => 'nl,es']);
+	}
+
+
+	public function testAllowSeeTranslationInPassedOneLanguage()
+	{
+		$manager = $this->app[Manager::class];
+
+		$this->createTempFiles([
+			'en' => [
+				'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",
+			],
+			'nl' => [
+				'user' => "<?php\n return ['name' => 'Naam'];",
+			],
+			'es' => [
+				'user' => "<?php\n return ['name' => 'Nombre'];",
+			],
+
+		]);
+
+		$command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
+		$command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', null)->andReturn('fill_age');
+
+		$this->app['artisan']->add($command);
+		$this->artisan('langman:missing', ['--lang' => 'nl']);
+	}
 }
