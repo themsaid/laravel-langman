@@ -79,6 +79,12 @@ class SyncCommand extends Command
                 if (isset($allKeysInFiles[$fileName])) {
                     $missingKeys = array_diff($allKeysInFiles[$fileName], array_keys(array_dot($fileContent)));
 
+                    foreach ($missingKeys as $i => $missingKey) {
+                        if (Arr::has($fileContent, $missingKey)) {
+                            unset($missingKeys[$i]);
+                        }
+                    }
+
                     $this->fillMissingKeys($fileName, $missingKeys, $languageKey);
                 }
             }
