@@ -135,7 +135,6 @@ class MissingCommand extends Command
     /**
      * Get an array of keys that have missing values with a hint
      * from another language translation file if possible.
-     * also you can pass the languages needed to filter through
      *
      * ex: [ ['key' => 'product.color.nl', 'hint' => 'en = "color"'] ]
      *
@@ -144,7 +143,7 @@ class MissingCommand extends Command
      */
     private function getMissing(array $languages)
     {
-        $files = $this->manager->files($languages);
+        $files = $this->manager->files();
 
         // Array of content of all files indexed by fileName.languageKey
         $filesResults = [];
