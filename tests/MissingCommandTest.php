@@ -94,11 +94,10 @@ class MissingCommandTest extends TestCase
         $this->artisan('langman:missing', ['--default' => true]);
     }
 
-
 	public function testAllowSeeTranslationInPassedTwoLanguages()
 	{
 		$manager = $this->app[Manager::class];
-		
+
 		$this->createTempFiles([
 			'en' => [
 				'user' => "<?php\n return ['name' => 'Name', 'age' => 'Age'];",

@@ -144,7 +144,7 @@ class MissingCommand extends Command
      */
     private function getMissing(array $languages)
     {
-        $files = $this->manager->files();
+        $files = $this->manager->files($languages);
 
         // Array of content of all files indexed by fileName.languageKey
         $filesResults = [];
