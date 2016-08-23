@@ -375,7 +375,7 @@ class Manager
             }
 
             foreach ($this->languages() as $languageName) {
-                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}")) {
+                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}") && ! array_key_exists("{$fileName}.{$languageName}.{$key}", $values)) {
                     $missing[] = "{$fileName}.{$key}:{$languageName}";
                 }
             }
