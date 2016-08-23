@@ -72,7 +72,7 @@ class SyncCommandTest extends TestCase
 
     public function testItDoesntOverrideParentKey()
     {
-        array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
 
         file_put_contents(__DIR__.'/views_temp/user.blade.php', '{{ trans(\'user.name\') }}');
 
@@ -86,6 +86,6 @@ class SyncCommandTest extends TestCase
 
         $this->assertEquals(['middle' => 'middle'], $userENFile['name']);
 
-        array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
     }
 }
