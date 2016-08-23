@@ -226,7 +226,7 @@ class Manager
 
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
-                $value = addslashes($value);
+                $value = str_replace('\"', '"', addslashes($value));
 
                 $output .= "\n{$prepend}    '{$key}' => '{$value}',";
             }
