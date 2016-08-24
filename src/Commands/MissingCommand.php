@@ -175,7 +175,7 @@ class MissingCommand extends Command
         $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
 
 	    if ( ! empty($languages)) {
-		    $missing = array_where($missing, function ($key, $value) use ($languages) {
+		    $missing = array_where($missing, function ($value, $key) use ($languages) {
 			    list($dottedValue, $langKey) = explode(':', $value);
 			    if (in_array($langKey, $languages)) {
 				    return $value;
