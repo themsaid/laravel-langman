@@ -12,6 +12,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('langman.path', __DIR__.'/temp');
+        $app['config']->set('langman.exports_path', __DIR__.'/temp_exports_path');
         $app['config']->set('view.paths', [__DIR__.'/views_temp']);
     }
 
@@ -20,6 +21,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         parent::setUp();
 
         exec('rm -rf '.__DIR__.'/temp/*');
+        exec('rm -rf '.__DIR__.'/temp_exports_path/*');
     }
 
     public function tearDown()
@@ -27,6 +29,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         parent::tearDown();
 
         exec('rm -rf '.__DIR__.'/temp/*');
+        exec('rm -rf '.__DIR__.'/temp_exports_path/*');
 
         $this->consoleOutput = '';
     }

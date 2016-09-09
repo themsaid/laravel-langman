@@ -22,7 +22,8 @@
         "phpunit/phpunit" : "^4.8 || ^5.0",
         "orchestra/testbench": "3.3.x-dev",
         "orchestra/database": "3.3.x-dev",
-        "mockery/mockery": "~0.9.4"
+        "mockery/mockery": "~0.9.4",
+        "mikey179/vfsStream": "1.*"
     },
     "autoload": {
         "psr-4": {
