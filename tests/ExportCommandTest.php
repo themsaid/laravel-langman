@@ -23,10 +23,6 @@ class ExportCommandTest extends TestCase
         $this->assertContentRows($contentRows);
     }
 
-    /**
-     * @param  $exportedFilePath
-     * @return array
-     */
     protected function getExcelFileContents($exportedFilePath)
     {
         $excelObj = \PHPExcel_IOFactory::load($exportedFilePath);
@@ -35,9 +31,6 @@ class ExportCommandTest extends TestCase
         return $rows;
     }
 
-    /**
-     * @param $headerRow
-     */
     protected function assertHeaderRow($headerRow)
     {
         $this->assertEquals($headerRow['A'], 'Language File');
@@ -46,10 +39,6 @@ class ExportCommandTest extends TestCase
         $this->assertEquals($headerRow['D'], 'es');
     }
 
-    /**
-     * @param $row1
-     * @param $row2
-     */
     protected function assertContentRows($contentRows)
     {
         $row1 = $contentRows[0];
