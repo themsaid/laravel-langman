@@ -232,7 +232,7 @@ class Manager
 
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
-                $value = addslashes($value);
+                $value = str_replace('\"', '"', addslashes($value));
 
                 $output .= "\n{$prepend}    '{$key}' => '{$value}',";
             }
@@ -315,8 +315,9 @@ class Manager
         $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
 
         $pattern =
-            // See https://regex101.com/r/jS5fX0/2
-            '[^\w|>]'. // Must not start with any alphanum or _ or >
+            // See https://regex101.com/r/jS5fX0/3
+            '[^\w]'. // Must not start with any alphanum or _
+            '(?<!->)'. // Must not start with ->
             '('.implode('|', $functions).')'.// Must start with one of the functions
             "\(".// Match opening parentheses
             "[\'\"]".// Match " or '
@@ -381,7 +382,7 @@ class Manager
             }
 
             foreach ($this->languages() as $languageName) {
-                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}")) {
+                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}") && ! array_key_exists("{$fileName}.{$languageName}.{$key}", $values)) {
                     $missing[] = "{$fileName}.{$key}:{$languageName}";
                 }
             }

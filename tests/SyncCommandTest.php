@@ -69,4 +69,23 @@ class SyncCommandTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));
         array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
     }
+
+    public function testItDoesntOverrideParentKey()
+    {
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
+
+        file_put_contents(__DIR__.'/views_temp/user.blade.php', '{{ trans(\'user.name\') }}');
+
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return ['name' => ['middle' => 'middle']];"],
+        ]);
+
+        $this->artisan('langman:sync');
+
+        $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
+
+        $this->assertEquals(['middle' => 'middle'], $userENFile['name']);
+
+        array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
+    }
 }

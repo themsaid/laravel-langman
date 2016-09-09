@@ -91,6 +91,8 @@ class ManagerTest extends TestCase
         $values = [
             'name' => ['first' => 'first', 'last' => ['last1' => '1', 'last2' => 2]],
             'age' => 'age',
+            'double_quotes' => '"with quotes"',
+            'quotes' => "With some ' quotes",
         ];
 
         $manager->writeFile($filePath, $values);
