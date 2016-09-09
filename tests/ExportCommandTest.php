@@ -15,12 +15,10 @@ class ExportCommandTest extends TestCase
 
         $excelRows = $this->getExcelFileContents($exportedFilePath);
 
-        $headerRow = $excelRows[1];
-        $contentRows = [$excelRows[2], $excelRows[3]];
-
         $this->assertFileExists($exportedFilePath);
-        $this->assertHeaderRow($headerRow);
-        $this->assertContentRows($contentRows);
+        $this->assertExcelRowEquals($excelRows[1], ['Language File', 'Key', 'en', 'es']);
+        $this->assertExcelRowEquals($excelRows[2], ['user', 'address', 'Address', 'Dirección']);
+        $this->assertExcelRowEquals($excelRows[3], ['user', 'contact.cellphone', 'Mobile', 'Movil']);
     }
 
     protected function getExcelFileContents($exportedFilePath)
@@ -31,26 +29,13 @@ class ExportCommandTest extends TestCase
         return $rows;
     }
 
-    protected function assertHeaderRow($headerRow)
-    {
-        $this->assertEquals($headerRow['A'], 'Language File');
-        $this->assertEquals($headerRow['B'], 'Key');
-        $this->assertEquals($headerRow['C'], 'en');
-        $this->assertEquals($headerRow['D'], 'es');
-    }
+    protected function assertExcelRowEquals($row, $content) {
+        $columns = array_values($row);
 
-    protected function assertContentRows($contentRows)
-    {
-        $row1 = $contentRows[0];
-        $this->assertEquals($row1['A'], 'user');
-        $this->assertEquals($row1['B'], 'address');
-        $this->assertEquals($row1['C'], 'Address');
-        $this->assertEquals($row1['D'], 'Dirección');
+        $this->assertEquals(count($columns), count($content));
 
-        $row2 = $contentRows[1];
-        $this->assertEquals($row2['A'], 'user');
-        $this->assertEquals($row2['B'], 'contact.cellphone');
-        $this->assertEquals($row2['C'], 'Mobile');
-        $this->assertEquals($row2['D'], 'Movil');
+        foreach ($columns as $index => $column) {
+            $this->assertEquals($column, $content[$index]);
+        }
     }
 }
