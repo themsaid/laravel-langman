@@ -11,8 +11,6 @@ class ImportCommandTest extends TestCase
 
         $path = $this->createTempExcelFile([
             ['Language File', 'Key', 'en', 'es'],
-            ['product', 'name', 'Name', 'Nombre'],
-            ['product', 'description', 'Description', 'Descripción'],
             ['course', 'start_date', 'Start Date', 'Fecha De Inicio'],
             ['user', 'address', 'Address', 'Dirección'],
             ['user', 'education.major', 'Major', 'Importante'],
@@ -21,7 +19,7 @@ class ImportCommandTest extends TestCase
 
         $filename = basename($path);
 
-        $filesToBeChanged = join("\n\t", ['product', 'course', 'user']);
+        $filesToBeChanged = join("\n\t", ['course', 'user']);
 
         $command = m::mock('\Themsaid\Langman\Commands\ImportCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()
@@ -32,12 +30,33 @@ class ImportCommandTest extends TestCase
 
         $langPath = $this->app['config']['langman.path'];
 
-        $this->assertFileExists($langPath . '/en/product.php');
-        $this->assertFileExists($langPath . '/en/course.php');
-        $this->assertFileExists($langPath . '/en/user.php');
-        $this->assertFileExists($langPath . '/es/product.php');
-        $this->assertFileExists($langPath . '/es/course.php');
-        $this->assertFileExists($langPath . '/es/user.php');
+        $userEnglish = include $langPath . '/en/user.php';
+        $userSpanish = include $langPath . '/es/user.php';
+        $courseEnglish = include $langPath . '/en/course.php';
+        $courseSpanish = include $langPath . '/es/course.php';
+
+        $this->assertContains('Import complete', $this->consoleOutput());
+
+        // Assert user.php content
+        $this->assertEquals($userEnglish['address'], 'Address');
+        $this->assertEquals($userSpanish['address'], 'Dirección');
+
+        // Assert dotted keys
+        $this->assertEquals($userEnglish['education']['major'], 'Major');
+        $this->assertEquals($userEnglish['education']['minor'], 'Minor');
+        $this->assertEquals($userSpanish['education']['major'], 'Importante');
+        $this->assertEquals($userSpanish['education']['minor'], 'Menor');
+
+        // Assert course.php content
+        $this->assertEquals($courseEnglish['start_date'], 'Start Date');
+        $this->assertEquals($courseSpanish['start_date'], 'Fecha De Inicio');
+    }
+
+    public function testCommandShowsErrorIfFileNotFound()
+    {
+        $this->artisan('langman:import', ['filename' => 'nofile.xlsx']);
+
+        $this->assertContains('No such file found', $this->consoleOutput());
     }
 
     /**

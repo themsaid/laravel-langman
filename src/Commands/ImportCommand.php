@@ -60,6 +60,11 @@ class ImportCommand extends Command
     {
         $excelFileContents = $this->getExcelFileContents();
 
+        if (is_null($excelFileContents)) {
+            $this->error('No such file found.');
+            return;
+        }
+
         $filesToBeChanged = join("\n\t", array_keys(array_first($excelFileContents)));
 
         if (! $this->confirm("The following files will be overridden: \n\t" . $filesToBeChanged . "\nAre you sure?")) {
@@ -73,7 +78,7 @@ class ImportCommand extends Command
     }
 
     /**
-     * Gets the user choosen excel file content.
+     * Gets the user chosen excel file content.
      *
      * @return array
      */
@@ -82,8 +87,7 @@ class ImportCommand extends Command
         $filePath = $this->getPathFromUserArgs();
 
         if (! file_exists($filePath)) {
-            $this->error('No such file found: ' . $filePath);
-            exit();
+            return null;
         }
 
         return $this->readExcelFileContents($filePath);
