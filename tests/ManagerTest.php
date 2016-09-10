@@ -35,7 +35,15 @@ class ManagerTest extends TestCase
 //            ],
         ];
 
+        $expectedUserOnly = [
+            'user' => [
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'user.php',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'user.php',
+            ]
+        ];
+
         $this->assertEquals($expected, $manager->files());
+        $this->assertEquals($expectedUserOnly, $manager->files('user'));
     }
 
     public function testLanguagesMethod()
@@ -267,5 +275,70 @@ class ManagerTest extends TestCase
         $this->assertContains('user.phone:en', $results);
         $this->assertNotContains('user.address:en', $results);
         $this->assertNotContains('user.address:nl', $results);
+    }
+
+    public function testGetFilesContentGroupedByFilenameAndKeyMethod()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $filesList = [
+            'en' => [
+                'user' => "<?php\n return ['missing' => ['not_found' => 'user not found'], 'edit-user' => 'Edit User'];",
+                'category' => "<?php\n return ['category-missing' => ['cat-not-found' => 'category not found'], 'edit-cat' => 'Edit Category'];",
+            ],
+            'fr' => [
+                'user' => "<?php\n return ['missing' => ['not_found' => 'french user not found'], 'edit-user' => 'French Edit User'];",
+                'category' => "<?php\n return ['category-missing' => ['cat-not-found' => 'french category not found'], 'edit-cat' => 'French Edit Category'];",
+            ]
+        ];
+
+        $expected = [
+            'user' => [
+                'missing.not_found' => [
+                    'key' => 'missing.not_found',
+                    'en' => 'user not found',
+                    'fr' => 'french user not found'
+                ],
+                'edit-user' => [
+                    'key' => 'edit-user',
+                    'en' => 'Edit User',
+                    'fr' => 'French Edit User'
+                ]
+            ],
+            'category' => [
+                'category-missing.cat-not-found' => [
+                    'key' => 'category-missing.cat-not-found',
+                    'en' => 'category not found',
+                    'fr' => 'french category not found'
+                ],
+                'edit-cat' => [
+                    'key' => 'edit-cat',
+                    'en' => 'Edit Category',
+                    'fr' => 'French Edit Category'
+                ]
+            ]
+        ];
+
+        $expectedUserOnly = [
+            'user' => [
+                'missing.not_found' => [
+                    'key' => 'missing.not_found',
+                    'en' => 'user not found',
+                    'fr' => 'french user not found'
+                ],
+                'edit-user' => [
+                    'key' => 'edit-user',
+                    'en' => 'Edit User',
+                    'fr' => 'French Edit User'
+                ]
+            ]
+        ];
+
+        $this->createTempFiles($filesList);
+
+        $this->assertEquals($expected, $manager->getFilesContentGroupedByFilenameAndKey());
+        $this->assertEquals($expected, $manager->getFilesContentGroupedByFilenameAndKey([]));
+        $this->assertEquals($expectedUserOnly, $manager->getFilesContentGroupedByFilenameAndKey(['user']));
+        $this->assertEquals($expectedUserOnly, $manager->getFilesContentGroupedByFilenameAndKey('user'));
     }
 }

@@ -36,7 +36,9 @@ class LangmanServiceProvider extends ServiceProvider
             \Themsaid\Langman\Commands\ShowCommand::class,
             \Themsaid\Langman\Commands\FindCommand::class,
             \Themsaid\Langman\Commands\SyncCommand::class,
-            \Themsaid\Langman\Commands\RenameCommand::class,
+            \Themsaid\Langman\Commands\ExportCommand::class,
+            \Themsaid\Langman\Commands\ImportCommand::class,
+            \Themsaid\Langman\Commands\RenameCommand::class
         ]);
     }
 }
