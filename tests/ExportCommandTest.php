@@ -43,7 +43,7 @@ class ExportCommandTest extends TestCase
         $this->assertFalse($this->excelContentContainsRow($excelRows, ['user', 'address', 'Address', 'Dirección']));
     }
 
-    public function testOnlyOptionSupportsCommaSeparatedNames()
+    public function testOptionOnlySupportsCommaSeparatedNames()
     {
         $this->createTempFiles([
             'en' => [
@@ -70,6 +70,57 @@ class ExportCommandTest extends TestCase
         $this->assertTrue($this->excelContentContainsRow($excelRows, ['product', 'name', 'Name', 'Nombre']));
         $this->assertTrue($this->excelContentContainsRow($excelRows, ['product', 'description', 'Description', 'Descripción']));
         $this->assertFalse($this->excelContentContainsRow($excelRows, ['course', 'start_date', 'Start Date', 'Fecha De Inicio']));
+    }
+
+    public function testCommandExportExcludesSpecifiedFiles()
+    {
+        $this->createTempFiles([
+            'en' => ['user' => "<?php\n return['address' => 'Address'];", 'course' => "<?php\n return['start_date' => 'Start Date'];",],
+            'es' => ['user' => "<?php\n return['address' => 'Dirección'];", 'course' => "<?php\n return['start_date' => 'Fecha De Inicio'];"],
+        ]);
+
+        $this->artisan('langman:export', ['--exclude' => 'user']);
+
+        $exportedFilePath = $this->getExportedFilePath();
+
+        $excelRows = $this->getExcelFileContents($exportedFilePath);
+
+        $this->assertFileExists($exportedFilePath);
+
+        // Always remember that first row is the header row,
+        // it does not contain any language file content
+        $this->assertCount(2, $excelRows);
+        $this->assertTrue($this->excelContentContainsRow($excelRows, ['course', 'start_date', 'Start Date', 'Fecha De Inicio']));
+        $this->assertFalse($this->excelContentContainsRow($excelRows, ['user', 'address', 'Address', 'Dirección']));
+    }
+
+    public function testOptionExcludeSupportsCommaSeparatedNames()
+    {
+        $this->createTempFiles([
+            'en' => [
+                'user' => "<?php\n return['address' => 'Address'];",
+                'course' => "<?php\n return['start_date' => 'Start Date'];",
+                'product' => "<?php\n return['name' => 'Name', 'description' => 'Description'];"
+            ],
+            'es' => [
+                'user' => "<?php\n return['address' => 'Dirección'];",
+                'course' => "<?php\n return['start_date' => 'Fecha De Inicio'];",
+                'product' => "<?php\n return['name' => 'Nombre', 'description' => 'Descripción'];"
+            ],
+        ]);
+
+        $this->artisan('langman:export', ['--exclude' => 'user,product']);
+
+        $exportedFilePath = $this->getExportedFilePath();
+
+        $excelRows = $this->getExcelFileContents($exportedFilePath);
+
+        $this->assertFileExists($exportedFilePath);
+        $this->assertCount(2, $excelRows);
+        $this->assertFalse($this->excelContentContainsRow($excelRows, ['user', 'address', 'Address', 'Dirección']));
+        $this->assertFalse($this->excelContentContainsRow($excelRows, ['product', 'name', 'Name', 'Nombre']));
+        $this->assertFalse($this->excelContentContainsRow($excelRows, ['product', 'description', 'Description', 'Descripción']));
+        $this->assertTrue($this->excelContentContainsRow($excelRows, ['course', 'start_date', 'Start Date', 'Fecha De Inicio']));
     }
 
     protected function getExcelFileContents($exportedFilePath)
