@@ -136,7 +136,8 @@ class ExportCommandTest extends TestCase
         return $rows;
     }
 
-    protected function assertExcelRowEquals($row, $content) {
+    protected function assertExcelRowEquals($row, $content)
+    {
         $columns = array_values($row);
 
         $this->assertEquals(count($columns), count($content));

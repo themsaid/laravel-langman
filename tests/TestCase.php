@@ -19,7 +19,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     public function setUp()
     {
         parent::setUp();
-        
+
         exec('rm -rf '.__DIR__.'/temp/*');
         exec('rm -rf '.__DIR__.'/temp_excel_path/*');
     }
