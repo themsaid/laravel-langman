@@ -3,7 +3,6 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Themsaid\Langman\Manager;
 use Themsaid\Langman\Support\Arr;
 
@@ -33,13 +32,6 @@ class ImportCommand extends Command
     private $manager;
 
     /**
-     * The Languages manager instance.
-     *
-     * @var \Illuminate\Contracts\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * Array of files grouped by filename.
      *
      * @var array
@@ -50,15 +42,13 @@ class ImportCommand extends Command
      * ListCommand constructor.
      *
      * @param  \Themsaid\LangMan\Manager $manager
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem
      * @return void
      */
-    public function __construct(Manager $manager, Filesystem $filesystem)
+    public function __construct(Manager $manager)
     {
         parent::__construct();
 
         $this->manager = $manager;
-        $this->filesystem = $filesystem;
     }
 
     /**
@@ -74,7 +64,7 @@ class ImportCommand extends Command
 
         if (! $this->confirm("The following files will be overridden: \n\t" . $filesToBeChanged . "\nAre you sure?")) {
             $this->line('No files changed. Closing.');
-            exit();
+            return;
         }
 
         $this->writeToLangFiles($excelFileContents);
@@ -185,8 +175,8 @@ class ImportCommand extends Command
         foreach ($data as $langDirName => $langDirContent) {
             $langDirPath = config('langman.path') . DIRECTORY_SEPARATOR . $langDirName;
 
-            if (! $this->filesystem->exists($langDirPath)) {
-                $this->filesystem->makeDirectory($langDirPath);
+            if (! file_exists($langDirPath)) {
+                mkdir($langDirPath);
             }
 
             foreach ($langDirContent as $fileName => $fileContent) {
