@@ -92,7 +92,7 @@ class ExportCommand extends Command
     {
         if (! is_null($this->option('only')) && ! is_null($this->option('exclude'))) {
             $this->error('You cannot combine --only and --exclude options. Please use one of them.');
-            exit();
+            return;
         }
 
         $onlyFiles = [];

@@ -87,8 +87,6 @@ class ExportCommandTest extends TestCase
 
         $this->assertFileExists($exportedFilePath);
 
-        // Always remember that first row is the header row,
-        // it does not contain any language file content
         $this->assertCount(2, $excelRows);
         $this->assertTrue($this->excelContentContainsRow($excelRows, ['course', 'start_date', 'Start Date', 'Fecha De Inicio']));
         $this->assertFalse($this->excelContentContainsRow($excelRows, ['user', 'address', 'Address', 'Dirección']));
@@ -121,6 +119,13 @@ class ExportCommandTest extends TestCase
         $this->assertFalse($this->excelContentContainsRow($excelRows, ['product', 'name', 'Name', 'Nombre']));
         $this->assertFalse($this->excelContentContainsRow($excelRows, ['product', 'description', 'Description', 'Descripción']));
         $this->assertTrue($this->excelContentContainsRow($excelRows, ['course', 'start_date', 'Start Date', 'Fecha De Inicio']));
+    }
+
+    public function testExcludeAndOnlyOptionCannotBeCombined()
+    {
+        $this->artisan('langman:export', ['--exclude' => 'somefile', '--only' => 'someanotherfile']);
+
+        $this->assertContains('You cannot combine --only and --exclude options.', $this->consoleOutput());
     }
 
     protected function getExcelFileContents($exportedFilePath)
