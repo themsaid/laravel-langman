@@ -58,7 +58,7 @@ class MissingCommand extends Command
     {
         $this->info('Looking for missing translations...');
 
-	    if ( ! $this->option('lang')) {
+	    if (! $this->option('lang')) {
 		    $languages = $this->manager->languages();
 	    } else {
 		    $languages = explode(',', $this->option('lang'));
@@ -174,7 +174,7 @@ class MissingCommand extends Command
 
         $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
 
-	    if ( ! empty($languages)) {
+	    if (! empty($languages)) {
 		    $missing = array_filter($missing, function ($value, $key) use ($languages) {
 			    list($dottedValue, $langKey) = explode(':', $value);
 			    if (in_array($langKey, $languages)) {
