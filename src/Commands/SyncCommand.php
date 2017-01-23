@@ -101,10 +101,20 @@ class SyncCommand extends Command
      */
     private function fillMissingKeys($fileName, array $foundMissingKeys, $languageKey)
     {
+        // Get the base language translation
+        $baseLanguage = config('langman.base_language', 'en');
+        $baseLanguageFile = config('langman.path') . "/{$baseLanguage}/{$fileName}.php";
+        $baseTranslation = [];
+        if (file_exists($baseLanguageFile)) {
+            $baseTranslation = require $baseLanguageFile;
+        }
+
         $missingKeys = [];
 
         foreach ($foundMissingKeys as $missingKey) {
-            $missingKeys[$missingKey] = [$languageKey => ''];
+            // Use base language translation as default value
+            $languageValue = isset($baseTranslation[$missingKey]) ? $baseTranslation[$missingKey] : '';
+            $missingKeys[$missingKey] = [$languageKey => $languageValue];
 
             $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
         }
