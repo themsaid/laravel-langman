@@ -309,7 +309,7 @@ class Manager
         $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
 
         $pattern =
-            // See https://regex101.com/r/jS5fX0/3
+            // See https://regex101.com/r/jS5fX0/4
             '[^\w]'. // Must not start with any alphanum or _
             '(?<!->)'. // Must not start with ->
             '('.implode('|', $functions).')'.// Must start with one of the functions
@@ -317,7 +317,7 @@ class Manager
             "[\'\"]".// Match " or '
             '('.// Start a new group to match:
             '[a-zA-Z0-9_-]+'.// Must start with group
-            "([.][^\1)]+)+".// Be followed by one or more items/keys
+            "([.][^\1)$]+)+".// Be followed by one or more items/keys
             ')'.// Close group
             "[\'\"]".// Closing quote
             "[\),]"  // Close parentheses or new parameter
