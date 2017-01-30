@@ -53,7 +53,9 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->allFiles($this->path));
+        $files = Collection::make($this->disk->allFiles($this->path))->filter(function ($file) {
+            return $this->disk->extension($file) == 'php';
+        });
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
@@ -118,12 +120,12 @@ class Manager
         }, $this->disk->directories($this->path));
 
         $languages = array_filter($languages, function ($directory) {
-            return $directory != 'vendor';
+            return $directory != 'vendor' && $directory != 'json';
         });
 
         sort($languages);
 
-        return Arr::except($languages, ['vendor']);
+        return Arr::except($languages, ['vendor', 'json']);
     }
 
     /**
