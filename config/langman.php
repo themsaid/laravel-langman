@@ -12,4 +12,17 @@ return [
      */
 
     'path' => realpath(base_path('resources/lang')),
+
+
+    /*
+     * --------------------------------------------------------------------------
+     * The base language for translation
+     * --------------------------------------------------------------------------
+     *
+     * This option is the base language,other languages should translate
+     * from base language, These language files are
+     * usually located in resources/lang but you may change that.
+     */
+
+    'base_language' => 'en',
 ];
