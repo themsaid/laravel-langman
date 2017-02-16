@@ -57,7 +57,9 @@ class RenameCommand extends Command
      */
     public function handle()
     {
-        $this->renameKey();
+        if (!$this->renameKey()) {
+            return ;
+        }
 
         $this->listFilesContainingOldKey();
 
@@ -103,6 +105,8 @@ class RenameCommand extends Command
             $file,
             [$newKey => $currentValues]
         );
+
+        return true;
     }
 
     /**
