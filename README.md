@@ -15,6 +15,7 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/license.svg" alt="License"></a>
 
 </p>
+
 ## Installation
 
 Begin by installing the package through Composer. Run the following command in your terminal:
