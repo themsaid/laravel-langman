@@ -30,5 +30,12 @@
         "classmap": [
             "tests"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Themsaid\\Langman\\LangmanServiceProvider"
+            ]
+        }
     }
 }
