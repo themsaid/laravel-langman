@@ -58,20 +58,21 @@ class Manager
         });
 
         $filesByFile = $files->groupBy(function ($file) {
-            $fileName = $file->getBasename('.'.$file->getExtension());
+            $filePath = str_replace('.' . $file->getExtension(), '', $file->getRelativePathname());
+            $filePath = array_reverse(explode('/', $filePath, 2))[0];
 
             if (Str::contains($file->getPath(), 'vendor')) {
-                $fileName = str_replace('.php', '', $file->getFileName());
+                $filePath = str_replace('.php', '', $file->getFileName());
 
                 $packageName = basename(dirname($file->getPath()));
 
-                return "{$packageName}::{$fileName}";
+                return "{$packageName}::{$filePath}";
             } else {
-                return $fileName;
+                return $filePath;
             }
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
-                return basename($file->getPath());
+                return explode('/', str_replace($this->path, '', $file->getRelativePathname()))[0];
             })->map(function ($file) {
                 return $file->getRealPath();
             });
