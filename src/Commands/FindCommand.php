@@ -5,7 +5,6 @@ namespace Themsaid\Langman\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Themsaid\Langman\Manager;
-use Illuminate\Support\Str;
 
 class FindCommand extends Command
 {
