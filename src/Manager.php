@@ -203,11 +203,11 @@ class Manager
      */
     public function writeFile($filePath, array $translations)
     {
-        $content = "<?php \n\nreturn [";
+        $content = "<?php\n\nreturn [";
 
         $content .= $this->stringLineMaker($translations);
 
-        $content .= "\n];";
+        $content .= "\n];\n";
 
         file_put_contents($filePath, $content);
     }
