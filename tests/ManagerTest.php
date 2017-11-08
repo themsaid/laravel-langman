@@ -38,6 +38,39 @@ class ManagerTest extends TestCase
         $this->assertEquals($expected, $manager->files());
     }
 
+    public function testFilesMethodWithNestedDirectory()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFilesRecursive([
+            'en' => [
+                'foo' => [
+                    'user' => '',
+                    'category' => '']],
+            'nl' => [
+                'foo' => [
+                    'user' => '',
+                    'category' => '']],
+            'vendor' => [
+                'package' => [
+                    'en' => ['user' => '', 'product' => ''],
+                    'sp' => ['user' => '', 'product' => '']]],
+        ]);
+
+        $expected = [
+            'user' => [
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'user.php',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'user.php',
+            ],
+            'category' => [
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'category.php',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'category.php',
+            ],
+        ];
+
+        $this->assertEquals($expected, $manager->files());
+    }
+
     public function testLanguagesMethod()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];

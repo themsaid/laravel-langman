@@ -71,7 +71,8 @@ class Manager
             }
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
-                return basename($file->getPath());
+                $tmp = str_replace($this->path, '', $file->getRealPath());
+                return substr($tmp, 1, 2);// e.g. '/en/foo/bar.php' will return 'en'
             })->map(function ($file) {
                 return $file->getRealPath();
             });

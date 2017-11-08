@@ -53,6 +53,18 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         }
     }
 
+    public function createTempFilesRecursive($files = [], $prefix = __DIR__.'/temp/')
+    {
+        foreach ($files as $file => $content) {
+            if (is_array($content)) {
+                mkdir($prefix.'/'.$file);
+                $this->createTempFilesRecursive($content, $prefix.'/'.$file.'/');
+            } else {
+                file_put_contents($prefix.'/'.$file.'.php', $content);
+            }
+        }
+    }
+
     public function resolveApplicationConsoleKernel($app)
     {
         $app->singleton('artisan', function ($app) {

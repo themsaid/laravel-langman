@@ -147,6 +147,9 @@ class ShowCommand extends Command
     private function filesFromKey()
     {
         try {
+            if (Str::contains( $this->file, '/')) {
+                return $this->manager->files()[explode('/', $this->file)[1]];// e.g. 'foo/bar' will return 'bar'
+            }
             return $this->manager->files()[$this->file];
         } catch (\ErrorException $e) {
             $this->error(sprintf('Language file %s.php not found!', $this->file));
