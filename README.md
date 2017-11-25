@@ -24,7 +24,7 @@ Begin by installing the package through Composer. Run the following command in y
 $ composer require themsaid/laravel-langman
 ```
 
-Once done, add the following line in your providers array of `config/app.php`:
+If you're using Laravel 5.5 or higher the package will automatically register itself. If you're using Laravel 5.4 or lower, add the following line in your providers array of `config/app.php`:
 
 ```php
 Themsaid\Langman\LangmanServiceProvider::class
