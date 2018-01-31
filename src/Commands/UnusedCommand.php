@@ -68,21 +68,20 @@ class UnusedCommand extends Command
         $this->info('Finding unused keys...');
 
         // An array of all translation keys as found in project files.
-        $allKeysInFiles = $this->manager->collectFromFiles();        
+        $allKeysInFiles = $this->manager->collectFromFiles();
 
         foreach ($translationFiles as $fileName => $languages) {
-            /// 
+
             foreach ($languages as $languageKey => $path) {
                 $fileContent = $this->manager->getFileContent($path);
 
                 if (isset($allKeysInFiles[$fileName])) {
-                    
                     $missingKeys = array_diff(array_keys(array_dot($fileContent)), $allKeysInFiles[$fileName]);
                     foreach ($missingKeys as $i => $missingKey) {
-                            $this->output->writeln("\"<fg=red>{$languageKey}.{$missingKey}</>\" never used.");
+                        $this->output->writeln("\"<fg=red>{$languageKey}.{$missingKey}</>\" never used.");
                     }
                 }
             }
         }
-    }    
+    }
 }
