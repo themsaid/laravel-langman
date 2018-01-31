@@ -18,10 +18,10 @@ class UnusedCommandTest extends TestCase
         ]);
 
         $this->artisan('langman:unused');
-        
-        $this->assertContains('en.not_in_files_en', $this->consoleOutput());
-        $this->assertContains('nl.nop.not_in_files_nl', $this->consoleOutput());
-        
+
+        $this->assertContains('en.user.not_in_files_en', $this->consoleOutput());
+        $this->assertContains('nl.user.nop.not_in_files_nl', $this->consoleOutput());
+
 
         array_map('unlink', glob(__DIR__.'/views_temp/user/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));

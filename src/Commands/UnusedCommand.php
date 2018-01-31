@@ -78,7 +78,7 @@ class UnusedCommand extends Command
                     $missingKeys = array_diff(array_keys(array_dot($fileContent)), $allKeysInFiles[$fileName]);
 
                     foreach ($missingKeys as $i => $missingKey) {
-                        $this->output->writeln("\"<fg=red>{$languageKey}.{$missingKey}</>\" never used.");
+                        $this->output->writeln("\"<fg=red>{$languageKey}.{$fileName}.{$missingKey}</>\" never used.");
                     }
                 }
             }
