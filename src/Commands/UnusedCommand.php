@@ -71,7 +71,6 @@ class UnusedCommand extends Command
         $allKeysInFiles = $this->manager->collectFromFiles();
 
         foreach ($translationFiles as $fileName => $languages) {
-
             foreach ($languages as $languageKey => $path) {
                 $fileContent = $this->manager->getFileContent($path);
 
