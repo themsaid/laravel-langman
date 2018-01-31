@@ -74,7 +74,6 @@ class UnusedCommand extends Command
 
             foreach ($languages as $languageKey => $path) {
                 $fileContent = $this->manager->getFileContent($path);
-
                 if (isset($allKeysInFiles[$fileName])) {
                     $missingKeys = array_diff(array_keys(array_dot($fileContent)), $allKeysInFiles[$fileName]);
                     foreach ($missingKeys as $i => $missingKey) {
