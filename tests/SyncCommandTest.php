@@ -8,7 +8,7 @@ class SyncCommandTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/user'));
         array_map('unlink', glob(__DIR__.'/views_temp/user.blade.php'));
 
-        file_put_contents(__DIR__.'/views_temp/user.blade.php', '{{ trans(\'user.name\') }} {{ trans(\'user.age\') }}');
+        file_put_contents(__DIR__.'/views_temp/user.blade.php', "{{ trans('user.name') }} {{ trans('user.age') }}");
         mkdir(__DIR__.'/views_temp/user');
         file_put_contents(__DIR__.'/views_temp/user/index.blade.php', "{{ trans('user.city') }} {{ trans('user.code.initial') }}");
 
