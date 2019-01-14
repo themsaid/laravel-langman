@@ -163,7 +163,11 @@ class MissingCommand extends Command
         // Here we collect the file results
         foreach ($files as $fileName => $languageFiles) {
             foreach ($languageFiles as $languageKey => $filePath) {
+<<<<<<< HEAD
                 if (in_array($languageKey, $languages)) {
+=======
+                if(in_array($languageKey, $languages)) {
+>>>>>>> b12b2f333dc0f5682b0a54823d2873909e5f6c46
                     $filesResults[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
                 }
             }
