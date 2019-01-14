@@ -13,7 +13,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:missing {--default}';
+    protected $signature = 'langman:missing {--default} {--lang=}';
 
     /**
      * The name and signature of the console command.
@@ -37,6 +37,13 @@ class MissingCommand extends Command
     protected $files;
 
     /**
+     * Array of displayable languages.
+     *
+     * @var array
+     */
+    protected $languages;
+
+    /**
      * ListCommand constructor.
      *
      * @param \Themsaid\LangMan\Manager $manager
@@ -56,11 +63,17 @@ class MissingCommand extends Command
      */
     public function handle()
     {
+        try {
+            $this->languages = $this->getLanguages();
+        } catch (InvalidArgumentException $e) {
+            $this->error($e->getMessage());
+
+            return;
+        }
+
         $this->info('Looking for missing translations...');
 
-        $languages = $this->manager->languages();
-
-        $missing = $this->getMissing($languages);
+        $missing = $this->getMissing($this->languages);
 
         $values = $this->collectValues($missing);
 
@@ -150,7 +163,9 @@ class MissingCommand extends Command
         // Here we collect the file results
         foreach ($files as $fileName => $languageFiles) {
             foreach ($languageFiles as $languageKey => $filePath) {
-                $filesResults[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
+                if (in_array($languageKey, $languages)) {
+                    $filesResults[$fileName][$languageKey] = $this->manager->getFileContent($filePath);
+                }
             }
         }
 
@@ -170,5 +185,27 @@ class MissingCommand extends Command
         $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
 
         return $missing;
+    }
+
+    /**
+     * Get the languages to be displayed in the command output.
+     *
+     * @return array
+     */
+    private function getLanguages()
+    {
+        $allLanguages = $this->manager->languages();
+
+        if (! $this->option('lang')) {
+            return $allLanguages;
+        }
+
+        $userLanguages = explode(',', (string) $this->option('lang'));
+
+        if ($missingLanguages = array_diff($userLanguages, $allLanguages)) {
+            throw new InvalidArgumentException('Unknown Language(s) ['.implode(',', $missingLanguages).'].');
+        }
+
+        return $userLanguages;
     }
 }
