@@ -371,7 +371,14 @@ class Manager
         // other languages. Those keys combined with ones with values = ''
         // will be sent to the console user to fill and save in disk.
         foreach ($values as $key => $value) {
-            list($fileName, $languageKey, $key) = explode('.', $key, 3);
+            $parts = explode('.', $key, 3);
+
+            // Some wrong translation key being used?
+            if (count($parts) < 3) {
+                continue;
+            }
+
+            list($fileName, $languageKey, $key) = $parts;
 
             if (in_array("{$fileName}.{$key}", $searched)) {
                 continue;
