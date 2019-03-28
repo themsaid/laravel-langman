@@ -116,6 +116,12 @@ php artisan langman:sync
 This command will look into all files in `resources/views` and `app` and find all translation keys that are not covered in your translation files, after
 that it appends those keys to the files with a value equal to an empty string.
 
+### Create missing translation files from collected keys
+
+```
+php artisan langman:sync --create
+```
+
 ### Filling missing translations
 
 ```
