@@ -91,7 +91,7 @@ class SyncCommand extends Command
         }
 
         // create missing translation sections files from found keys.
-        if ($this->option('create') === 'true') {
+        if ($this->option('create')) {
             $missingLangFiles = array_diff(
                 array_keys($allKeysInFiles),
                 array_keys($translationFiles)
