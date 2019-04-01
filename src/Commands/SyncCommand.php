@@ -13,7 +13,7 @@ class SyncCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:sync';
+    protected $signature = 'langman:sync {--create : Create missing translation files}';
 
     /**
      * The description of the console command.
@@ -86,6 +86,21 @@ class SyncCommand extends Command
                     }
 
                     $this->fillMissingKeys($fileName, $missingKeys, $languageKey);
+                }
+            }
+        }
+
+        // create missing translation sections files from found keys.
+        if ($this->option('create')) {
+            $missingLangFiles = array_diff(
+                array_keys($allKeysInFiles),
+                array_keys($translationFiles)
+            );
+            foreach ($missingLangFiles as $langFile) {
+                foreach ($translationFiles as $fileName => $languages) {
+                    foreach ($languages as $languageKey => $path) {
+                        $this->fillMissingKeys($langFile, $allKeysInFiles[$langFile], $languageKey);
+                    }
                 }
             }
         }
