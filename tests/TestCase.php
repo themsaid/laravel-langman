@@ -79,7 +79,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
 
     private function removeTempFiles()
     {
-        $this->rrmdir(__DIR__.'/temp', '/\.gitignore$/i',  true);
+        $this->rrmdir(__DIR__.'/temp', '/\.gitignore$/i', true);
     }
 
     private function rrmdir($dir, $ignoreRegex, $skipTopLevel = false)
@@ -90,7 +90,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
                 if ($object != "." && $object != "..") {
                     if (is_dir($dir.DIRECTORY_SEPARATOR.$object)) {
                         $this->rrmdir($dir.DIRECTORY_SEPARATOR.$object, $ignoreRegex);
-                    } else if (empty($ignoreRegex) || empty(preg_match($ignoreRegex, $object))) {
+                    } elseif (empty($ignoreRegex) || empty(preg_match($ignoreRegex, $object))) {
                         unlink($dir.DIRECTORY_SEPARATOR.$object);
                     }
                 }
