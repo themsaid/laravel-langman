@@ -77,25 +77,27 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         return $this->consoleOutput ?: $this->consoleOutput = $this->app[Kernel::class]->output();
     }
 
-    private function removeTempFiles() {
+    private function removeTempFiles()
+    {
         $this->rrmdir(__DIR__.'/temp', '/\.gitignore$/i',  true);
     }
 
-    private function rrmdir($dir, $ignoreRegex, $skipTopLevel = false) {
+    private function rrmdir($dir, $ignoreRegex, $skipTopLevel = false)
+    {
         if (is_dir($dir)) {
-          $objects = scandir($dir);
-          foreach ($objects as $object) {
-            if ($object != "." && $object != "..") {
-              if (is_dir($dir.DIRECTORY_SEPARATOR.$object)) {
-                $this->rrmdir($dir.DIRECTORY_SEPARATOR.$object, $ignoreRegex);
-              } else if (empty($ignoreRegex) || empty(preg_match($ignoreRegex, $object))) {
-                unlink($dir.DIRECTORY_SEPARATOR.$object);
-              }
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir.DIRECTORY_SEPARATOR.$object)) {
+                        $this->rrmdir($dir.DIRECTORY_SEPARATOR.$object, $ignoreRegex);
+                    } else if (empty($ignoreRegex) || empty(preg_match($ignoreRegex, $object))) {
+                        unlink($dir.DIRECTORY_SEPARATOR.$object);
+                    }
+                }
             }
-          }
-          if (empty($skipTopLevel)) {
-            rmdir($dir);
-          }
+            if (empty($skipTopLevel)) {
+                rmdir($dir);
+            }
         }
     }
 }

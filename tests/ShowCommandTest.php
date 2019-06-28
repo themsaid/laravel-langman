@@ -71,7 +71,6 @@ class ShowCommandTest extends TestCase
 
     public function testCommandOutputForFileWithNestedFiles()
     {
-
         $separator = '/';
         $nestedFile = "nested{$separator}user"; // nested/user
 

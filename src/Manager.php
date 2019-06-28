@@ -76,8 +76,8 @@ class Manager
                 // use the laravel SEPARATOR for lang, not the platform specific one
                 return implode('/', $directories);
             }
-        })->map(function ($files) use($languageDirectoryIndex) {
-            return $files->keyBy(function ($file) use($languageDirectoryIndex) {
+        })->map(function ($files) use ($languageDirectoryIndex) {
+            return $files->keyBy(function ($file) use ($languageDirectoryIndex) {
                 $directories = explode(DIRECTORY_SEPARATOR, $file->getPath());
                 // ignoring the path directories, the very next one is the language code
                 return $directories[$languageDirectoryIndex];
