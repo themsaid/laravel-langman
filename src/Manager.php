@@ -57,21 +57,30 @@ class Manager
             return $this->disk->extension($file) == 'php';
         });
 
-        $filesByFile = $files->groupBy(function ($file) {
-            $fileName = $file->getBasename('.'.$file->getExtension());
+        $languageDirectoryIndex = count(explode(DIRECTORY_SEPARATOR, $this->path));
 
+        $filesByFile = $files->groupBy(function ($file) use ($languageDirectoryIndex) {
+            $fileName = $file->getBasename('.'.$file->getExtension());
             if (Str::contains($file->getPath(), 'vendor')) {
                 $fileName = str_replace('.php', '', $file->getFileName());
-
                 $packageName = basename(dirname($file->getPath()));
-
                 return "{$packageName}::{$fileName}";
             } else {
-                return $fileName;
+                $directories = explode(DIRECTORY_SEPARATOR, $file->getPathname());
+                // remove lang path
+                $directories = array_slice($directories, $languageDirectoryIndex + 1);
+                // remove file name (inc. extension)
+                $directories = array_slice($directories, 0, count($directories) - 1);
+                // add file name without extension
+                $directories[] = $fileName;
+                // use the laravel SEPARATOR for lang, not the platform specific one
+                return implode('/', $directories);
             }
-        })->map(function ($files) {
-            return $files->keyBy(function ($file) {
-                return basename($file->getPath());
+        })->map(function ($files) use ($languageDirectoryIndex) {
+            return $files->keyBy(function ($file) use ($languageDirectoryIndex) {
+                $directories = explode(DIRECTORY_SEPARATOR, $file->getPath());
+                // ignoring the path directories, the very next one is the language code
+                return $directories[$languageDirectoryIndex];
             })->map(function ($file) {
                 return $file->getRealPath();
             });

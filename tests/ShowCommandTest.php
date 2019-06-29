@@ -69,6 +69,23 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/name.last(?:.*)last/', $this->consoleOutput());
     }
 
+    public function testCommandOutputForFileWithNestedFiles()
+    {
+        $separator = '/';
+        $nestedFile = "nested{$separator}user"; // nested/user
+
+        $this->createTempFiles([
+            'en' => [$nestedFile => "<?php\n return ['name' => ['first' => 'first', 'last' => 'last']];"],
+            'sp' => [$nestedFile => "<?php\n return ['name' => ['first' => 'firstsp']];"],
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'nested/user']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/name.first(?:.*)first(?:.*)firstsp/', $this->consoleOutput());
+        $this->assertRegExp('/name.last(?:.*)last/', $this->consoleOutput());
+    }
+
     public function testCommandOutputForKey()
     {
         $this->createTempFiles([

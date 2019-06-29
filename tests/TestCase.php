@@ -19,14 +19,14 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        exec('rm -rf '.__DIR__.'/temp/*');
+        $this->removeTempFiles();
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        exec('rm -rf '.__DIR__.'/temp/*');
+        $this->removeTempFiles();
 
         $this->consoleOutput = '';
     }
@@ -34,19 +34,24 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     public function createTempFiles($files = [])
     {
         foreach ($files as $dir => $dirFiles) {
-            mkdir(__DIR__.'/temp/'.$dir);
+            mkdir(__DIR__.'/temp/'.$dir, 0777, true);
 
             foreach ($dirFiles as $file => $content) {
                 if (is_array($content)) {
-                    mkdir(__DIR__.'/temp/'.$dir.'/'.$file);
+                    mkdir(__DIR__.'/temp/'.$dir.'/'.$file, 0777, true);
 
                     foreach ($content as $subDir => $subContent) {
-                        mkdir(__DIR__.'/temp/vendor/'.$file.'/'.$subDir);
+                        mkdir(__DIR__.'/temp/vendor/'.$file.'/'.$subDir, 0777, true);
                         foreach ($subContent as $subFile => $subsubContent) {
                             file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'/'.$subDir.'/'.$subFile.'.php', $subsubContent);
                         }
                     }
                 } else {
+                    $fileParts = explode('/', $file);
+                    if (count($fileParts) > 1) {
+                        $fileParts = array_slice($fileParts, 0, count($fileParts) - 1);
+                    }
+                    mkdir(__DIR__.'/temp/'.$dir.'/'.implode('/', $fileParts), 0777, true);
                     file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'.php', $content);
                 }
             }
@@ -70,5 +75,29 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     public function consoleOutput()
     {
         return $this->consoleOutput ?: $this->consoleOutput = $this->app[Kernel::class]->output();
+    }
+
+    private function removeTempFiles()
+    {
+        $this->rrmdir(__DIR__.'/temp', '/\.gitignore$/i', true);
+    }
+
+    private function rrmdir($dir, $ignoreRegex, $skipTopLevel = false)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir.DIRECTORY_SEPARATOR.$object)) {
+                        $this->rrmdir($dir.DIRECTORY_SEPARATOR.$object, $ignoreRegex);
+                    } elseif (empty($ignoreRegex) || empty(preg_match($ignoreRegex, $object))) {
+                        unlink($dir.DIRECTORY_SEPARATOR.$object);
+                    }
+                }
+            }
+            if (empty($skipTopLevel)) {
+                rmdir($dir);
+            }
+        }
     }
 }
