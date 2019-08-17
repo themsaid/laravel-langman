@@ -114,7 +114,7 @@ class ShowCommand extends Command
                 }
 
                 $output[$key]['key'] = $key;
-                $output[$key][$languageKey] = $value;
+                $output[$key][$languageKey] = $value ?: '';
             }
         }
 
@@ -125,7 +125,9 @@ class ShowCommand extends Command
             $original = [];
 
             foreach ($this->languages as $languageKey) {
-                $original[$languageKey] = isset($values[$languageKey]) ? $values[$languageKey] : '<bg=red>  MISSING  </>';
+                $original[$languageKey] = isset($values[$languageKey]) && $values[$languageKey]
+                    ? $values[$languageKey]
+                    : '<bg=red>  MISSING  </>';
             }
 
             // Sort the language values based on language name

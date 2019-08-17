@@ -13,7 +13,7 @@ class MissingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:missing';
+    protected $signature = 'langman:missing {--default}';
 
     /**
      * The name and signature of the console command.
@@ -96,11 +96,36 @@ class MissingCommand extends Command
 
         foreach ($missing as $missingKey) {
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation"
+                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValue($missingKey)
             );
         }
 
         return $values;
+    }
+
+    /**
+     * Get translation in default locale for the given key.
+     *
+     * @param string $missingKey
+     * @return string
+     */
+    private function getDefaultValue($missingKey)
+    {
+        if (! $this->option('default')) {
+            return null;
+        }
+
+        try {
+            $missingKey = explode(':', $missingKey)[0];
+
+            list($file, $key) = explode('.', $missingKey);
+
+            $filePath = $this->manager->files()[$file][config('app.locale')];
+
+            return config('app.locale').":{$this->manager->getFileContent($filePath)[$key]}";
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -142,29 +167,7 @@ class MissingCommand extends Command
             $missing[] = "{$fileName}.{$key}:{$languageKey}";
         }
 
-        // Array of keys indexed by fileName.key, those are the keys we looked
-        // at before so we save them in order for us to not look at them
-        // again in a different language iteration.
-        $searched = [];
-
-        // Now we add keys that exist in a language but missing in any of the
-        // other languages. Those keys combined with ones with values = ''
-        // will be sent to the console user to fill and save in disk.
-        foreach ($values as $key => $value) {
-            list($fileName, $languageKey, $key) = explode('.', $key, 3);
-
-            if (in_array("{$fileName}.{$key}", $searched)) {
-                continue;
-            }
-
-            foreach ($languages as $languageName) {
-                if (Arr::get($filesResults, "{$fileName}.{$languageName}.{$key}") === null) {
-                    $missing[] = "{$fileName}.{$key}:{$languageName}";
-                }
-            }
-
-            $searched[] = "{$fileName}.{$key}";
-        }
+        $missing = array_merge($missing, $this->manager->getKeysExistingInALanguageButNotTheOther($values));
 
         return $missing;
     }

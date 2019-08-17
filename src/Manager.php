@@ -53,7 +53,9 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->allFiles($this->path));
+        $files = Collection::make($this->disk->allFiles($this->path))->filter(function ($file) {
+            return $this->disk->extension($file) == 'php';
+        });
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
@@ -79,12 +81,29 @@ class Manager
         // main language files of the application, in this case we will
         // neglect all vendor files.
         if (! Str::contains($this->path, 'vendor')) {
-            $filesByFile = $filesByFile->filter(function ($value, $key) {
-                return ! Str::contains($key, ':');
-            });
+            $filesByFile = $this->neglectVendorFiles($filesByFile);
         }
 
-        return $filesByFile->toArray();
+        return $filesByFile;
+    }
+
+    /**
+     * Nelgect all vendor files.
+     *
+     * @param $filesByFile Collection
+     * @return array
+     */
+    private function neglectVendorFiles($filesByFile)
+    {
+        $return = [];
+
+        foreach ($filesByFile->toArray() as $key => $value) {
+            if (! Str::contains($key, ':')) {
+                $return[$key] = $value;
+            }
+        }
+
+        return $return;
     }
 
     /**
@@ -101,12 +120,12 @@ class Manager
         }, $this->disk->directories($this->path));
 
         $languages = array_filter($languages, function ($directory) {
-            return $directory != 'vendor';
+            return $directory != 'vendor' && $directory != 'json';
         });
 
         sort($languages);
 
-        return Arr::except($languages, ['vendor']);
+        return Arr::except($languages, ['vendor', 'json']);
     }
 
     /**
@@ -209,7 +228,7 @@ class Manager
 
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
-                $value = addslashes($value);
+                $value = str_replace('\"', '"', addslashes($value));
 
                 $output .= "\n{$prepend}    '{$key}' => '{$value}',";
             }
@@ -248,53 +267,74 @@ class Manager
     /**
      * Collect all translation keys from views files.
      *
+     * e.g. ['users' => ['city', 'name', 'phone']]
+     *
      * @return array
      */
     public function collectFromFiles()
     {
-        $output = [];
+        $translationKeys = [];
 
+        foreach ($this->getAllViewFilesWithTranslations() as $file => $matches) {
+            foreach ($matches as $key) {
+                try {
+                    list($fileName, $keyName) = explode('.', $key, 2);
+                } catch (\ErrorException $e) {
+                    continue;
+                }
+
+                if (isset($translationKeys[$fileName]) && in_array($keyName, $translationKeys[$fileName])) {
+                    continue;
+                }
+
+                $translationKeys[$fileName][] = $keyName;
+            }
+        }
+
+        return $translationKeys;
+    }
+
+    /**
+     * Get found translation lines found per file.
+     *
+     * e.g. ['users.blade.php' => ['users.name'], 'users/index.blade.php' => ['users.phone', 'users.city']]
+     *
+     * @return array
+     */
+    public function getAllViewFilesWithTranslations()
+    {
         /*
          * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
          *
          * https://github.com/barryvdh/laravel-translation-manager/blob/master/src/Manager.php
          */
-        $functions = ['trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
+        $functions = ['__', 'trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice'];
 
         $pattern =
-            // See https://regex101.com/r/jS5fX0/2
-            '[^\w|>]'. // Must not start with any alphanum or _ or >
+            // See https://regex101.com/r/jS5fX0/4
+            '[^\w]'. // Must not start with any alphanum or _
+            '(?<!->)'. // Must not start with ->
             '('.implode('|', $functions).')'.// Must start with one of the functions
             "\(".// Match opening parentheses
             "[\'\"]".// Match " or '
             '('.// Start a new group to match:
             '[a-zA-Z0-9_-]+'.// Must start with group
-            "([.][^\1)]+)+".// Be followed by one or more items/keys
+            "([.][^\1)$]+)+".// Be followed by one or more items/keys
             ')'.// Close group
             "[\'\"]".// Closing quote
             "[\),]"  // Close parentheses or new parameter
         ;
 
+        $allMatches = [];
+
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->disk->allFiles($this->syncPaths) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
-                foreach ($matches[2] as $key) {
-                    try {
-                        list($fileName, $keyName) = explode('.', $key, 2);
-                    } catch (\ErrorException $e) {
-                        continue;
-                    }
-
-                    if (isset($output[$fileName]) && in_array($keyName, $output[$fileName])) {
-                        continue;
-                    }
-
-                    $output[$fileName][] = $keyName;
-                }
+                $allMatches[$file->getRelativePathname()] = $matches[2];
             }
         }
 
-        return $output;
+        return $allMatches;
     }
 
     /**
@@ -306,5 +346,46 @@ class Manager
     public function setPathToVendorPackage($packageName)
     {
         $this->path = $this->path.'/vendor/'.$packageName;
+    }
+
+    /**
+     * Extract keys that exists in a language but not the other.
+     *
+     * Given a dot array of all keys in the format 'file.language.key', this
+     * method searches for keys that exist in one language but not the
+     * other and outputs an array consists of those keys.
+     *
+     * @param $values
+     * @return array
+     */
+    public function getKeysExistingInALanguageButNotTheOther($values)
+    {
+        $missing = [];
+
+        // Array of keys indexed by fileName.key, those are the keys we looked
+        // at before so we save them in order for us to not look at them
+        // again in a different language iteration.
+        $searched = [];
+
+        // Now we add keys that exist in a language but missing in any of the
+        // other languages. Those keys combined with ones with values = ''
+        // will be sent to the console user to fill and save in disk.
+        foreach ($values as $key => $value) {
+            list($fileName, $languageKey, $key) = explode('.', $key, 3);
+
+            if (in_array("{$fileName}.{$key}", $searched)) {
+                continue;
+            }
+
+            foreach ($this->languages() as $languageName) {
+                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}") && ! array_key_exists("{$fileName}.{$languageName}.{$key}", $values)) {
+                    $missing[] = "{$fileName}.{$key}:{$languageName}";
+                }
+            }
+
+            $searched[] = "{$fileName}.{$key}";
+        }
+
+        return $missing;
     }
 }

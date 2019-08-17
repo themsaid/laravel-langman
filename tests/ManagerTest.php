@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Filesystem\Filesystem;
+use Mockery as m;
 
 class ManagerTest extends TestCase
 {
@@ -15,12 +17,12 @@ class ManagerTest extends TestCase
 
         $expected = [
             'user' => [
-                'en' => __DIR__.'/temp/en/user.php',
-                'nl' => __DIR__.'/temp/nl/user.php',
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'user.php',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'user.php',
             ],
             'category' => [
-                'en' => __DIR__.'/temp/en/category.php',
-                'nl' => __DIR__.'/temp/nl/category.php',
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'category.php',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'category.php',
             ],
 // Uncomment when starting to support vendor language files
 //            'package::product' => [
@@ -81,6 +83,8 @@ class ManagerTest extends TestCase
         $values = [
             'name' => ['first' => 'first', 'last' => ['last1' => '1', 'last2' => 2]],
             'age' => 'age',
+            'double_quotes' => '"with quotes"',
+            'quotes' => "With some ' quotes",
         ];
 
         $manager->writeFile($filePath, $values);
@@ -244,5 +248,24 @@ class ManagerTest extends TestCase
         $this->assertContains('name', $results['users']);
         $this->assertContains('age', $results['users']);
         $this->assertContains('city', $results['users']);
+    }
+
+    public function testGetKeysExistingInALanguageButNotTheOther()
+    {
+        $manager = m::mock('Themsaid\Langman\Manager[languages]', [new Filesystem(), '', []]);
+
+        $manager->shouldReceive('languages')->andReturn(['en', 'nl']);
+
+        $results = $manager->getKeysExistingInALanguageButNotTheOther([
+            'user.en.name' => 'a',
+            'user.nl.phone' => 'a',
+            'user.en.address' => 'a',
+            'user.nl.address' => 'a',
+        ]);
+
+        $this->assertContains('user.name:nl', $results);
+        $this->assertContains('user.phone:en', $results);
+        $this->assertNotContains('user.address:en', $results);
+        $this->assertNotContains('user.address:nl', $results);
     }
 }
