@@ -3,6 +3,7 @@
 namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Themsaid\Langman\Manager;
 
 class SyncCommand extends Command
@@ -81,7 +82,7 @@ class SyncCommand extends Command
     {
         $missingKeys = [];
 
-        foreach (array_diff($keys, array_keys(array_dot($fileContent))) as $missingKey) {
+        foreach (array_diff($keys, array_keys(Arr::dot($fileContent))) as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
             $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
