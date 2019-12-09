@@ -186,11 +186,15 @@ class Manager
         foreach ($this->languages() as $language) {
             $filePath = $this->path."/{$language}/{$fileName}.php";
 
-            $fileContent = $this->getFileContent($filePath);
+            try {
+                $fileContent = $this->getFileContent($filePath);
 
-            Arr::forget($fileContent, $key);
+                Arr::forget($fileContent, $key);
 
-            $this->writeFile($filePath, $fileContent);
+                $this->writeFile($filePath, $fileContent);
+            } catch (FileNotFoundException $e) {
+                // If there is no language file, continue
+            }
         }
     }
 
