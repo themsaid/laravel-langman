@@ -110,9 +110,9 @@ class FindCommand extends Command
 
             foreach ($allLanguages as $languageKey) {
                 $original[$languageKey] =
-                    isset($values[$languageKey])
+                    (isset($values[$languageKey])
                         ? $values[$languageKey]
-                        : isset($filesContent[$fileName][$languageKey][$key]) ? $filesContent[$fileName][$languageKey][$key] : '';
+                        : isset($filesContent[$fileName][$languageKey][$key])) ? $filesContent[$fileName][$languageKey][$key] : '';
             }
 
             // Sort the language values based on language name
