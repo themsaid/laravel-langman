@@ -6,9 +6,9 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 <br>
 <br>
 
-<img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
+<!--<img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">-->
 <br>
-[![Build Status](https://travis-ci.org/lauhakari/laravel-langman.svg?branch=master)](https://travis-ci.org/lauhakari/laravel-langman)
+<a href="https://travis-ci.org/lauhakari/laravel-langman?" rel="nofollow"><img src="https://travis-ci.org/lauhakari/laravel-langman.svg?branch=master" alt="Build Status" data-canonical-src="https://travis-ci.org/lauhakari/laravel-langman.svg?branch=master" style="max-width:100%;"></a>
 <!--<a href="https://styleci.io/repos/55088784"><img src="https://styleci.io/repos/55088784/shield?style=flat" alt="StyleCI"></a>
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/d/total.svg" alt="Total Downloads"></a>-->
