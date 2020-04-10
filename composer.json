@@ -1,14 +1,19 @@
 {
-    "name": "themsaid/laravel-langman",
+    "name": "muisit/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
-    "homepage": "https://github.com/themsaid/laravel-langman",
+    "homepage": "https://github.com/muisit/laravel-langman",
     "license": "MIT",
     "authors": [
         {
             "name": "Mohamed Said",
             "email": "theMohamedSaid@gmail.com",
             "homepage": "https://themsaid.github.io"
+        },
+        {
+            "name": "Michiel Uitdehaag",
+            "email": "info@muisit.nl",
+            "homepage": "https://www.muisit.nl"
         }
     ],
     "require": {
