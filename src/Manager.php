@@ -336,8 +336,7 @@ class Manager
                 $fileName = "-json";
                 $keyName = $key;
 
-                if (strpos($key, '.') !== false)
-                {
+                if (strpos($key, '.') !== false) {
                     list($fileName, $keyName) = explode('.', $key, 2);
 
                     if (!isset($translationKeys[$fileName])) {
