@@ -31,6 +31,28 @@ class RemoveCommandTest extends TestCase
         $this->assertArrayNotHasKey('name', $userNLFile);
     }
 
+    public function testCommandOutputJSON()
+    {
+        $manager = $this->app[Manager::class];
+
+        $this->createTempFiles([
+            'en' => [ '-json' => ['String 1'=>'String 1', 'String 2'=>'String 2']],
+            'nl' => [ '-json' => ['String 1'=>'Primo', 'String 2'=>'Secondo']],
+        ]);
+
+        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "String 1"?')->andReturn(true);
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:remove', ['key' => 'String 1']);
+
+        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
+
+        $this->assertArrayNotHasKey('String 1', $ENFile);
+        $this->assertArrayNotHasKey('String 1', $NLFile);
+    }
+
     public function testRemovesNestedKeys()
     {
         $manager = $this->app[Manager::class];

@@ -61,7 +61,7 @@ class RenameCommand extends Command
 
         $this->listFilesContainingOldKey();
 
-        $this->info('The key at '.$this->argument('oldKey').' was renamed to '.$this->argument('newKey').' successfully!');
+        $this->info('The key at "'.$this->argument('oldKey').'" was renamed to "'.$this->argument('newKey').'" successfully!');
     }
 
     /**
@@ -74,18 +74,19 @@ class RenameCommand extends Command
         try {
             list($file, $key) = explode('.', $this->argument('oldKey'), 2);
         } catch (\ErrorException $e) {
-            $this->error('Could not recognize the key you want to rename.');
+            $file = "-json";
+            $key = $this->argument('oldKey');
+        }
 
+        if (Str::contains($this->argument('newKey'), '.') && $file !== "-json") {
+            $this->error('The provided new key must not contain a dot.');
             return;
         }
 
-        if (Str::contains($this->argument('newKey'), '.')) {
-            $this->error('Please provide the new key must not contain a dot.');
-
-            return;
+        $newKey = $this->argument('newKey');
+        if ($file !== "-json") {
+            $newKey = preg_replace('/(\w+)$/i', $newKey, $key);
         }
-
-        $newKey = preg_replace('/(\w+)$/i', $this->argument('newKey'), $key);
 
         $files = $this->manager->files()[$file];
 

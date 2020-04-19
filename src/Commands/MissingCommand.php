@@ -95,8 +95,12 @@ class MissingCommand extends Command
         $values = [];
 
         foreach ($missing as $missingKey) {
+            $key = $missingKey;
+            if (substr($key, 0, 6) == "-json.") {
+                $key = substr($key, 6);
+            }
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValue($missingKey)
+               "<fg=yellow>{$key}</> translation", $this->getDefaultValue($missingKey)
             );
         }
 

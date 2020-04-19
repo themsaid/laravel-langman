@@ -22,13 +22,13 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with('/user\.age:nl/', null)->andReturn('fill_age');
-        $command->shouldReceive('ask')->once()->with('/product\.name:en/', null)->andReturn('fill_name');
-        $command->shouldReceive('ask')->once()->with('/product\.color:nl/', null)->andReturn('fill_color');
-        $command->shouldReceive('ask')->once()->with('/product\.size:nl/', null)->andReturn('fill_size');
-        $command->shouldReceive('ask')->once()->with('/missing\.missing\.id:nl/', null)->andReturn('fill_missing_id');
-        $command->shouldReceive('ask')->once()->with('/missing\.missing\.price:en/', null)->andReturn('fill_missing_price');
-        $command->shouldReceive('ask')->once()->with('/missing\.missing\.price:nl/', null)->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/user\.age:nl/'), null)->andReturn('fill_age');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.name:en/'), null)->andReturn('fill_name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.color:nl/'), null)->andReturn('fill_color');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.size:nl/'), null)->andReturn('fill_size');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.id:nl/'), null)->andReturn('fill_missing_id');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:en/'), null)->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:nl/'), null)->andReturn('fill_missing_price');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:missing');
@@ -48,6 +48,31 @@ class MissingCommandTest extends TestCase
         $this->assertEquals('fill_missing_price', $missingENFile['missing']['price']);
     }
 
+    public function testCommandOutputJSON()
+    {
+        $manager = $this->app[Manager::class];
+
+        $this->createTempFiles([
+            'en' => [ '-json' => ['String 1'=>'String 1', 'String 2'=>'String 2']],
+            'nl' => [ '-json' => ['String 3'=>'Tiero']],
+        ]);
+
+        $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 1:nl/'), null)->andReturn('fill_age');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 2:nl/'), null)->andReturn('fill_name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 3:en/'), null)->andReturn('fill_color');
+
+        $this->app['artisan']->add($command);
+        $this->artisan('langman:missing');
+
+        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
+
+        $this->assertEquals('fill_age', $NLFile['String 1']);
+        $this->assertEquals('fill_name', $NLFile['String 2']);
+        $this->assertEquals('fill_color', $ENFile['String 3']);
+    }
+
     public function testAllowSeeTranslationInDefaultLanguage()
     {
         $manager = $this->app[Manager::class];
@@ -64,7 +89,7 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', '/en:Age/');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/<fg=yellow>user\.age:nl<\/> translation/'), 'en:Age');
 
         $this->app['artisan']->add($command);
 
@@ -87,7 +112,7 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with('/<fg=yellow>user\.age:nl<\/> translation/', null);
+        $command->shouldReceive('ask')->once()->with(m::pattern('/<fg=yellow>user\.age:nl<\/> translation/'), null);
 
         $this->app['artisan']->add($command);
 

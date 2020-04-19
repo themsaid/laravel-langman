@@ -15,18 +15,20 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         $app['config']->set('view.paths', [__DIR__.'/views_temp']);
     }
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
+        $this->withoutMockingConsoleOutput();
 
         exec('rm -rf '.__DIR__.'/temp/*');
+        exec('rm -rf '.__DIR__.'/views_temp/*');
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 
-        exec('rm -rf '.__DIR__.'/temp/*');
+        exec('rm -rf '.__DIR__.'/views_temp/*');
 
         $this->consoleOutput = '';
     }
@@ -37,7 +39,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
             mkdir(__DIR__.'/temp/'.$dir);
 
             foreach ($dirFiles as $file => $content) {
-                if (is_array($content)) {
+                if (is_array($content) && $file!== "-json") {
                     mkdir(__DIR__.'/temp/'.$dir.'/'.$file);
 
                     foreach ($content as $subDir => $subContent) {
@@ -47,7 +49,11 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
                         }
                     }
                 } else {
-                    file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'.php', $content);
+                    if ($file == "-json") {
+                        file_put_contents(__DIR__.'/temp/'.$dir.'.json', json_encode($content, JSON_PRETTY_PRINT));
+                    } else {
+                        file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'.php', $content);
+                    }
                 }
             }
         }

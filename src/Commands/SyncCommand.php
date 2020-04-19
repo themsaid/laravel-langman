@@ -53,6 +53,9 @@ class SyncCommand extends Command
 
         $this->syncKeysFromFiles($translationFiles);
 
+        // reread the files in case we created new ones while syncing
+        $translationFiles = $this->manager->files();
+
         $this->syncKeysBetweenLanguages($translationFiles);
 
         $this->info('Done!');
@@ -71,22 +74,41 @@ class SyncCommand extends Command
 
         // An array of all translation keys as found in project files.
         $allKeysInFiles = $this->manager->collectFromFiles();
+        $languages = $this->manager->languages();
 
-        foreach ($translationFiles as $fileName => $languages) {
-            foreach ($languages as $languageKey => $path) {
+        foreach ($allKeysInFiles as $file=>$labels) {
+            foreach ($languages as $lang) {
+                if (!isset($translationFiles[$file])) {
+                    if ($file === "-json") {
+                        $this->info('Found json translation keys');
+                    } else {
+                        $this->info('Found translation keys for new file '.$file);
+                    }
+                    $translationFiles[$file]=[];
+                }
+                if (!isset($translationFiles[$file][$lang])) {
+                    if ($file === "-json") {
+                        $this->info('Creating new JSON translation file for locale '.$lang);
+                    } else {
+                        $this->info('Creating new translation key file '.$file.' for locale '.$lang);
+                    }
+                    $this->manager->createFile($file, $lang);
+                    $translationFiles[$file][$lang]=$this->manager->createFileName($file, $lang);
+                }
+
+                $path = $translationFiles[$file][$lang];
                 $fileContent = $this->manager->getFileContent($path);
 
-                if (isset($allKeysInFiles[$fileName])) {
-                    $missingKeys = array_diff($allKeysInFiles[$fileName], array_keys(array_dot($fileContent)));
+                $missingKeys = array_diff($labels, array_keys(Arr::dot($fileContent)));
 
-                    foreach ($missingKeys as $i => $missingKey) {
-                        if (Arr::has($fileContent, $missingKey)) {
-                            unset($missingKeys[$i]);
-                        }
+                // remove all keys that are in the translation, but not in any view
+                foreach ($missingKeys as $i => $missingKey) {
+                    if (Arr::has($fileContent, $missingKey)) {
+                        unset($missingKeys[$i]);
                     }
-
-                    $this->fillMissingKeys($fileName, $missingKeys, $languageKey);
                 }
+
+                $this->fillMissingKeys($file, $missingKeys, $lang);
             }
         }
     }
@@ -106,7 +128,11 @@ class SyncCommand extends Command
         foreach ($foundMissingKeys as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
-            $this->output->writeln("\"<fg=yellow>{$fileName}.{$missingKey}.{$languageKey}</>\" was added.");
+            if ($fileName == "-json") {
+                $this->output->writeln("\"<fg=yellow>JSON {$languageKey}:{$missingKey}</>\" was added.");
+            } else {
+                $this->output->writeln("\"<fg=yellow>{$languageKey}.{$fileName}.{$missingKey}</>\" was added.");
+            }
         }
 
         $this->manager->fillKeys(

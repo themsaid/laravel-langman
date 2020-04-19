@@ -8,8 +8,141 @@ class ShowCommandTest extends TestCase
 
         $this->artisan('langman:show', ['key' => 'user']);
 
-        $this->assertContains('Language file user.php not found!', $this->consoleOutput());
+        $this->assertStringContainsString('JSON language strings not found!', $this->consoleOutput());
     }
+
+    public function testOptionCombination1()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user']);
+
+        $this->assertStringContainsString("Displaying specific keys matching 'user' from JSON strings using equality match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination2()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', "--close"=>true]);
+
+        $this->assertStringContainsString("Displaying specific keys matching 'user' from JSON strings using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination3()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', "--close"=>true, "--unused"=>true]);
+
+        $this->assertStringContainsString("Displaying specific unused keys matching 'user' from JSON strings using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination3b()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', "--unused"=>true]);
+
+        $this->assertStringContainsString("Displaying specific unused keys matching 'user' from JSON strings using equality match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination4()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name']);
+
+        $this->assertStringContainsString("Displaying specific keys matching 'name' from user using equality match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination5()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name', "--close"=>true]);
+
+        $this->assertStringContainsString("Displaying specific keys matching 'name' from user using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination6()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name', "--close"=>true, "--unused"=>true]);
+
+        $this->assertStringContainsString("Displaying specific unused keys matching 'name' from user using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination6b()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => []]
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user.name', "--unused"=>true]);
+
+        $this->assertStringContainsString("Displaying specific unused keys matching 'name' from user using equality match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination7()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => [], 'user' => '<?php return []; ']
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user']);
+
+        $this->assertStringContainsString("Displaying all keys from user", $this->consoleOutput());
+    }
+
+    public function testOptionCombination8()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => [], 'user' => '<?php return []; ']
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', '--close' => true]);
+
+        $this->assertStringContainsString("Displaying specific keys matching 'user' from JSON strings using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination9()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => [], 'user' => '<?php return []; ']
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', '--close' => true, '--unused' => true]);
+
+        $this->assertStringContainsString("Displaying specific unused keys matching 'user' from JSON strings using substring match", $this->consoleOutput());
+    }
+
+    public function testOptionCombination9b()
+    {
+        $this->createTempFiles([
+            "en" => ["-json" => [], 'user' => '<?php return []; ']
+        ]);
+
+        $this->artisan('langman:show', ['key' => 'user', '--unused' => true]);
+
+        $this->assertStringContainsString("Displaying all unused keys from user", $this->consoleOutput());
+    }
+
 
     public function testCommandOutputForFile()
     {
@@ -25,6 +158,20 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/age(?:.*)Age(?:.*)|(?: *)|/', $this->consoleOutput());
     }
 
+    public function testCommandOutputForJSON()
+    {
+        $this->createTempFiles([
+            'en' => [ '-json' => ['String 1'=>'String 1', 'String 2'=>'String 2']],
+            'nl' => [ '-json' => ['String 1'=>'Primo', 'String 3 with a very long text that is cut off at some point' => 'Tiero']],
+        ]);
+
+        $this->artisan('langman:show');
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/String 1(?:.*)String 1(?:.*)Primo/', $this->consoleOutput());
+        $this->assertRegExp('/String 2(?:.*)String 2(?:.*)|(?: *)|/', $this->consoleOutput());
+        $this->assertRegExp('/String 3 with a very long text that is cut off at some point(?:.*)|(?: *)|(?:.*)Tiero/', $this->consoleOutput());
+    }
     public function testCommandOutputForFileAndSpecificLanguages()
     {
         $this->createTempFiles([
@@ -37,8 +184,8 @@ class ShowCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
-        $this->assertNotContains('Nome', $this->consoleOutput());
-        $this->assertNotContains('it_lang', $this->consoleOutput());
+        $this->assertStringNotContainsString('Nome', $this->consoleOutput());
+        $this->assertStringNotContainsString('it_lang', $this->consoleOutput());
     }
 
     public function testCommandOutputForPackageFile()
@@ -80,8 +227,8 @@ class ShowCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
-        $this->assertNotContains('age', $this->consoleOutput());
-        $this->assertNotContains('uname', $this->consoleOutput());
+        $this->assertStringNotContainsString('age', $this->consoleOutput());
+        $this->assertStringNotContainsString('uname', $this->consoleOutput());
     }
 
     public function testCommandOutputForNestedKey()
@@ -95,8 +242,8 @@ class ShowCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name.first(?:.*)first(?:.*)firstnl/', $this->consoleOutput());
-        $this->assertNotContains('name.last', $this->consoleOutput());
-        $this->assertNotContains('age', $this->consoleOutput());
+        $this->assertStringNotContainsString('name.last', $this->consoleOutput());
+        $this->assertStringNotContainsString('age', $this->consoleOutput());
     }
 
     public function testCommandOutputForSearchingParentKey()
@@ -111,7 +258,7 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name.first(?:.*)first(?:.*)firstnl/', $this->consoleOutput());
         $this->assertRegExp('/name.last(?:.*)last(?:.*)lastnl/', $this->consoleOutput());
-        $this->assertNotContains('age', $this->consoleOutput());
+        $this->assertStringNotContainsString('age', $this->consoleOutput());
     }
 
     public function testCommandOutputForKeyOnCloseMatch()
@@ -126,7 +273,7 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/name(?:.*)Name(?:.*)Naam/', $this->consoleOutput());
         $this->assertRegExp('/username(?:.*)uname(?:.*)|(?: *)|/', $this->consoleOutput());
-        $this->assertNotContains('age', $this->consoleOutput());
+        $this->assertStringNotContainsString('age', $this->consoleOutput());
     }
 
     public function test_ignore_attributes_and_keys_with_empty_arrays()

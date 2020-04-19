@@ -15,7 +15,7 @@ class ShowCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'langman:show {key} {--c|close} {--lang=}';
+    protected $signature = 'langman:show {key?} {--c|close} {--lang=} {--u|unused}';
 
     /**
      * The name and signature of the console command.
@@ -82,6 +82,15 @@ class ShowCommand extends Command
 
         $this->files = $this->filesFromKey();
 
+        $excluded = null;
+        if ($this->option('unused')) {
+            $allKeysInFiles = $this->manager->collectFromFiles();
+            $keyfile = $this->file ?: "-json";
+            if (isset($allKeysInFiles[$keyfile])) {
+                $excluded = array_values($allKeysInFiles[$keyfile]);
+            }
+        }
+
         try {
             $this->languages = $this->getLanguages();
         } catch (InvalidArgumentException $e) {
@@ -90,18 +99,25 @@ class ShowCommand extends Command
             return;
         }
 
+        $displayFile = $this->file ?: "JSON strings";
+        $closematch = $this->key === null ? "" : ($this->option('close') ? 'using substring match' : 'using equality match');
+        $unused = $this->option('unused') ? 'unused keys' : 'keys';
+        $what = $this->key === null ? "all $unused" : "specific $unused matching '$this->key'";
+        $this->info("Displaying $what from $displayFile $closematch");
+
         $this->table(
             array_merge(['key'], $this->languages),
-            $this->tableRows()
+            $this->tableRows($excluded)
         );
     }
 
     /**
      * The output of the table rows.
      *
+     * @param $allKeysInFiles Array? if set, a list of all keys we should filter out
      * @return array
      */
-    private function tableRows()
+    private function tableRows($excluded)
     {
         $output = [];
 
@@ -109,11 +125,12 @@ class ShowCommand extends Command
 
         foreach ($this->files as $languageKey => $file) {
             foreach ($filesContent[$languageKey] = Arr::dot($this->manager->getFileContent($file)) as $key => $value) {
-                if (! $this->shouldShowKey($key)) {
+                if (! $this->shouldShowKey($key, $excluded)) {
                     continue;
                 }
 
-                $output[$key]['key'] = $key;
+                $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
+                $output[$key]['key'] = $okey;
                 $output[$key][$languageKey] = $value ?: '';
             }
         }
@@ -133,7 +150,8 @@ class ShowCommand extends Command
             // Sort the language values based on language name
             ksort($original);
 
-            $output[$key] = array_merge(['key' => "<fg=yellow>$key</>"], $original);
+            $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
+            $output[$key] = array_merge(['key' => "<fg=yellow>$okey</>"], $original);
         }
 
         return array_values($output);
@@ -147,9 +165,13 @@ class ShowCommand extends Command
     private function filesFromKey()
     {
         try {
-            return $this->manager->files()[$this->file];
+            return $this->manager->files()[$this->file ?? "-json"];
         } catch (\ErrorException $e) {
-            $this->error(sprintf('Language file %s.php not found!', $this->file));
+            if ($this->file === null) {
+                $this->error(sprintf('JSON language strings not found!', $this->file));
+            } else {
+                $this->error(sprintf('Language file %s.php not found!', $this->file));
+            }
 
             return [];
         }
@@ -162,22 +184,39 @@ class ShowCommand extends Command
      */
     private function parseKey()
     {
-        $parts = explode('.', $this->argument('key'), 2);
+        if (strlen($this->argument('key'))) {
+            $parts = explode('.', $this->argument('key'), 2);
 
-        $this->file = $parts[0];
+            $this->file = $parts[0];
 
-        $this->key = isset($parts[1]) ? $parts[1] : null;
+            $this->key = isset($parts[1]) ? $parts[1] : null;
 
-        if (Str::contains($this->file, '::')) {
-            try {
-                $parts = explode('::', $this->file);
+            if (Str::contains($this->file, '::')) {
+                try {
+                    $parts = explode('::', $this->file);
+                    $this->manager->setPathToVendorPackage($parts[0]);
+                } catch (\ErrorException $e) {
+                    $this->error('Could not recognize the package.');
 
-                $this->manager->setPathToVendorPackage($parts[0]);
-            } catch (\ErrorException $e) {
-                $this->error('Could not recognize the package.');
-
-                return;
+                    return;
+                }
+            } else {
+                if ($this->key === null && !isset($this->manager->files()[$this->file])) {
+                    // fallback on a key search in the JSON strings
+                    $this->key = $this->file;
+                    $this->file = null;
+                }
             }
+
+            // if we want to use --close on the JSON strings, the key is _always_ a key, even
+            // if it is also a file
+            if ($this->key === null && $this->option('close')) {
+                $this->key = $this->file;
+                $this->file = null;
+            }
+        } else {
+            $this->file = null;
+            $this->key = null;
         }
     }
 
@@ -188,8 +227,12 @@ class ShowCommand extends Command
      *
      * @return bool
      */
-    private function shouldShowKey($key)
+    private function shouldShowKey($key, $exclude)
     {
+        if ($exclude != null && in_array($key, $exclude)) {
+            return false;
+        }
+
         if ($this->key) {
             if (Str::contains($key, '.') && Str::startsWith($key, $this->key)) {
                 return true;

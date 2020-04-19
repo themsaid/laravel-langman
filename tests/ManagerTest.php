@@ -10,8 +10,8 @@ class ManagerTest extends TestCase
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => ['user' => '', 'category' => ''],
-            'nl' => ['user' => '', 'category' => ''],
+            'en' => ['user' => '', 'category' => '', "-json"=>[]],
+            'nl' => ['user' => '', 'category' => '', "-json"=>[]],
             'vendor' => ['package' => ['en' => ['user' => '', 'product' => ''], 'sp' => ['user' => '', 'product' => '']]],
         ]);
 
@@ -24,6 +24,10 @@ class ManagerTest extends TestCase
                 'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'category.php',
                 'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl'.DIRECTORY_SEPARATOR.'category.php',
             ],
+            "-json" => [
+                'en' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'en.json',
+                'nl' => __DIR__.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.'nl.json',
+            ]
 // Uncomment when starting to support vendor language files
 //            'package::product' => [
 //                'en' => __DIR__.'/temp/vendor/package/en/product.php',
@@ -56,7 +60,7 @@ class ManagerTest extends TestCase
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => [],
+            'en' => ["-json"=>[]],
             'sp' => [],
             'nl' => ['user' => '__UN_TOUCHED__'],
         ]);
@@ -65,8 +69,19 @@ class ManagerTest extends TestCase
 
         $this->assertFileExists($this->app['config']['langman.path'].'/en/user.php');
         $this->assertFileExists($this->app['config']['langman.path'].'/sp/user.php');
+        $this->assertFileNotExists($this->app['config']['langman.path'].'/sp.json');
+        $this->assertFileNotExists($this->app['config']['langman.path'].'/nl.json');
         $this->assertEquals('__UN_TOUCHED__', file_get_contents($this->app['config']['langman.path'].'/nl/user.php'));
         $this->assertEquals([], (array) include $this->app['config']['langman.path'].'/en/user.php');
+        $this->assertEquals([], (array) include $this->app['config']['langman.path'].'/sp/user.php');
+
+        $manager->createFile('-json', "sp");
+
+        $this->assertFileExists($this->app['config']['langman.path'].'/en.json');
+        $this->assertFileExists($this->app['config']['langman.path'].'/sp.json');
+        $this->assertFileNotExists($this->app['config']['langman.path'].'/nl.json');
+        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true));
+        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/sp.json'), true));
     }
 
     public function testWriteFile()
@@ -92,22 +107,44 @@ class ManagerTest extends TestCase
         $this->assertEquals($values, (array) include $filePath);
     }
 
-    public function testGetFileContentReadsContent()
+    public function testWriteJSONFile()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
-            'en' => ['users' => "<?php return ['_content_'];"],
+            'en' => ["-json" => []],
+            'nl' => ["-json" => []],
+        ]);
+
+        $filePath = $this->app['config']['langman.path'].'/en.json';
+
+        $values = [
+            'name' => ['first' => 'first', 'last' => ['last1' => '1', 'last2' => 2]],
+            'age' => 'age',
+            'double_quotes' => '"with quotes"',
+            'quotes' => "With some ' quotes",
+        ];
+
+        $manager->writeFile($filePath, $values);
+
+        $this->assertEquals($values, $manager->getFileContent($filePath));
+    }
+
+    public function testGetFileContentReadsContent()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $values = ["Test1"=>"Value1", 'Test2'=>'Value2'];
+        $this->createTempFiles([
+            'en' => ['users' => "<?php return ['_content_'];", "-json"=>$values],
         ]);
 
         $filePath = $this->app['config']['langman.path'].'/en/users.php';
 
         $this->assertContains('_content_', $manager->getFileContent($filePath));
+        $this->assertEquals($values, $manager->getFileContent($this->app['config']['langman.path'].'/en.json'));
     }
 
-    /**
-     * @expectedException Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
     public function testGetFileContentThrowsExceptionIfNotFound()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
@@ -116,6 +153,7 @@ class ManagerTest extends TestCase
 
         $filePath = $this->app['config']['langman.path'].'/en/users.php';
 
+        $this->expectException('\Illuminate\Contracts\Filesystem\FileNotFoundException');
         $manager->getFileContent($filePath);
     }
 
@@ -150,6 +188,26 @@ class ManagerTest extends TestCase
         $this->assertArrayHasKey('age', $enFile);
         $this->assertArrayNotHasKey('name', $nlFile);
         $this->assertArrayHasKey('age', $nlFile);
+    }
+
+    public function testRemoveTranslationLineFromJSONFiles()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['-json' => ['String 1'=>'Trans 1', 'String 2'=>'Trans 2']],
+            'nl' => ['-json' => ['String 1'=>'Hola 1', 'String 2'=>'Hola 2']],
+        ]);
+
+        $manager->removeKey('-json', 'String 1');
+
+        $enFile = $manager->getFileContent($this->app['config']['langman.path'].'/en.json');
+        $nlFile = $manager->getFileContent($this->app['config']['langman.path'].'/nl.json');
+
+        $this->assertArrayNotHasKey('String 1', $enFile);
+        $this->assertArrayHasKey('String 2', $enFile);
+        $this->assertArrayNotHasKey('String 1', $nlFile);
+        $this->assertArrayHasKey('String 2', $nlFile);
     }
 
     public function testRemoveNestedTranslationLineFromAllFiles()
@@ -192,6 +250,24 @@ class ManagerTest extends TestCase
         $this->assertEquals('naam', $nlFile['name']);
     }
 
+    public function testFillJSONTranslationLinesThatDoesNotExistYet()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $this->createTempFiles([
+            'en' => ['-json' => []],
+            'nl' => ['-json' => []],
+        ]);
+
+        $manager->fillKeys('-json', ['name' => ['en' => 'name', 'nl' => 'naam']]);
+
+        $enFile = $manager->getFileContent($this->app['config']['langman.path'].'/en.json');
+        $nlFile = $manager->getFileContent($this->app['config']['langman.path'].'/nl.json');
+
+        $this->assertEquals('name', $enFile['name']);
+        $this->assertEquals('naam', $nlFile['name']);
+    }
+
     public function testUpdatesTranslationLineThatExists()
     {
         $manager = $this->app[\Themsaid\Langman\Manager::class];
@@ -205,6 +281,27 @@ class ManagerTest extends TestCase
         $enFile = (array) include $this->app['config']['langman.path'].'/en/users.php';
 
         $this->assertEquals('name', $enFile['name']);
+    }
+
+    public function testUpdatesJSONTranslationLineThatExists()
+    {
+        $manager = $this->app[\Themsaid\Langman\Manager::class];
+
+        $enval = ['String 1'=>'Test 1', 'String 2'=>'Test 2'];
+        $nlval = ['String 1'=>'Hola 1', 'String 2'=>'Hola 2'];
+        $this->createTempFiles([
+            'en' => ['-json' => $enval],
+            'nl' => ['-json' => $nlval],
+        ]);
+
+        $manager->fillKeys('-json', ['String 1' => ['en' => 'name']]);
+
+        $enFile = $manager->getFileContent($this->app['config']['langman.path'].'/en.json');
+        $nlFile = $manager->getFileContent($this->app['config']['langman.path'].'/nl.json');
+
+        $enval['String 1']='name';
+        $this->assertEquals($enval, $enFile);
+        $this->assertEquals($nlval, $nlFile);
     }
 
     public function testFillNestedTranslationLines()
@@ -234,9 +331,37 @@ class ManagerTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        file_put_contents(__DIR__.'/views_temp/users.blade.php', '{{ trans(\'users.name\') }} {{ trans(\'users.age\') }}');
         mkdir(__DIR__.'/views_temp/users');
         file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.city') }}");
+        file_put_contents(__DIR__.'/views_temp/user.blade.php', <<<HEREDOC
+// Translations cannot start at offset 0 in the file, the regex fails on that
+trans('user.name')
+trans('user.age')
+__('JSON string check')
+ trans_choice('user.choice1',12)
+ Lang::get('random json string')
+ Lang::choice('user.choice2','param')
+ Lang::trans('whatever')
+ Lang::transChoice('user.choice3','another')
+ @lang('do something')
+ @choice('user.choice4','old')
+
+Allow whitespace:
+trans     (     'user.ws'   
+   )
+
+Skip these
+->trans('not1')
+___('not2')
+@ lang('not3')
+@ choice('not4')
+trans(\$var)
+trans()
+anytrans('user.not5')
+trans ( 'user.not6' . \$additional )
+
+HEREDOC
+);
 
         $results = $manager->collectFromFiles();
 
@@ -244,10 +369,28 @@ class ManagerTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        $this->assertArrayHasKey('users', $results);
-        $this->assertContains('name', $results['users']);
-        $this->assertContains('age', $results['users']);
-        $this->assertContains('city', $results['users']);
+        $expected = [
+            "-json" => [
+                "JSON string check",
+                "random json string",
+                "whatever",
+                "do something",
+            ],
+            "user" => [
+                "name",
+                "age",
+                "choice1",
+                "choice2",
+                "choice3",
+                "choice4",
+                "ws"
+            ],
+            "users" => [
+                "city"
+            ]
+        ];
+
+        $this->assertEquals($expected, $results);
     }
 
     public function testGetKeysExistingInALanguageButNotTheOther()
@@ -261,11 +404,17 @@ class ManagerTest extends TestCase
             'user.nl.phone' => 'a',
             'user.en.address' => 'a',
             'user.nl.address' => 'a',
+            "-json.en.city" => 'city',
+            "-json.nl.handy" => 'phone'
         ]);
 
         $this->assertContains('user.name:nl', $results);
         $this->assertContains('user.phone:en', $results);
+        $this->assertContains('-json.city:nl', $results);
+        $this->assertContains('-json.handy:en', $results);
         $this->assertNotContains('user.address:en', $results);
         $this->assertNotContains('user.address:nl', $results);
+        $this->assertNotContains('-json.city:en', $results);
+        $this->assertNotContains('-json.handy:nl', $results);
     }
 }

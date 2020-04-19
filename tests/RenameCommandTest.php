@@ -33,6 +33,24 @@ class RenameCommandTest extends TestCase
         $this->assertEquals($expectedValueES, $newValueES);
     }
 
+    public function testRenameAKeyValueForAllLanguagesJSON()
+    {
+        $this->createTempFiles([
+            'en' => [ '-json' => ['String 1'=>'String 1', 'String 2'=>'String 2']],
+            'nl' => [ '-json' => ['String 1'=>'Primo', 'String 2'=>'Secondo']],
+        ]);
+
+        $this->artisan('langman:rename', ['oldKey' => 'String 1', 'newKey' => 'contact']);
+
+        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
+
+        $this->assertArrayNotHasKey('String 1', $ENFile);
+        $this->assertArrayNotHasKey('String 1', $NLFile);
+        $this->assertArrayHasKey('contact', $ENFile);
+        $this->assertArrayHasKey('contact', $NLFile);
+    }
+
     public function testRenameANestedKeyValueForAllLanguages()
     {
         $this->createTempFiles([
@@ -91,7 +109,7 @@ class RenameCommandTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        $this->assertContains("Renamed key was found in 2 file(s).", $this->consoleOutput());
+        $this->assertStringContainsString("Renamed key was found in 2 file(s).", $this->consoleOutput());
         $this->assertRegExp('/Encounters(?:.*)File/', $this->consoleOutput());
         $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
         $this->assertRegExp('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());

@@ -25,7 +25,7 @@ class Kernel extends \Illuminate\Foundation\Console\Kernel
      *
      * @throws \Exception
      */
-    protected function reportException(Exception $e)
+    protected function reportException(Throwable $e)
     {
         throw $e;
     }

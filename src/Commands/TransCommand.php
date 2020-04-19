@@ -110,11 +110,8 @@ class TransCommand extends Command
             $this->fileName = $matches[1];
             $this->key = $matches[2];
         } catch (\ErrorException $e) {
-            if (! $this->key) {
-                $this->error('Could not recognize the key you want to translate.');
-
-                return false;
-            }
+            $this->fileName = "-json";
+            $this->key = $this->argument('key');
         }
 
         if (Str::contains($this->fileName, '::')) {
@@ -144,8 +141,14 @@ class TransCommand extends Command
         try {
             return $this->manager->files()[$this->fileName];
         } catch (\ErrorException $e) {
-            if ($this->confirm(sprintf('Language file %s.php not found, would you like to create it?', $this->fileName))) {
-                $this->manager->createFile(str_replace($this->packageName.'::', '', $this->fileName));
+            if ($this->fileName === "-json") {
+                if ($this->confirm(sprintf('JSON language file not found, would you like to create it?'))) {
+                    $this->manager->createFile($this->fileName);
+                }
+            } else {
+                if ($this->confirm(sprintf('Language file %s.php not found, would you like to create it?', $this->fileName))) {
+                    $this->manager->createFile(str_replace($this->packageName.'::', '', $this->fileName));
+                }
             }
 
             return [];
@@ -180,7 +183,11 @@ class TransCommand extends Command
         );
 
         foreach ($values as $languageKey => $value) {
-            $this->line("<fg=yellow>{$this->fileName}.{$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
+            if ($this->fileName == "-json") {
+                $this->line("<fg=yellow>JSON {$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
+            } else {
+                $this->line("<fg=yellow>{$this->fileName}.{$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
+            }
         }
     }
 
@@ -197,10 +204,14 @@ class TransCommand extends Command
         foreach ($languages as $languageKey) {
             $languageContent = $this->manager->getFileContent($this->files[$languageKey]);
 
+            $promptFile = $this->fileName.".";
+            if ($this->fileName == "-json") {
+                $promptFile = "";
+            }
             $values[$languageKey] = $this->ask(
                 sprintf(
-                    '<fg=yellow>%s.%s:%s</> translation',
-                    $this->fileName,
+                    '<fg=yellow>%s%s:%s</> translation',
+                    $promptFile,
                     $this->key,
                     $languageKey
                 ),

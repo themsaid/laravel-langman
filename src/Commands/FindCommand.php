@@ -118,7 +118,11 @@ class FindCommand extends Command
             // Sort the language values based on language name
             ksort($original);
 
-            $output[$fullKey] = array_merge(['key' => "<fg=yellow>$fullKey</>"], $original);
+            $okey = $fullKey;
+            if ($fileName == "-json") {
+                $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
+            }
+            $output[$fullKey] = array_merge(['key' => "<fg=yellow>$okey</>"], $original);
         }
 
         return array_values($output);

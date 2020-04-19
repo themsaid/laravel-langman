@@ -54,23 +54,28 @@ class Manager
     public function files()
     {
         $files = Collection::make($this->disk->allFiles($this->path))->filter(function ($file) {
-            return $this->disk->extension($file) == 'php';
+            return $this->disk->extension($file) == 'php' || $this->disk->extension($file) == 'json';
         });
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
 
             if (Str::contains($file->getPath(), 'vendor')) {
-                $fileName = str_replace('.php', '', $file->getFileName());
-
                 $packageName = basename(dirname($file->getPath()));
-
                 return "{$packageName}::{$fileName}";
             } else {
-                return $fileName;
+                // for our locale-general JSON files, group them as '-json'
+                if ($file->getExtension() == "json") {
+                    return "-json";
+                } else {
+                    return $fileName;
+                }
             }
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
+                if ($file->getExtension() == "json") {
+                    return $file->getBasename('.json');
+                }
                 return basename($file->getPath());
             })->map(function ($file) {
                 return $file->getRealPath();
@@ -132,15 +137,47 @@ class Manager
      * Create a file for all languages if does not exist already.
      *
      * @param $fileName
+     * @param $lang string|Array    locale or array of locales to create files for
      * @return void
+     *
+     * If $lang is not passed, create files in all locales
+     * @return file path of the created file
      */
-    public function createFile($fileName)
+    public function createFile($fileName, $lang=null)
     {
-        foreach ($this->languages() as $languageKey) {
-            $file = $this->path."/{$languageKey}/{$fileName}.php";
+        if ($lang === null) {
+            $lang=$this->languages();
+        } elseif (!is_array($lang)) {
+            $lang=[$lang];
+        }
+
+        $file=null;
+        foreach ($lang as $languageKey) {
+            $file = $this->createFileName($fileName, $languageKey);
             if (! $this->disk->exists($file)) {
-                file_put_contents($file, "<?php \n\n return[];");
+                if ($fileName === "-json") {
+                    file_put_contents($file, json_encode([]));
+                } else {
+                    file_put_contents($file, "<?php \n\n return[];");
+                }
             }
+        }
+    }
+
+    /**
+     * Construct a filename based on a module and a languageKey
+     *
+     * @param $file string module name or "-json" for JSON strings
+     * @param $languageKey string language locale
+     *
+     * @returns string file path
+     */
+    public function createFileName($file, $languageKey)
+    {
+        if ($file === "-json") {
+            return $this->path . "/{$languageKey}.json";
+        } else {
+            return $this->path."/{$languageKey}/{$file}.php";
         }
     }
 
@@ -159,8 +196,7 @@ class Manager
 
         foreach ($keys as $key => $values) {
             foreach ($values as $languageKey => $value) {
-                $filePath = $this->path."/{$languageKey}/{$fileName}.php";
-
+                $filePath = $this->createFileName($fileName, $languageKey);
                 Arr::set($appends[$filePath], $key, $value);
             }
         }
@@ -184,7 +220,7 @@ class Manager
     public function removeKey($fileName, $key)
     {
         foreach ($this->languages() as $language) {
-            $filePath = $this->path."/{$language}/{$fileName}.php";
+            $filePath = $this->createFileName($fileName, $language);
 
             $fileContent = $this->getFileContent($filePath);
 
@@ -203,11 +239,16 @@ class Manager
      */
     public function writeFile($filePath, array $translations)
     {
-        $content = "<?php \n\nreturn [";
+        $ext = substr(strrchr($filePath, '.'), 1);
+        ksort($translations);
 
-        $content .= $this->stringLineMaker($translations);
-
-        $content .= "\n];";
+        if ($ext == "php") {
+            $content = "<?php \n\nreturn [";
+            $content .= $this->stringLineMaker($translations);
+            $content .= "\n];";
+        } else {
+            $content = json_encode($translations, JSON_PRETTY_PRINT);
+        }
 
         file_put_contents($filePath, $content);
     }
@@ -247,18 +288,32 @@ class Manager
      */
     public function getFileContent($filePath, $createIfNotExists = false)
     {
+        $info = pathinfo($filePath);
         if ($createIfNotExists && ! $this->disk->exists($filePath)) {
             if (! $this->disk->exists($directory = dirname($filePath))) {
                 mkdir($directory, 0777, true);
             }
 
-            file_put_contents($filePath, "<?php\n\nreturn [];");
+            if ($info['extension'] == 'php') {
+                file_put_contents($filePath, "<?php\n\nreturn [];\r\n");
+            }
+            if ($info['extension'] == 'json') {
+                file_put_contents($filePath, "{\r\n}\r\n");
+            }
 
             return [];
         }
 
         try {
-            return (array) include $filePath;
+            if ($info['extension'] == 'php') {
+                return (array) include $filePath;
+            } else {
+                $retval = json_decode(file_get_contents($filePath), true);
+                if ($retval === false || empty($retval)) {
+                    $retval = [];
+                }
+                return $retval;
+            }
         } catch (\ErrorException $e) {
             throw new FileNotFoundException('File not found: '.$filePath);
         }
@@ -269,6 +324,7 @@ class Manager
      *
      * e.g. ['users' => ['city', 'name', 'phone']]
      *
+     * @param Array $files ['user' => ['en' => 'user.php', 'nl' => 'user.php'], 'password' => ...]
      * @return array
      */
     public function collectFromFiles()
@@ -277,20 +333,30 @@ class Manager
 
         foreach ($this->getAllViewFilesWithTranslations() as $file => $matches) {
             foreach ($matches as $key) {
-                try {
-                    list($fileName, $keyName) = explode('.', $key, 2);
-                } catch (\ErrorException $e) {
-                    continue;
-                }
+                $fileName = "-json";
+                $keyName = $key;
 
+                if (strpos($key, '.') !== false) {
+                    list($fileName, $keyName) = explode('.', $key, 2);
+
+                    if (!isset($translationKeys[$fileName])) {
+                        // only create a new file if the fileName contains only alnum characters
+                        if (preg_match("/^[a-zA-Z][a-zA-Z0-9]*\$/", $fileName)) {
+                            $translationKeys[$fileName] = [];
+                        } else {
+                            $fileName = "-json";
+                            $keyName = $key;
+                        }
+                    }
+                }
                 if (isset($translationKeys[$fileName]) && in_array($keyName, $translationKeys[$fileName])) {
+                    // translation already found
                     continue;
                 }
 
                 $translationKeys[$fileName][] = $keyName;
             }
         }
-
         return $translationKeys;
     }
 
@@ -312,17 +378,15 @@ class Manager
 
         $pattern =
             // See https://regex101.com/r/jS5fX0/4
-            '[^\w]'. // Must not start with any alphanum or _
-            '(?<!->)'. // Must not start with ->
+            // https://regex101.com/r/L9maxG/3
+            '[^\w]'.                         // Must not start with any alphanum or _
+            '(?<!->)'.                       // Must not start with ->
             '('.implode('|', $functions).')'.// Must start with one of the functions
-            "\(".// Match opening parentheses
-            "[\'\"]".// Match " or '
-            '('.// Start a new group to match:
-            '[a-zA-Z0-9_-]+'.// Must start with group
-            "([.][^\1)$]+)+".// Be followed by one or more items/keys
-            ')'.// Close group
-            "[\'\"]".// Closing quote
-            "[\),]"  // Close parentheses or new parameter
+            '\s*\(\s*'.                      // match opening parentheses using any number of whitespace
+            "((?<![\\\\])['\"])".               // match an unescaped opening quote
+            '((?:.(?!(?<![\\\\])\2))*.?)'.     // match everything until we find the same, unescaped quote
+            '\2'.                            // match the closing quote
+            '\s*[,\)]'                       // match a following comma or closing parentheses
         ;
 
         $allMatches = [];
@@ -330,7 +394,7 @@ class Manager
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->disk->allFiles($this->syncPaths) as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
-                $allMatches[$file->getRelativePathname()] = $matches[2];
+                $allMatches[$file->getRelativePathname()] = $matches[3];
             }
         }
 
@@ -371,15 +435,20 @@ class Manager
         // other languages. Those keys combined with ones with values = ''
         // will be sent to the console user to fill and save in disk.
         foreach ($values as $key => $value) {
-            list($fileName, $languageKey, $key) = explode('.', $key, 3);
+            $parts = explode('.', $key, 3);
+            $fileName = $parts[0];
+            $languageKey = $parts[1];
+            if (sizeof($parts) > 2) {
+                $key = $parts[2];
 
-            if (in_array("{$fileName}.{$key}", $searched)) {
-                continue;
-            }
+                if (in_array("{$fileName}.{$key}", $searched)) {
+                    continue;
+                }
 
-            foreach ($this->languages() as $languageName) {
-                if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}") && ! array_key_exists("{$fileName}.{$languageName}.{$key}", $values)) {
-                    $missing[] = "{$fileName}.{$key}:{$languageName}";
+                foreach ($this->languages() as $languageName) {
+                    if (! Arr::has($values, "{$fileName}.{$languageName}.{$key}") && ! array_key_exists("{$fileName}.{$languageName}.{$key}", $values)) {
+                        $missing[] = "{$fileName}.{$key}:{$languageName}";
+                    }
                 }
             }
 

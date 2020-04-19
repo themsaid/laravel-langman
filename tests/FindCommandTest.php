@@ -10,8 +10,7 @@ class FindCommandTest extends TestCase
         $this->createTempFiles();
 
         $this->artisan('langman:find', ['keyword' => 'ragnar']);
-
-        $this->assertContains('No language files were found!', $this->consoleOutput());
+        $this->assertStringContainsString('No language files were found!', $this->consoleOutput());
     }
 
     public function testCommandOutputForFile()
@@ -26,8 +25,8 @@ class FindCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertRegExp('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
-        $this->assertNotContains('age', $this->consoleOutput());
-        $this->assertNotContains('else', $this->consoleOutput());
+        $this->assertStringNotContainsString('age', $this->consoleOutput());
+        $this->assertStringNotContainsString('else', $this->consoleOutput());
     }
 
     public function testCommandOutputForFileWithNestedKeys()
@@ -41,7 +40,7 @@ class FindCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
         $this->assertRegExp('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
-        $this->assertNotContains('jarl_borg', $this->consoleOutput());
+        $this->assertStringNotContainsString('jarl_borg', $this->consoleOutput());
     }
 
     public function testCommandOutputForPackage()
@@ -56,6 +55,21 @@ class FindCommandTest extends TestCase
 
         $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
         $this->assertRegExp('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
-        $this->assertNotContains('weight', $this->consoleOutput());
+        $this->assertStringNotContainsString('weight', $this->consoleOutput());
+    }
+
+    public function testCommandOutputForJson()
+    {
+        $this->createTempFiles([
+            'en' => ['-json' => ['String1' => 'Usor','String2'=>'Admin'] ],
+            'nl' => ['-json' => ['String1' => 'Giraffe','String2'=>'Tiger'] ],
+        ]);
+
+        $this->artisan('langman:find', ['keyword' => 'admin']);
+
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/^| String2 (?:.*)Admin(?:.*)Tiger/', $this->consoleOutput());
+        $this->assertStringNotContainsString('User', $this->consoleOutput());
+        $this->assertStringNotContainsString('Giraffe', $this->consoleOutput());
     }
 }

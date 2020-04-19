@@ -59,12 +59,15 @@ class RemoveCommand extends Command
         try {
             list($file, $key) = explode('.', $this->argument('key'), 2);
         } catch (\ErrorException $e) {
-            $this->error('Could not recognize the key you want to remove.');
-
-            return;
+            $file = "-json";
+            $key = $this->argument('key');
         }
 
-        if ($this->confirm("Are you sure you want to remove \"{$file}.{$key}\"?")) {
+        $fileName=$file.".";
+        if ($file === "-json") {
+            $fileName="";
+        }
+        if ($this->confirm("Are you sure you want to remove \"{$fileName}{$key}\"?")) {
             if (Str::contains($file, '::')) {
                 try {
                     $parts = explode('::', $file);
@@ -81,7 +84,7 @@ class RemoveCommand extends Command
 
             $this->manager->removeKey($file, $key);
 
-            $this->info("{$file}.{$key} was removed successfully.");
+            $this->info("{$fileName}{$key} was removed successfully.");
         }
     }
 }
