@@ -83,10 +83,10 @@ class ShowCommand extends Command
         $this->files = $this->filesFromKey();
 
         $excluded = null;
-        if($this->option('unused')) {
+        if ($this->option('unused')) {
             $allKeysInFiles = $this->manager->collectFromFiles();
             $keyfile = $this->file ?: "-json";
-            if(isset($allKeysInFiles[$keyfile])) {
+            if (isset($allKeysInFiles[$keyfile])) {
                 $excluded = array_values($allKeysInFiles[$keyfile]);
             }
         }
@@ -129,7 +129,7 @@ class ShowCommand extends Command
                     continue;
                 }
 
-                $okey = strlen($key) > 40 ? substr($key,0,36)." ..." : $key;
+                $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
                 $output[$key]['key'] = $okey;
                 $output[$key][$languageKey] = $value ?: '';
             }
@@ -150,7 +150,7 @@ class ShowCommand extends Command
             // Sort the language values based on language name
             ksort($original);
 
-            $okey = strlen($key) > 40 ? substr($key,0,36)." ..." : $key;
+            $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
             $output[$key] = array_merge(['key' => "<fg=yellow>$okey</>"], $original);
         }
 
@@ -167,10 +167,9 @@ class ShowCommand extends Command
         try {
             return $this->manager->files()[$this->file ?? "-json"];
         } catch (\ErrorException $e) {
-            if($this->file === NULL) {
+            if ($this->file === NULL) {
                 $this->error(sprintf('JSON language strings not found!', $this->file));
-            }
-            else {
+            } else {
                 $this->error(sprintf('Language file %s.php not found!', $this->file));
             }
 
@@ -185,7 +184,7 @@ class ShowCommand extends Command
      */
     private function parseKey()
     {
-        if(strlen($this->argument('key'))) {
+        if (strlen($this->argument('key'))) {
             $parts = explode('.', $this->argument('key'), 2);
 
             $this->file = $parts[0];
@@ -201,9 +200,8 @@ class ShowCommand extends Command
 
                     return;
                 }
-            }
-            else {
-                if($this->key === null && !isset($this->manager->files()[$this->file])) {
+            } else {
+                if ($this->key === null && !isset($this->manager->files()[$this->file])) {
                     // fallback on a key search in the JSON strings
                     $this->key = $this->file;
                     $this->file = null;
@@ -212,7 +210,7 @@ class ShowCommand extends Command
 
             // if we want to use --close on the JSON strings, the key is _always_ a key, even
             // if it is also a file
-            if($this->key === null && $this->option('close')) {
+            if ($this->key === null && $this->option('close')) {
                 $this->key = $this->file;
                 $this->file = null;
             }
@@ -231,7 +229,7 @@ class ShowCommand extends Command
      */
     private function shouldShowKey($key, $exclude)
     {
-        if($exclude != null && in_array($key,$exclude)) {
+        if ($exclude != null && in_array($key,$exclude)) {
             return false;
         }
 

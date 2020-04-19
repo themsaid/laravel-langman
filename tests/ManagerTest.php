@@ -75,13 +75,13 @@ class ManagerTest extends TestCase
         $this->assertEquals([], (array) include $this->app['config']['langman.path'].'/en/user.php');
         $this->assertEquals([], (array) include $this->app['config']['langman.path'].'/sp/user.php');
 
-        $manager->createFile('-json',"sp");
+        $manager->createFile('-json', "sp");
 
         $this->assertFileExists($this->app['config']['langman.path'].'/en.json');
         $this->assertFileExists($this->app['config']['langman.path'].'/sp.json');
         $this->assertFileNotExists($this->app['config']['langman.path'].'/nl.json');
-        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), TRUE));
-        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/sp.json'), TRUE));
+        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true));
+        $this->assertEquals([], (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/sp.json'), true));
     }
 
     public function testWriteFile()

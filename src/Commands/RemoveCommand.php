@@ -64,7 +64,7 @@ class RemoveCommand extends Command
         }
 
         $fileName=$file.".";
-        if($file === "-json") {
+        if ($file === "-json") {
             $fileName="";
         }
         if ($this->confirm("Are you sure you want to remove \"{$fileName}{$key}\"?")) {

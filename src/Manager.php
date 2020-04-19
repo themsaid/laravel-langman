@@ -65,7 +65,7 @@ class Manager
                 return "{$packageName}::{$fileName}";
             } else {
                 // for our locale-general JSON files, group them as '-json'
-                if($file->getExtension() == "json") {
+                if ($file->getExtension() == "json") {
                     return "-json";
                 } else {
                     return $fileName;
@@ -73,7 +73,7 @@ class Manager
             }
         })->map(function ($files) {
             return $files->keyBy(function ($file) {
-                if($file->getExtension() == "json") {
+                if ($file->getExtension() == "json") {
                     return $file->getBasename('.json');
                 }
                 return basename($file->getPath());
@@ -136,7 +136,7 @@ class Manager
     /**
      * Create a file for all languages if does not exist already.
      *
-     * @param $fileName     
+     * @param $fileName
      * @param $lang string|Array    locale or array of locales to create files for
      * @return void
      *
@@ -145,10 +145,9 @@ class Manager
      */
     public function createFile($fileName, $lang=null)
     {
-        if($lang===null) {
+        if ($lang === null) {
             $lang=$this->languages();
-        }
-        else if(!is_array($lang)) {
+        } else if (!is_array($lang)) {
             $lang=[$lang];
         }
 
@@ -156,10 +155,9 @@ class Manager
         foreach ($lang as $languageKey) {
             $file = $this->createFileName($fileName, $languageKey);
             if (! $this->disk->exists($file)) {
-                if($fileName === "-json") {
+                if ($fileName === "-json") {
                     file_put_contents($file, json_encode([]));
-                }
-                else {
+                } else {
                     file_put_contents($file, "<?php \n\n return[];");
                 }
             }
@@ -174,11 +172,11 @@ class Manager
      *
      * @returns string file path
      */
-    public function createFileName($file, $languageKey) {
-        if($file === "-json") {
+    public function createFileName($file, $languageKey) 
+    {
+        if ($file === "-json") {
             return $this->path . "/{$languageKey}.json";
-        }
-        else {
+        } else {
             return $this->path."/{$languageKey}/{$file}.php";
         }
     }
@@ -199,7 +197,7 @@ class Manager
         foreach ($keys as $key => $values) {
             foreach ($values as $languageKey => $value) {
                 $filePath = $this->createFileName($fileName, $languageKey);
-                Arr::set($appends[$filePath],$key,$value);
+                Arr::set($appends[$filePath], $key, $value);
             }
         }
 
@@ -241,10 +239,10 @@ class Manager
      */
     public function writeFile($filePath, array $translations)
     {
-        $ext = substr(strrchr($filePath,'.'),1);
+        $ext = substr(strrchr($filePath, '.'), 1);
         ksort($translations);
 
-        if($ext == "php") {
+        if ($ext == "php") {
             $content = "<?php \n\nreturn [";
             $content .= $this->stringLineMaker($translations);
             $content .= "\n];";
@@ -296,10 +294,10 @@ class Manager
                 mkdir($directory, 0777, true);
             }
 
-            if($info['extension'] == 'php') {
+            if ($info['extension'] == 'php') {
                 file_put_contents($filePath, "<?php\n\nreturn [];\r\n");
             }
-            if($info['extension'] == 'json') {
+            if ($info['extension'] == 'json') {
                 file_put_contents($filePath, "{\r\n}\r\n");
             }
 
@@ -307,11 +305,11 @@ class Manager
         }
 
         try {
-            if($info['extension'] == 'php') {
+            if ($info['extension'] == 'php') {
                 return (array) include $filePath;
             } else {
-                $retval = json_decode(file_get_contents($filePath),TRUE);
-                if($retval === FALSE || empty($retval)) {
+                $retval = json_decode(file_get_contents($filePath), TRUE);
+                if ($retval === false || empty($retval)) {
                     $retval = [];
                 }
                 return $retval;
@@ -335,21 +333,20 @@ class Manager
 
         foreach ($this->getAllViewFilesWithTranslations() as $file => $matches) {
             foreach ($matches as $key) {
-                $fileName="-json";
-                $keyName=$key;
+                $fileName = "-json";
+                $keyName = $key;
 
-                if(strpos($key,'.')!==FALSE)
+                if (strpos($key,'.') !== false)
                 {
                     list($fileName, $keyName) = explode('.', $key, 2);
 
-                    if(!isset($translationKeys[$fileName])) {
+                    if (!isset($translationKeys[$fileName])) {
                         // only create a new file if the fileName contains only alnum characters
-                        if(preg_match("/^[a-zA-Z][a-zA-Z0-9]*\$/",$fileName)) {
-                            $translationKeys[$fileName]=[];
-                        }
-                        else {
-                            $fileName="-json";
-                            $keyName=$key;
+                        if (preg_match("/^[a-zA-Z][a-zA-Z0-9]*\$/", $fileName)) {
+                            $translationKeys[$fileName] = [];
+                        } else {
+                            $fileName = "-json";
+                            $keyName = $key;
                         }
                     }
                 }
@@ -442,7 +439,7 @@ class Manager
             $parts = explode('.', $key, 3);
             $fileName = $parts[0];
             $languageKey = $parts[1];
-            if(sizeof($parts)>2) {
+            if (sizeof($parts) > 2) {
                 $key = $parts[2];
 
                 if (in_array("{$fileName}.{$key}", $searched)) {

@@ -55,8 +55,8 @@ HEREDOC
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNlFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
-        $userJSONFileEN = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), TRUE);
-        $userJSONFileNL = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), TRUE);
+        $userJSONFileEN = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $userJSONFileNL = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
 
         $expectedEN=[
             'name' => 'Name',

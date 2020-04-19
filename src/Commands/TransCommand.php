@@ -141,12 +141,11 @@ class TransCommand extends Command
         try {
             return $this->manager->files()[$this->fileName];
         } catch (\ErrorException $e) {
-            if($this->fileName === "-json") {
+            if ($this->fileName === "-json") {
                 if ($this->confirm(sprintf('JSON language file not found, would you like to create it?'))) {
                     $this->manager->createFile($this->fileName);
                 }
-            }
-            else {
+            } else {
                 if ($this->confirm(sprintf('Language file %s.php not found, would you like to create it?', $this->fileName))) {
                     $this->manager->createFile(str_replace($this->packageName.'::', '', $this->fileName));
                 }
@@ -184,10 +183,9 @@ class TransCommand extends Command
         );
 
         foreach ($values as $languageKey => $value) {
-            if($this->fileName == "-json") {
+            if ($this->fileName == "-json") {
                 $this->line("<fg=yellow>JSON {$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
-            }
-            else {
+            } else {
                 $this->line("<fg=yellow>{$this->fileName}.{$this->key}:{$languageKey}</> was set to \"<fg=yellow>{$value}</>\" successfully.");
             }
         }
@@ -206,9 +204,9 @@ class TransCommand extends Command
         foreach ($languages as $languageKey) {
             $languageContent = $this->manager->getFileContent($this->files[$languageKey]);
 
-            $promptFile=$this->fileName.".";
-            if($this->fileName == "-json") {
-                $promptFile="";
+            $promptFile = $this->fileName.".";
+            if ($this->fileName == "-json") {
+                $promptFile = "";
             }
             $values[$languageKey] = $this->ask(
                 sprintf(

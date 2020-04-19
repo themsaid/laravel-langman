@@ -49,10 +49,9 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
                         }
                     }
                 } else {
-                    if($file == "-json") {
+                    if ($file == "-json") {
                         file_put_contents(__DIR__.'/temp/'.$dir.'.json', json_encode($content, JSON_PRETTY_PRINT));
-                    }
-                    else {
+                    } else {
                         file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'.php', $content);
                     }
                 }

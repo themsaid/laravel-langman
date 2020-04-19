@@ -74,7 +74,7 @@ class RenameCommand extends Command
         try {
             list($file, $key) = explode('.', $this->argument('oldKey'), 2);
         } catch (\ErrorException $e) {
-            $file="-json";
+            $file = "-json";
             $key = $this->argument('oldKey');
         }
 
@@ -84,7 +84,7 @@ class RenameCommand extends Command
         }
 
         $newKey = $this->argument('newKey');
-        if($file !== "-json") {
+        if ($file !== "-json") {
             $newKey = preg_replace('/(\w+)$/i', $newKey, $key);
         }
 

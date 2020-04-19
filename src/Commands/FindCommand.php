@@ -119,8 +119,8 @@ class FindCommand extends Command
             ksort($original);
 
             $okey = $fullKey;
-            if($fileName == "-json") {
-              $okey = strlen($key) > 40 ? substr($key,0,36)." ..." : $key;
+            if ($fileName == "-json") {
+              $okey = strlen($key) > 40 ? substr($key, 0, 36)." ..." : $key;
             }
             $output[$fullKey] = array_merge(['key' => "<fg=yellow>$okey</>"], $original);
         }

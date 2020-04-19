@@ -14,16 +14,16 @@ class TransCommandTest extends TestCase
 
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with(m::pattern('/users:en/'), NULL)->andReturn('test');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/users:nl/'), NULL)->andReturn('otherwise');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/users:en/'), null)->andReturn('test');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/users:nl/'), null)->andReturn('otherwise');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users']);
 
-        $ENFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'),TRUE);
-        $NLFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'),TRUE);
-        $this->assertEquals(["admin"=>"Admini","users"=>"otherwise"],$NLFile);
-        $this->assertEquals(["admin"=>"Admin","users"=>"test"],$ENFile);
+        $ENFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'),true);
+        $NLFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'),true);
+        $this->assertEquals(["admin" => "Admini","users" => "otherwise"], $NLFile);
+        $this->assertEquals(["admin" => "Admin","users" => "test"], $ENFile);
     }
 
     public function testCommandErrorOutputOnLanguageNotFound()
@@ -100,8 +100,8 @@ class TransCommandTest extends TestCase
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
-        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:en/'), NULL)->andReturn('name');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:nl/'), NULL)->andReturn('naam');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:en/'), null)->andReturn('name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:nl/'), null)->andReturn('naam');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users.name']);
@@ -164,7 +164,7 @@ class TransCommandTest extends TestCase
         $manager = $this->app[Manager::class];
         $command = m::mock('\Themsaid\Langman\Commands\TransCommand[ask]', [$manager]);
         $command->shouldReceive('confirm')->never();
-        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:en/'), NULL)->andReturn('name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/users\.name:en/'), null)->andReturn('name');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users.name', '--lang' => 'en']);

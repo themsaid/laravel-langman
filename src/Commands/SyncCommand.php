@@ -76,26 +76,24 @@ class SyncCommand extends Command
         $allKeysInFiles = $this->manager->collectFromFiles();
         $languages = $this->manager->languages();
 
-        foreach($allKeysInFiles as $file=>$labels) {
-            foreach($languages as $lang) {
-                if(!isset($translationFiles[$file])) {
-                    if($file === "-json") {
+        foreach ($allKeysInFiles as $file=>$labels) {
+            foreach ($languages as $lang) {
+                if (!isset($translationFiles[$file])) {
+                    if ($file === "-json") {
                         $this->info('Found json translation keys');
-                    }
-                    else {
+                    } else {
                         $this->info('Found translation keys for new file '.$file);
                     }
                     $translationFiles[$file]=[];
                 }
-                if(!isset($translationFiles[$file][$lang])) {
+                if (!isset($translationFiles[$file][$lang])) {
                     if($file === "-json") {
                         $this->info('Creating new JSON translation file for locale '.$lang);
-                    }
-                    else {
+                    } else {
                         $this->info('Creating new translation key file '.$file.' for locale '.$lang);
                     }
                     $this->manager->createFile($file, $lang);
-                    $translationFiles[$file][$lang]=$this->manager->createFileName($file,$lang);
+                    $translationFiles[$file][$lang]=$this->manager->createFileName($file, $lang);
                 }
 
                 $path = $translationFiles[$file][$lang];
@@ -130,10 +128,9 @@ class SyncCommand extends Command
         foreach ($foundMissingKeys as $missingKey) {
             $missingKeys[$missingKey] = [$languageKey => ''];
 
-            if($fileName == "-json") {
+            if ($fileName == "-json") {
                 $this->output->writeln("\"<fg=yellow>JSON {$languageKey}:{$missingKey}</>\" was added.");
-            }
-            else {
+            } else {
                 $this->output->writeln("\"<fg=yellow>{$languageKey}.{$fileName}.{$missingKey}</>\" was added.");
             }
         }

@@ -22,13 +22,13 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with(m::pattern('/user\.age:nl/'), NULL)->andReturn('fill_age');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.name:en/'), NULL)->andReturn('fill_name');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.color:nl/'), NULL)->andReturn('fill_color');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.size:nl/'), NULL)->andReturn('fill_size');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.id:nl/'), NULL)->andReturn('fill_missing_id');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:en/'), NULL)->andReturn('fill_missing_price');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:nl/'), NULL)->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/user\.age:nl/'), null)->andReturn('fill_age');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.name:en/'), null)->andReturn('fill_name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.color:nl/'), null)->andReturn('fill_color');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/product\.size:nl/'), null)->andReturn('fill_size');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.id:nl/'), null)->andReturn('fill_missing_id');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:en/'), null)->andReturn('fill_missing_price');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/missing\.missing\.price:nl/'), null)->andReturn('fill_missing_price');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:missing');
@@ -58,15 +58,15 @@ class MissingCommandTest extends TestCase
         ]);
 
         $command = m::mock('\Themsaid\Langman\Commands\MissingCommand[ask]', [$manager]);
-        $command->shouldReceive('ask')->once()->with(m::pattern('/String 1:nl/'), NULL)->andReturn('fill_age');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/String 2:nl/'), NULL)->andReturn('fill_name');
-        $command->shouldReceive('ask')->once()->with(m::pattern('/String 3:en/'), NULL)->andReturn('fill_color');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 1:nl/'), null)->andReturn('fill_age');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 2:nl/'), null)->andReturn('fill_name');
+        $command->shouldReceive('ask')->once()->with(m::pattern('/String 3:en/'), null)->andReturn('fill_color');
 
         $this->app['artisan']->add($command);
         $this->artisan('langman:missing');
 
-        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), TRUE);
-        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), TRUE);
+        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
 
         $this->assertEquals('fill_age', $NLFile['String 1']);
         $this->assertEquals('fill_name', $NLFile['String 2']);

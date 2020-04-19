@@ -46,8 +46,8 @@ class RemoveCommandTest extends TestCase
         $this->app['artisan']->add($command);
         $this->artisan('langman:remove', ['key' => 'String 1']);
 
-        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), TRUE);
-        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), TRUE);
+        $ENFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = (array) json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
 
         $this->assertArrayNotHasKey('String 1', $ENFile);
         $this->assertArrayNotHasKey('String 1', $NLFile);
