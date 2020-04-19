@@ -87,7 +87,7 @@ class SyncCommand extends Command
                     $translationFiles[$file]=[];
                 }
                 if (!isset($translationFiles[$file][$lang])) {
-                    if($file === "-json") {
+                    if ($file === "-json") {
                         $this->info('Creating new JSON translation file for locale '.$lang);
                     } else {
                         $this->info('Creating new translation key file '.$file.' for locale '.$lang);

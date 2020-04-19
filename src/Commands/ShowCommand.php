@@ -167,7 +167,7 @@ class ShowCommand extends Command
         try {
             return $this->manager->files()[$this->file ?? "-json"];
         } catch (\ErrorException $e) {
-            if ($this->file === NULL) {
+            if ($this->file === null) {
                 $this->error(sprintf('JSON language strings not found!', $this->file));
             } else {
                 $this->error(sprintf('Language file %s.php not found!', $this->file));
@@ -229,7 +229,7 @@ class ShowCommand extends Command
      */
     private function shouldShowKey($key, $exclude)
     {
-        if ($exclude != null && in_array($key,$exclude)) {
+        if ($exclude != null && in_array($key, $exclude)) {
             return false;
         }
 

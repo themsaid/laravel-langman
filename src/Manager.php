@@ -147,7 +147,7 @@ class Manager
     {
         if ($lang === null) {
             $lang=$this->languages();
-        } else if (!is_array($lang)) {
+        } elseif (!is_array($lang)) {
             $lang=[$lang];
         }
 
@@ -172,7 +172,7 @@ class Manager
      *
      * @returns string file path
      */
-    public function createFileName($file, $languageKey) 
+    public function createFileName($file, $languageKey)
     {
         if ($file === "-json") {
             return $this->path . "/{$languageKey}.json";
@@ -308,7 +308,7 @@ class Manager
             if ($info['extension'] == 'php') {
                 return (array) include $filePath;
             } else {
-                $retval = json_decode(file_get_contents($filePath), TRUE);
+                $retval = json_decode(file_get_contents($filePath), true);
                 if ($retval === false || empty($retval)) {
                     $retval = [];
                 }
@@ -336,7 +336,7 @@ class Manager
                 $fileName = "-json";
                 $keyName = $key;
 
-                if (strpos($key,'.') !== false)
+                if (strpos($key, '.') !== false)
                 {
                     list($fileName, $keyName) = explode('.', $key, 2);
 

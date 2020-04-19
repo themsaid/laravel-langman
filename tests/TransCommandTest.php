@@ -20,8 +20,8 @@ class TransCommandTest extends TestCase
         $this->app['artisan']->add($command);
         $this->artisan('langman:trans', ['key' => 'users']);
 
-        $ENFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'),true);
-        $NLFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'),true);
+        $ENFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/en.json'), true);
+        $NLFile = json_decode(file_get_contents($this->app['config']['langman.path'].'/nl.json'), true);
         $this->assertEquals(["admin" => "Admini","users" => "otherwise"], $NLFile);
         $this->assertEquals(["admin" => "Admin","users" => "test"], $ENFile);
     }
