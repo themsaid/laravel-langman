@@ -1,27 +1,28 @@
 {
-    "name": "themsaid/laravel-langman",
+    "name": "zomblateam/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
-    "homepage": "https://github.com/themsaid/laravel-langman",
+    "homepage": "https://github.com/zomblateam/laravel-langman",
     "license": "MIT",
     "authors": [
         {
             "name": "Mohamed Said",
             "email": "theMohamedSaid@gmail.com",
             "homepage": "https://themsaid.github.io"
+            "Updated": "Adel Kedjour <adel@zombla.team>"
         }
     ],
     "require": {
-        "php": "^5.5.9 || ^7.0",
-        "illuminate/support": "~5.1",
-        "illuminate/console": "~5.1",
-        "illuminate/filesystem": "~5.1"
+        "php": "^5.5.9 || ^8.0",
+        "illuminate/support": "^5.1 || ^5.8 || ^6.3 || ^7.0.1 || ^8.18.1",
+        "illuminate/console": "^5.1 || ^5.8 || ^6.3 || ^7.0.1 || ^8.18.1",
+        "illuminate/filesystem": "^5.1 || ^5.8 || ^6.3 || ^7.0.1 || ^8.18.1",
     },
     "require-dev": {
-        "phpunit/phpunit" : "^4.8 || ^5.0",
-        "orchestra/testbench": "~3.0",
-        "orchestra/database": "~3.0",
-        "mockery/mockery": "~0.9.4"
+        "phpunit/phpunit" : "^4.8 || ^5.0 || ^8.5.8|^9.3.3",
+        "orchestra/testbench": "^3.0 || ^4.12.2",
+        "orchestra/database": "^3.0 || ^5.1.0",
+        "mockery/mockery": "^0.9.4 || ^1.3.3"
     },
     "autoload": {
         "psr-4": {
