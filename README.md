@@ -1,5 +1,9 @@
 <h1 align="center">Laravel Langman</h1>
 
+
+<p align="center">
+This is a fork of https://github.com/themsaid/laravel-langman and its needed in my project, but because of its not maintained any more and after I pulled request to fix an issue I re-namespace this package to use it in my projects
+</p>
 <p align="center">
 Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
 translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
