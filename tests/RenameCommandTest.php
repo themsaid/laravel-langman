@@ -71,7 +71,7 @@ class RenameCommandTest extends TestCase
 
     public function testRenameCommandShowViewFilesAffectedForTheChange()
     {
-        $manager = $this->app[\Themsaid\Langman\Manager::class];
+        $manager = $this->app[\Muathye\Themsaid\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => "<?php\n return['name' => 'Name'];"],

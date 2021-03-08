@@ -1,6 +1,6 @@
 <?php
 
-namespace Themsaid\Langman;
+namespace Muathye\Themsaid\Langman;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Filesystem\Filesystem;
@@ -30,13 +30,13 @@ class LangmanServiceProvider extends ServiceProvider
         });
 
         $this->commands([
-            \Themsaid\Langman\Commands\MissingCommand::class,
-            \Themsaid\Langman\Commands\RemoveCommand::class,
-            \Themsaid\Langman\Commands\TransCommand::class,
-            \Themsaid\Langman\Commands\ShowCommand::class,
-            \Themsaid\Langman\Commands\FindCommand::class,
-            \Themsaid\Langman\Commands\SyncCommand::class,
-            \Themsaid\Langman\Commands\RenameCommand::class,
+            \Muathye\Themsaid\Langman\Commands\MissingCommand::class,
+            \Muathye\Themsaid\Langman\Commands\RemoveCommand::class,
+            \Muathye\Themsaid\Langman\Commands\TransCommand::class,
+            \Muathye\Themsaid\Langman\Commands\ShowCommand::class,
+            \Muathye\Themsaid\Langman\Commands\FindCommand::class,
+            \Muathye\Themsaid\Langman\Commands\SyncCommand::class,
+            \Muathye\Themsaid\Langman\Commands\RenameCommand::class,
         ]);
     }
 }

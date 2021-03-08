@@ -1,14 +1,18 @@
 {
-    "name": "themsaid/laravel-langman",
+    "name": "muath-ye/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
-    "homepage": "https://github.com/themsaid/laravel-langman",
+    "homepage": "https://github.com/muath-ye/laravel-langman",
     "license": "MIT",
     "authors": [
         {
             "name": "Mohamed Said",
             "email": "theMohamedSaid@gmail.com",
             "homepage": "https://themsaid.github.io"
+        },
+        {
+            "name": "Muath Assawadi",
+            "homepage": "https://muath-ye.github.io"
         }
     ],
     "require": {
@@ -25,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Themsaid\\Langman\\": "src"
+            "Muathye\\Themsaid\\Langman\\": "src"
         },
         "classmap": [
             "tests"
@@ -34,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Themsaid\\Langman\\LangmanServiceProvider"
+                "Muathye\\Themsaid\\Langman\\LangmanServiceProvider"
             ]
         }
     }
