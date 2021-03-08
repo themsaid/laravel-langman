@@ -1,5 +1,9 @@
 <h1 align="center">Laravel Langman</h1>
 
+
+<p align="center">
+This is a fork of https://github.com/themsaid/laravel-langman and its needed in my project, but because of its not maintained any more and after I pulled request to fix an issue I re-namespace this package to use it in my projects
+</p>
 <p align="center">
 Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
 translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
@@ -27,14 +31,14 @@ $ composer require themsaid/laravel-langman
 Once done, add the following line in your providers array of `config/app.php`:
 
 ```php
-Themsaid\Langman\LangmanServiceProvider::class
+Muathye\Themsaid\Langman\LangmanServiceProvider::class
 ```
 
 This package has a single configuration option that points to the `resources/lang` directory, if only you need to change
 the path then publish the config file:
 
 ```
-php artisan vendor:publish --provider="Themsaid\Langman\LangmanServiceProvider"
+php artisan vendor:publish --provider="Muathye\Themsaid\Langman\LangmanServiceProvider"
 ```
 
 ## Usage
