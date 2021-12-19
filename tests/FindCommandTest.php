@@ -24,8 +24,8 @@ class FindCommandTest extends TestCase
 
         $this->artisan('langman:find', ['keyword' => 'not found']);
 
-        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
-        $this->assertRegExp('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
         $this->assertNotContains('age', $this->consoleOutput());
         $this->assertNotContains('else', $this->consoleOutput());
     }
@@ -39,8 +39,8 @@ class FindCommandTest extends TestCase
 
         $this->artisan('langman:find', ['keyword' => 'not found']);
 
-        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
-        $this->assertRegExp('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
         $this->assertNotContains('jarl_borg', $this->consoleOutput());
     }
 
@@ -54,8 +54,8 @@ class FindCommandTest extends TestCase
 
         $this->artisan('langman:find', ['keyword' => 'not found', '--package' => 'package']);
 
-        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
-        $this->assertRegExp('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
         $this->assertNotContains('weight', $this->consoleOutput());
     }
 }

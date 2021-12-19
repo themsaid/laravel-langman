@@ -71,7 +71,7 @@ class RenameCommandTest extends TestCase
 
     public function testRenameCommandShowViewFilesAffectedForTheChange()
     {
-        $manager = $this->app[\Themsaid\Langman\Manager::class];
+        $manager = $this->app[\OSSTools\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => "<?php\n return['name' => 'Name'];"],
@@ -92,8 +92,8 @@ class RenameCommandTest extends TestCase
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
         $this->assertContains("Renamed key was found in 2 file(s).", $this->consoleOutput());
-        $this->assertRegExp('/Encounters(?:.*)File/', $this->consoleOutput());
-        $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
-        $this->assertRegExp('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/Encounters(?:.*)File/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
     }
 }

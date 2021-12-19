@@ -1,6 +1,6 @@
 <?php
 
-use Themsaid\Langman\Manager;
+use OSSTools\Langman\Manager;
 use Mockery as m;
 
 class RemoveCommandTest extends TestCase
@@ -18,7 +18,7 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "user.name"?')->andReturn(true);
 
         $this->app['artisan']->add($command);
@@ -44,7 +44,7 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(true);
 
         $this->app['artisan']->add($command);
@@ -72,7 +72,7 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(true);
 
         $this->app['artisan']->add($command);
@@ -95,7 +95,7 @@ class RemoveCommandTest extends TestCase
             'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "package::file.not_found"?')->andReturn(true);
 
         $this->app['artisan']->add($command);

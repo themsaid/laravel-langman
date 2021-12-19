@@ -8,11 +8,11 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 
 <img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
 <br>
-<a href="https://travis-ci.org/themsaid/laravel-langman"><img src="https://travis-ci.org/themsaid/laravel-langman.svg?branch=master" alt="Build Status"></a>
-<a href="https://styleci.io/repos/55088784"><img src="https://styleci.io/repos/55088784/shield?style=flat" alt="StyleCI"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/license.svg" alt="License"></a>
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oss-tools/laravel-langman/run-tests?label=tests)
+![Check & fix styling](https://github.com/oss-tools/laravel-langman/workflows/Check%20&%20fix%20styling/badge.svg)
+[![Total Downloads](https://img.shields.io/packagist/dt/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
 
 </p>
 
@@ -21,20 +21,20 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 Begin by installing the package through Composer. Run the following command in your terminal:
 
 ```
-$ composer require themsaid/laravel-langman
+$ composer require oss-tools/laravel-langman
 ```
 
 Once done, add the following line in your providers array of `config/app.php`:
 
 ```php
-Themsaid\Langman\LangmanServiceProvider::class
+OSSTools\Langman\LangmanServiceProvider::class
 ```
 
 This package has a single configuration option that points to the `resources/lang` directory, if only you need to change
 the path then publish the config file:
 
 ```
-php artisan vendor:publish --provider="Themsaid\Langman\LangmanServiceProvider"
+php artisan vendor:publish --provider="OSSTools\Langman\LangmanServiceProvider"
 ```
 
 ## Usage
