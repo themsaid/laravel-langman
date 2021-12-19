@@ -1,7 +1,7 @@
 <?php
 
-use OSSTools\Langman\Manager;
 use Mockery as m;
+use OSSTools\Langman\Manager;
 
 class RemoveCommandTest extends TestCase
 {
