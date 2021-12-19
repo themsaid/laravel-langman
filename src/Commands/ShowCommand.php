@@ -5,8 +5,8 @@ namespace OSSTools\Langman\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use OSSTools\Langman\Manager;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class ShowCommand extends Command
 {
