@@ -8,7 +8,7 @@ class ShowCommandTest extends TestCase
 
         $this->artisan('langman:show', ['key' => 'user']);
 
-        $this->assertContains('Language file user.php not found!', $this->consoleOutput());
+        $this->assertStringContainsString('Language file user.php not found!', $this->consoleOutput());
     }
 
     public function testCommandOutputForFile()

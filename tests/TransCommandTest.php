@@ -11,7 +11,7 @@ class TransCommandTest extends TestCase
 
         $this->artisan('langman:trans', ['key' => 'users']);
 
-        $this->assertContains('Could not recognize the key you want to translate.', $this->consoleOutput());
+        $this->assertStringContainsString('Could not recognize the key you want to translate.', $this->consoleOutput());
     }
 
     public function testCommandErrorOutputOnLanguageNotFound()
@@ -20,7 +20,7 @@ class TransCommandTest extends TestCase
 
         $this->artisan('langman:trans', ['key' => 'users.name', '--lang' => 'sd']);
 
-        $this->assertContains('Language (sd) could not be found!', $this->consoleOutput());
+        $this->assertStringContainsString('Language (sd) could not be found!', $this->consoleOutput());
     }
 
     public function testCommandAsksForConfirmationToCreateFileIfNotFound()

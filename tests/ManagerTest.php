@@ -105,11 +105,9 @@ class ManagerTest extends TestCase
         $this->assertContains('_content_', $manager->getFileContent($filePath));
     }
 
-    /**
-     * @expectedException Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
     public function testGetFileContentThrowsExceptionIfNotFound()
     {
+        $this->expectException(Illuminate\Contracts\Filesystem\FileNotFoundException::class);
         $manager = $this->app[\OSSTools\Langman\Manager::class];
 
         $this->createTempFiles();

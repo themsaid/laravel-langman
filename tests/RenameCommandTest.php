@@ -91,7 +91,7 @@ class RenameCommandTest extends TestCase
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        $this->assertContains("Renamed key was found in 2 file(s).", $this->consoleOutput());
+        $this->assertStringContainsString("Renamed key was found in 2 file(s).", $this->consoleOutput());
         $this->assertMatchesRegularExpression('/Encounters(?:.*)File/', $this->consoleOutput());
         $this->assertMatchesRegularExpression('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
         $this->assertMatchesRegularExpression('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
