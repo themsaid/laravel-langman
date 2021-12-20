@@ -1,20 +1,14 @@
-<h1 align="center">Laravel Langman</h1>
+# Laravel Langman
 
-<p align="center">
-Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
-translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
-<br>
-<br>
-
-<img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
-<br>
 [![Latest Version](https://img.shields.io/github/release/oss-tools/laravel-langman.svg?style=flat-square)](https://github.com/oss-tools/laravel-langman/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oss-tools/laravel-langman/run-tests?label=tests)
 ![Check & fix styling](https://github.com/oss-tools/laravel-langman/workflows/Check%20&%20fix%20styling/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
 
-</p>
+### What is Langman?
+Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
+translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
 
 ## Note
 This package is a detached fork of [themsaid/laravel-langman](https://github.com/themsaid/laravel-langman)
