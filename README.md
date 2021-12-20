@@ -1,40 +1,37 @@
-<h1 align="center">Laravel Langman</h1>
+# Laravel Langman
 
-<p align="center">
+[![Latest Version](https://img.shields.io/github/release/oss-tools/laravel-langman.svg?style=flat-square)](https://github.com/oss-tools/laravel-langman/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oss-tools/laravel-langman/run-tests?label=tests)
+![Check & fix styling](https://github.com/oss-tools/laravel-langman/workflows/Check%20&%20fix%20styling/badge.svg)
+[![Total Downloads](https://img.shields.io/packagist/dt/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
+
+### What is Langman?
 Langman is a language files manager in your artisan console, it helps you search, update, add, and remove
 translation lines with ease. Taking care of a multilingual interface is not a headache anymore.
-<br>
-<br>
 
-<img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
-<br>
-<a href="https://travis-ci.org/themsaid/laravel-langman"><img src="https://travis-ci.org/themsaid/laravel-langman.svg?branch=master" alt="Build Status"></a>
-<a href="https://styleci.io/repos/55088784"><img src="https://styleci.io/repos/55088784/shield?style=flat" alt="StyleCI"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/themsaid/laravel-langman"><img src="https://poser.pugx.org/themsaid/laravel-langman/license.svg" alt="License"></a>
-
-</p>
+## Note
+This package is a detached fork of [themsaid/laravel-langman](https://github.com/themsaid/laravel-langman)
 
 ## Installation
 
 Begin by installing the package through Composer. Run the following command in your terminal:
 
 ```
-$ composer require themsaid/laravel-langman
+$ composer require oss-tools/laravel-langman
 ```
 
 Once done, add the following line in your providers array of `config/app.php`:
 
 ```php
-Themsaid\Langman\LangmanServiceProvider::class
+OSSTools\Langman\LangmanServiceProvider::class
 ```
 
 This package has a single configuration option that points to the `resources/lang` directory, if only you need to change
 the path then publish the config file:
 
 ```
-php artisan vendor:publish --provider="Themsaid\Langman\LangmanServiceProvider"
+php artisan vendor:publish --provider="OSSTools\Langman\LangmanServiceProvider"
 ```
 
 ## Usage
@@ -163,3 +160,8 @@ This will rename `users.name` to be `users.full_name`, the console will output a
 
 If you want a web interface to manage your language files instead, I recommend [Laravel 5 Translation Manager](https://github.com/barryvdh/laravel-translation-manager)
 by [Barry vd. Heuvel](https://github.com/barryvdh).
+
+## Testing
+```
+composer test
+```

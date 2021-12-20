@@ -1,10 +1,10 @@
 <?php
 
-namespace Themsaid\Langman\Commands;
+namespace OSSTools\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Themsaid\Langman\Manager;
+use OSSTools\Langman\Manager;
 
 class TransCommand extends Command
 {
@@ -53,7 +53,7 @@ class TransCommand extends Command
     /**
      * The Languages manager instance.
      *
-     * @var \Themsaid\LangMan\Manager
+     * @var \OSSTools\LangMan\Manager
      */
     private $manager;
 
@@ -67,7 +67,7 @@ class TransCommand extends Command
     /**
      * ListCommand constructor.
      *
-     * @param \Themsaid\LangMan\Manager $manager
+     * @param \OSSTools\LangMan\Manager $manager
      * @return void
      */
     public function __construct(Manager $manager)

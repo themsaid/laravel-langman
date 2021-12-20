@@ -1,12 +1,12 @@
 <?php
 
-namespace Themsaid\Langman\Commands;
+namespace OSSTools\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use OSSTools\Langman\Manager;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Themsaid\Langman\Manager;
 
 class ShowCommand extends Command
 {
@@ -27,7 +27,7 @@ class ShowCommand extends Command
     /**
      * The Languages manager instance.
      *
-     * @var \Themsaid\LangMan\Manager
+     * @var \OSSTools\LangMan\Manager
      */
     private $manager;
 
@@ -62,7 +62,7 @@ class ShowCommand extends Command
     /**
      * ListCommand constructor.
      *
-     * @param \Themsaid\LangMan\Manager $manager
+     * @param \OSSTools\LangMan\Manager $manager
      */
     public function __construct(Manager $manager)
     {
