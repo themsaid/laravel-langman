@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
+
 class FindCommandTest extends TestCase
 {
     public function testCommandErrorOnFilesNotFound()
@@ -9,7 +11,7 @@ class FindCommandTest extends TestCase
 
         $this->createTempFiles();
 
-        $this->artisan('langman:find', ['keyword' => 'ragnar']);
+        Artisan::call('langman:find', ['keyword' => 'ragnar']);
 
         $this->assertStringContainsString('No language files were found!', $this->consoleOutput());
     }
@@ -22,7 +24,7 @@ class FindCommandTest extends TestCase
             'sp' => ['user' => "<?php\n return ['else' => 'else'];"],
         ]);
 
-        $this->artisan('langman:find', ['keyword' => 'not found']);
+        Artisan::call('langman:find', ['keyword' => 'not found']);
 
         $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
         $this->assertMatchesRegularExpression('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
@@ -37,7 +39,7 @@ class FindCommandTest extends TestCase
             'sp' => ['user' => "<?php\n return ['missing' => ['not_found' => 'sp']];"],
         ]);
 
-        $this->artisan('langman:find', ['keyword' => 'not found']);
+        Artisan::call('langman:find', ['keyword' => 'not found']);
 
         $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
         $this->assertMatchesRegularExpression('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
@@ -52,7 +54,7 @@ class FindCommandTest extends TestCase
             'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
         ]);
 
-        $this->artisan('langman:find', ['keyword' => 'not found', '--package' => 'package']);
+        Artisan::call('langman:find', ['keyword' => 'not found', '--package' => 'package']);
 
         $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
         $this->assertMatchesRegularExpression('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());

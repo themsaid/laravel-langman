@@ -8,13 +8,16 @@ translation lines with ease. Taking care of a multilingual interface is not a he
 
 <img src="http://s16.postimg.org/mghfe2v3p/ezgif_com_optimize.gif" alt="Laravel Langman">
 <br>
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
+[![Latest Version](https://img.shields.io/github/release/oss-tools/laravel-langman.svg?style=flat-square)](https://github.com/oss-tools/laravel-langman/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oss-tools/laravel-langman/run-tests?label=tests)
 ![Check & fix styling](https://github.com/oss-tools/laravel-langman/workflows/Check%20&%20fix%20styling/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/oss-tools/laravel-langman.svg?style=flat-square)](https://packagist.org/packages/oss-tools/laravel-langman)
 
 </p>
+
+## Note
+This package is a detached fork of [themsaid/laravel-langman](https://github.com/themsaid/laravel-langman)
 
 ## Installation
 
@@ -163,3 +166,8 @@ This will rename `users.name` to be `users.full_name`, the console will output a
 
 If you want a web interface to manage your language files instead, I recommend [Laravel 5 Translation Manager](https://github.com/barryvdh/laravel-translation-manager)
 by [Barry vd. Heuvel](https://github.com/barryvdh).
+
+## Testing
+```
+composer test
+```
