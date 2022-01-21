@@ -21,13 +21,11 @@ class LangmanServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/langman.php', 'langman');
 
-        $this->app->bind(Manager::class, function () {
-            return new Manager(
-                new Filesystem,
-                $this->app['config']['langman.path'],
-                array_merge($this->app['config']['view.paths'], [$this->app['path']])
-            );
-        });
+        $this->app->bind(Manager::class, fn() => new Manager(
+            new Filesystem,
+            $this->app['config']['langman.path'],
+            array_merge($this->app['config']['view.paths'], [$this->app['path']])
+        ));
 
         $this->commands([
             \OSSTools\Langman\Commands\MissingCommand::class,
