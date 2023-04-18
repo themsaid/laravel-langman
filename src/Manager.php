@@ -30,7 +30,18 @@ class Manager
      * @var array
      */
     private $syncPaths;
-
+    /**
+     * The extension to the language files.
+     *
+     * @var string
+     */
+    private $extension;
+    /**
+     * The extension to the language files.
+     *
+     * @var array
+     */
+    private $exclude_extensions;
     /**
      * Manager constructor.
      *
@@ -42,8 +53,45 @@ class Manager
         $this->disk = $disk;
         $this->path = $path;
         $this->syncPaths = $syncPaths;
+        $this->extension = 'php';
+        $this->exclude_extensions = ['json',];
     }
-
+    /**
+     * Manager setExtension.
+     *
+     * @param string $extension
+     */
+    public function setExtension($extension){
+        $this->extension = $extension;
+    }
+    /**
+     * Manager setExcludeExtensions.
+     *
+     * @param array $exclude_extensions
+     */
+    public function setExcludeExtensions($exclude_extensions){
+        $this->exclude_extensions = $exclude_extensions;
+    }
+    /**
+     * get all the json file content
+     *
+     *
+     * @return array
+     */
+    public function getJsonFilesContent($filesByFile,$lang)
+    {
+        
+        $data = [];
+        foreach ($filesByFile as $fileName => $value) {
+            if (array_key_exists($lang,$filesByFile[$fileName])) // check is language avl 
+            {
+                $contents = $this->disk->get($filesByFile[$fileName][$lang]); // in get method provide full path of json file 
+                $data[$fileName][$lang] = json_decode($contents, true);       // data['example_file']['en'] = array of json file content
+            }
+        }
+        return $data;
+        
+    }
     /**
      * Array of language files grouped by file name.
      *
@@ -54,14 +102,14 @@ class Manager
     public function files()
     {
         $files = Collection::make($this->disk->allFiles($this->path))->filter(function ($file) {
-            return $this->disk->extension($file) == 'php';
+            return $this->disk->extension($file) == $this->extension;
         });
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
 
             if (Str::contains($file->getPath(), 'vendor')) {
-                $fileName = str_replace('.php', '', $file->getFileName());
+                $fileName = str_replace('.'.$this->extension, '', $file->getFileName());
 
                 $packageName = basename(dirname($file->getPath()));
 
@@ -105,7 +153,64 @@ class Manager
 
         return $return;
     }
+    /**
+     * Include only specified names of files.
+     *
+     * @param array $filesByFile
+     * @param array $includedFileNames 
+     * @return array
+     */
+    public function filterByIncludedFileNames($filesByFile,$includedFileNames)
+    {
+        $return = [];
 
+        foreach ($filesByFile as $key => $value) {
+            if (in_array($key,$includedFileNames)) {
+                $return[$key] = $value;
+            }
+        }
+
+        return $return;
+    }
+    /**
+     * Exclude only specified names of files.
+     *
+     * @param array $filesByFile
+     * @param array $includedFileNames 
+     * @return array
+     */
+    public function filterByExcludedFileNames($filesByFile,$excludedFileNames)
+    {
+        $return = [];
+
+        foreach ($filesByFile as $key => $value) {
+            if (!in_array($key,$excludedFileNames)) {
+                $return[$key] = $value;
+            }
+        }
+
+        return $return;
+    }
+    /**
+     * Get all supported languages after exclude or include.
+     *
+     * @param array $filesByFile
+     * 
+     * @return array 
+     */
+    public function getSupportedLanguages($filesByFile)
+    {
+        $return = [];
+
+        foreach ($filesByFile as $key => $nesValue) {
+            foreach($nesValue as $key => $nesValue)
+            {
+                $return[$key] = 1;
+            }
+        }
+
+        return array_keys($return);
+    }
     /**
      * Array of supported languages.
      *
@@ -120,12 +225,12 @@ class Manager
         }, $this->disk->directories($this->path));
 
         $languages = array_filter($languages, function ($directory) {
-            return $directory != 'vendor' && $directory != 'json';
+            return $directory != 'vendor' && !in_array($directory, $this->exclude_extensions);
         });
 
         sort($languages);
 
-        return Arr::except($languages, ['vendor', 'json']);
+        return Arr::except($languages, array_merge(['vendor',],$this->exclude_extensions));
     }
 
     /**
@@ -137,9 +242,12 @@ class Manager
     public function createFile($fileName)
     {
         foreach ($this->languages() as $languageKey) {
-            $file = $this->path."/{$languageKey}/{$fileName}.php";
+            $file = $this->path."/{$languageKey}/{$fileName}.".$this->extension;
             if (! $this->disk->exists($file)) {
-                file_put_contents($file, "<?php \n\n return[];");
+                if($this->extension == "json")
+                    file_put_contents($file, "{ \n\n }");
+                if($this->extension == "php")
+                    file_put_contents($file, "<?php \n\n return[];");
             }
         }
     }
@@ -159,7 +267,7 @@ class Manager
 
         foreach ($keys as $key => $values) {
             foreach ($values as $languageKey => $value) {
-                $filePath = $this->path."/{$languageKey}/{$fileName}.php";
+                $filePath = $this->path."/{$languageKey}/{$fileName}.".$this->extension;
 
                 Arr::set($appends[$filePath], $key, $value);
             }
@@ -184,7 +292,7 @@ class Manager
     public function removeKey($fileName, $key)
     {
         foreach ($this->languages() as $language) {
-            $filePath = $this->path."/{$language}/{$fileName}.php";
+            $filePath = $this->path."/{$language}/{$fileName}.".$this->extension;
 
             $fileContent = $this->getFileContent($filePath);
 
@@ -203,17 +311,58 @@ class Manager
      */
     public function writeFile($filePath, array $translations)
     {
-        $content = "<?php \n\nreturn [";
+        switch ($this->extension) {
+            case "json":
+                $content = "{\n";
 
-        $content .= $this->stringLineMaker($translations);
+                $content .= $this->stringJsonLineMaker($translations);
+        
+                $content .= "\n}";
+                break;
+            case "php":
+                $content = "<?php \n\nreturn [";
 
-        $content .= "\n];";
+                $content .= $this->stringLineMaker($translations);
+        
+                $content .= "\n];";
+                break;
+            default:
+                $content = "<?php \n\nreturn [";
+
+                $content .= $this->stringLineMaker($translations);
+        
+                $content .= "\n];";
+          }
 
         file_put_contents($filePath, $content);
     }
-
+    
     /**
-     * Write the lines of the inner array of the language file.
+     * Write the lines of the inner array of the JSON language file.
+     *
+     * @param $array
+     * @return string
+     */
+    private function stringJsonLineMaker($array, $prepend = '')
+    {
+        $output = '';
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = $this->stringJsonLineMaker($value, $prepend.'    ');
+                $output .= "\n".$prepend.'   "'.$key.'" : {"'.$value.'" "'.$prepend.'"    },';
+            } else {
+                $value = str_replace("\'", "'", addslashes($value));
+                $key = str_replace("\'", "'", addslashes($key));
+                $output .= "\n".$prepend.'   "'.$key.'" : "'.$value.'",';
+            }
+        }
+        $output = substr($output,0,-1);
+        // dd($output);
+        return $output;
+    }
+    /**
+     * Write the lines of the inner array of the PHP language file.
      *
      * @param $array
      * @return string
@@ -236,7 +385,6 @@ class Manager
 
         return $output;
     }
-
     /**
      * Get the content in the given file path.
      *
