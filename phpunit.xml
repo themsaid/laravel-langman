@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false"
-         bootstrap="vendor/autoload.php" colors="true" convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false"
-         stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-    <coverage/>
-    <testsuites>
-        <testsuite name="Langman Test Suite">
-            <directory suffix=".php">./tests/</directory>
-        </testsuite>
-    </testsuites>
-    <php>
-        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
-    </php>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+  <coverage/>
+  <testsuites>
+    <testsuite name="Langman Test Suite">
+      <directory suffix=".php">./tests/</directory>
+      <exclude>tests/Kernel.php</exclude>
+      <exclude>tests/TestCase.php</exclude>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+  </php>
+  <source/>
 </phpunit>
