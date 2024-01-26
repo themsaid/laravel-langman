@@ -1,5 +1,5 @@
 {
-    "name": "oss-tools/laravel-langman",
+    "name": "themsaid/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
     "homepage": "https://github.com/oss-tools/laravel-langman",
@@ -27,7 +27,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "OSSTools\\Langman\\LangmanServiceProvider"
+                "themsaid\\Langman\\LangmanServiceProvider"
             ]
         }
     },
