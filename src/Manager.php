@@ -47,7 +47,7 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->allFiles($this->path))->filter(fn($file) => $this->disk->extension($file) == 'php');
+        $files = Collection::make($this->disk->allFiles($this->path))->filter(fn ($file) => $this->disk->extension($file) == 'php');
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
@@ -61,7 +61,7 @@ class Manager
             } else {
                 return $fileName;
             }
-        })->map(fn($files) => $files->keyBy(fn($file) => basename($file->getPath()))->map(fn($file) => $file->getRealPath()));
+        })->map(fn ($files) => $files->keyBy(fn ($file) => basename($file->getPath()))->map(fn ($file) => $file->getRealPath()));
 
         // If the path does not contain "vendor" then we're looking at the
         // main language files of the application, in this case we will
@@ -101,9 +101,9 @@ class Manager
      */
     public function languages()
     {
-        $languages = array_map(fn($directory) => basename($directory), $this->disk->directories($this->path));
+        $languages = array_map(fn ($directory) => basename($directory), $this->disk->directories($this->path));
 
-        $languages = array_filter($languages, fn($directory) => $directory != 'vendor' && $directory != 'json');
+        $languages = array_filter($languages, fn ($directory) => $directory != 'vendor' && $directory != 'json');
 
         sort($languages);
 
