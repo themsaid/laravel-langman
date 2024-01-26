@@ -24,14 +24,14 @@ $ composer require oss-tools/laravel-langman
 Once done, add the following line in your providers array of `config/app.php`:
 
 ```php
-OSSTools\Langman\LangmanServiceProvider::class
+mrgegroup\Langman\LangmanServiceProvider::class
 ```
 
 This package has a single configuration option that points to the `resources/lang` directory, if only you need to change
 the path then publish the config file:
 
 ```
-php artisan vendor:publish --provider="OSSTools\Langman\LangmanServiceProvider"
+php artisan vendor:publish --provider="mrgegroup\Langman\LangmanServiceProvider"
 ```
 
 ## Usage
