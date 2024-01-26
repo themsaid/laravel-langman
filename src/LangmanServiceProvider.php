@@ -1,9 +1,9 @@
 <?php
 
-namespace Themsaid\Langman;
+namespace OSSTools\Langman;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\ServiceProvider;
 
 class LangmanServiceProvider extends ServiceProvider
 {
@@ -21,22 +21,20 @@ class LangmanServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/langman.php', 'langman');
 
-        $this->app->bind(Manager::class, function () {
-            return new Manager(
-                new Filesystem,
-                $this->app['config']['langman.path'],
-                array_merge($this->app['config']['view.paths'], [$this->app['path']])
-            );
-        });
+        $this->app->bind(Manager::class, fn () => new Manager(
+            new Filesystem,
+            $this->app['config']['langman.path'],
+            array_merge($this->app['config']['view.paths'], [$this->app['path']])
+        ));
 
         $this->commands([
-            \Themsaid\Langman\Commands\MissingCommand::class,
-            \Themsaid\Langman\Commands\RemoveCommand::class,
-            \Themsaid\Langman\Commands\TransCommand::class,
-            \Themsaid\Langman\Commands\ShowCommand::class,
-            \Themsaid\Langman\Commands\FindCommand::class,
-            \Themsaid\Langman\Commands\SyncCommand::class,
-            \Themsaid\Langman\Commands\RenameCommand::class,
+            \OSSTools\Langman\Commands\MissingCommand::class,
+            \OSSTools\Langman\Commands\RemoveCommand::class,
+            \OSSTools\Langman\Commands\TransCommand::class,
+            \OSSTools\Langman\Commands\ShowCommand::class,
+            \OSSTools\Langman\Commands\FindCommand::class,
+            \OSSTools\Langman\Commands\SyncCommand::class,
+            \OSSTools\Langman\Commands\RenameCommand::class,
         ]);
     }
 }

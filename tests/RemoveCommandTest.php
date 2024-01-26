@@ -1,7 +1,8 @@
 <?php
 
-use Themsaid\Langman\Manager;
+use Illuminate\Support\Facades\Artisan;
 use Mockery as m;
+use OSSTools\Langman\Manager;
 
 class RemoveCommandTest extends TestCase
 {
@@ -18,11 +19,11 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "user.name"?')->andReturn(true);
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:remove', ['key' => 'user.name']);
+        Artisan::call('langman:remove', ['key' => 'user.name']);
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
@@ -44,11 +45,11 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(true);
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:remove', ['key' => 'user.name.f']);
+        Artisan::call('langman:remove', ['key' => 'user.name.f']);
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
@@ -72,11 +73,11 @@ class RemoveCommandTest extends TestCase
             ],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->andReturn(true);
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:remove', ['key' => 'user.name']);
+        Artisan::call('langman:remove', ['key' => 'user.name']);
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
@@ -95,11 +96,11 @@ class RemoveCommandTest extends TestCase
             'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
         ]);
 
-        $command = m::mock('\Themsaid\Langman\Commands\RemoveCommand[confirm]', [$manager]);
+        $command = m::mock('\OSSTools\Langman\Commands\RemoveCommand[confirm]', [$manager]);
         $command->shouldReceive('confirm')->once()->with('Are you sure you want to remove "package::file.not_found"?')->andReturn(true);
 
         $this->app['artisan']->add($command);
-        $this->artisan('langman:remove', ['key' => 'package::file.not_found']);
+        Artisan::call('langman:remove', ['key' => 'package::file.not_found']);
 
         $ENFile = (array) include $this->app['config']['langman.path'].'/vendor/package/en/file.php';
         $SPFile = (array) include $this->app['config']['langman.path'].'/vendor/package/sp/file.php';

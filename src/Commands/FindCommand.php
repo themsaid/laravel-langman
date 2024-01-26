@@ -1,11 +1,10 @@
 <?php
 
-namespace Themsaid\Langman\Commands;
+namespace OSSTools\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Themsaid\Langman\Manager;
-use Illuminate\Support\Str;
+use OSSTools\Langman\Manager;
 
 class FindCommand extends Command
 {
@@ -26,7 +25,7 @@ class FindCommand extends Command
     /**
      * The Languages manager instance.
      *
-     * @var \Themsaid\LangMan\Manager
+     * @var \OSSTools\LangMan\Manager
      */
     private $manager;
 
@@ -40,7 +39,7 @@ class FindCommand extends Command
     /**
      * ListCommand constructor.
      *
-     * @param \Themsaid\LangMan\Manager $manager
+     * @param \OSSTools\LangMan\Manager $manager
      * @return void
      */
     public function __construct(Manager $manager)
@@ -112,7 +111,7 @@ class FindCommand extends Command
                 $original[$languageKey] =
                     isset($values[$languageKey])
                         ? $values[$languageKey]
-                        : isset($filesContent[$fileName][$languageKey][$key]) ? $filesContent[$fileName][$languageKey][$key] : '';
+                        : (isset($filesContent[$fileName][$languageKey][$key]) ? $filesContent[$fileName][$languageKey][$key] : '');
             }
 
             // Sort the language values based on language name

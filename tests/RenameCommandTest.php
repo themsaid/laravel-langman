@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
+
 class RenameCommandTest extends TestCase
 {
     public function testRenameAKeyValue()
@@ -8,7 +10,7 @@ class RenameCommandTest extends TestCase
             'en' => ['user' => "<?php\n return['mobile' => 'Mobile'];"],
         ]);
 
-        $this->artisan('langman:rename', ['oldKey' => 'user.mobile', 'newKey' => 'contact']);
+        Artisan::call('langman:rename', ['oldKey' => 'user.mobile', 'newKey' => 'contact']);
 
         $newValue = (array) include $this->app['config']['langman.path'].'/en/user.php';
 
@@ -24,7 +26,7 @@ class RenameCommandTest extends TestCase
         $expectedValueEN = ['contact' => 'Mobile'];
         $expectedValueES = ['contact' => 'Movil'];
 
-        $this->artisan('langman:rename', ['oldKey' => 'user.mobile', 'newKey' => 'contact']);
+        Artisan::call('langman:rename', ['oldKey' => 'user.mobile', 'newKey' => 'contact']);
 
         $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $newValueES = (array) include $this->app['config']['langman.path'].'/es/user.php';
@@ -42,7 +44,7 @@ class RenameCommandTest extends TestCase
         $expectedValueEN = ['contact' => ['mobile' => 'Mobile']];
         $expectedValueES = ['contact' => ['mobile' => 'Movil']];
 
-        $this->artisan('langman:rename', ['oldKey' => 'user.contact.cellphone', 'newKey' => 'mobile']);
+        Artisan::call('langman:rename', ['oldKey' => 'user.contact.cellphone', 'newKey' => 'mobile']);
 
         $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
 
@@ -61,7 +63,7 @@ class RenameCommandTest extends TestCase
         $expectedValueEN = ['contact' => ['mobile' => 'Mobile', 'others' => ['mail' => 'E-mail']]];
         $expectedValueES = ['contact' => ['mobile' => 'Movil', 'others' => ['mail' => 'Correo electronico']]];
 
-        $this->artisan('langman:rename', ['oldKey' => 'user.contact.others.msn', 'newKey' => 'mail']);
+        Artisan::call('langman:rename', ['oldKey' => 'user.contact.others.msn', 'newKey' => 'mail']);
 
         $newValueEN = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $newValueES = (array) include $this->app['config']['langman.path'].'/es/user.php';
@@ -71,7 +73,7 @@ class RenameCommandTest extends TestCase
 
     public function testRenameCommandShowViewFilesAffectedForTheChange()
     {
-        $manager = $this->app[\Themsaid\Langman\Manager::class];
+        $manager = $this->app[\OSSTools\Langman\Manager::class];
 
         $this->createTempFiles([
             'en' => ['users' => "<?php\n return['name' => 'Name'];"],
@@ -85,15 +87,15 @@ class RenameCommandTest extends TestCase
         mkdir(__DIR__.'/views_temp/users');
         file_put_contents(__DIR__.'/views_temp/users/index.blade.php', "{{ trans('users.name') }} {{ trans('users.city') }} {{ trans('users.name') }}");
 
-        $this->artisan('langman:rename', ['oldKey' => 'users.name', 'newKey' => 'username']);
+        Artisan::call('langman:rename', ['oldKey' => 'users.name', 'newKey' => 'username']);
 
         array_map('unlink', glob(__DIR__.'/views_temp/users/index.blade.php'));
         array_map('rmdir', glob(__DIR__.'/views_temp/users'));
         array_map('unlink', glob(__DIR__.'/views_temp/users.blade.php'));
 
-        $this->assertContains("Renamed key was found in 2 file(s).", $this->consoleOutput());
-        $this->assertRegExp('/Encounters(?:.*)File/', $this->consoleOutput());
-        $this->assertRegExp('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
-        $this->assertRegExp('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
+        $this->assertStringContainsString("Renamed key was found in 2 file(s).", $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/Encounters(?:.*)File/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/1(?:.*)users\.blade\.php/', $this->consoleOutput());
+        $this->assertMatchesRegularExpression('/2(?:.*)users(\\\|\/)index\.blade\.php/', $this->consoleOutput());
     }
 }

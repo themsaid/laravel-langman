@@ -1,27 +1,20 @@
 {
-    "name": "themsaid/laravel-langman",
+    "name": "mrge-group/laravel-langman",
     "description": "Manage language files with ease.",
     "keywords": ["laravel", "localization", "multilingual"],
-    "homepage": "https://github.com/themsaid/laravel-langman",
+    "homepage": "https://github.com/oss-tools/laravel-langman",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Mohamed Said",
-            "email": "theMohamedSaid@gmail.com",
-            "homepage": "https://themsaid.github.io"
-        }
-    ],
     "require": {
-        "php": "^5.5.9 || ^7.0",
-        "illuminate/support": "~5.1",
-        "illuminate/console": "~5.1",
-        "illuminate/filesystem": "~5.1"
+        "php": "^8.0.2",
+        "illuminate/database": "^9.0 || ^10.0",
+        "illuminate/support": "^9.0 || ^10.0",
+        "illuminate/console": "^9.0 || ^10.0",
+        "illuminate/filesystem": "^9.0 || ^10.0"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^4.8 || ^5.0",
-        "orchestra/testbench": "~3.0",
-        "orchestra/database": "~3.0",
-        "mockery/mockery": "~0.9.4"
+        "orchestra/testbench": "^7.0 || ^8.0",
+        "phpunit/phpunit": "^9.5.10 || ^10.1",
+        "mockery/mockery": "^1.6.0"
     },
     "autoload": {
         "psr-4": {
@@ -34,8 +27,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Themsaid\\Langman\\LangmanServiceProvider"
+                "mrgegroup\\Langman\\LangmanServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
 }
