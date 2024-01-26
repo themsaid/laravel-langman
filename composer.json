@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OSSTools\\Langman\\": "src"
+            "Themsaid\\Langman\\": "src"
         },
         "classmap": [
             "tests"
@@ -27,7 +27,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "themsaid\\Langman\\LangmanServiceProvider"
+                "Themsaid\\Langman\\LangmanServiceProvider"
             ]
         }
     },
