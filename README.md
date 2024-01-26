@@ -18,7 +18,7 @@ This package is a detached fork of [themsaid/laravel-langman](https://github.com
 Begin by installing the package through Composer. Run the following command in your terminal:
 
 ```
-$ composer require oss-tools/laravel-langman
+$ composer require mrge-group/laravel-langman
 ```
 
 Once done, add the following line in your providers array of `config/app.php`:
