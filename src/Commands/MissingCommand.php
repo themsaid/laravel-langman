@@ -1,10 +1,10 @@
 <?php
 
-namespace OSSTools\Langman\Commands;
+namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use OSSTools\Langman\Manager;
+use Themsaid\Langman\Manager;
 
 class MissingCommand extends Command
 {
@@ -25,7 +25,7 @@ class MissingCommand extends Command
     /**
      * The Languages manager instance.
      *
-     * @var \OSSTools\LangMan\Manager
+     * @var \Themsaid\LangMan\Manager
      */
     private $manager;
 
@@ -39,7 +39,7 @@ class MissingCommand extends Command
     /**
      * ListCommand constructor.
      *
-     * @param \OSSTools\LangMan\Manager $manager
+     * @param \Themsaid\LangMan\Manager $manager
      * @return void
      */
     public function __construct(Manager $manager)
@@ -96,8 +96,7 @@ class MissingCommand extends Command
 
         foreach ($missing as $missingKey) {
             $values[$missingKey] = $this->ask(
-                "<fg=yellow>{$missingKey}</> translation",
-                $this->getDefaultValue($missingKey)
+                "<fg=yellow>{$missingKey}</> translation", $this->getDefaultValue($missingKey)
             );
         }
 

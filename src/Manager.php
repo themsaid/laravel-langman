@@ -1,6 +1,6 @@
 <?php
 
-namespace OSSTools\Langman;
+namespace Themsaid\Langman;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
@@ -12,18 +12,24 @@ class Manager
 {
     /**
      * The Filesystem instance.
+     *
+     * @var Filesystem
      */
-    private \Illuminate\Filesystem\Filesystem $disk;
+    private $disk;
 
     /**
      * The path to the language files.
+     *
+     * @var string
      */
-    private string $path;
+    private $path;
 
     /**
      * The paths to directories where we look for localised strings to sync.
+     *
+     * @var array
      */
-    private array $syncPaths;
+    private $syncPaths;
 
     /**
      * Manager constructor.
@@ -47,7 +53,9 @@ class Manager
      */
     public function files()
     {
-        $files = Collection::make($this->disk->allFiles($this->path))->filter(fn ($file) => $this->disk->extension($file) == 'php');
+        $files = Collection::make($this->disk->allFiles($this->path))->filter(function ($file) {
+            return $this->disk->extension($file) == 'php';
+        });
 
         $filesByFile = $files->groupBy(function ($file) {
             $fileName = $file->getBasename('.'.$file->getExtension());
@@ -61,7 +69,13 @@ class Manager
             } else {
                 return $fileName;
             }
-        })->map(fn ($files) => $files->keyBy(fn ($file) => basename($file->getPath()))->map(fn ($file) => $file->getRealPath()));
+        })->map(function ($files) {
+            return $files->keyBy(function ($file) {
+                return basename($file->getPath());
+            })->map(function ($file) {
+                return $file->getRealPath();
+            });
+        });
 
         // If the path does not contain "vendor" then we're looking at the
         // main language files of the application, in this case we will
@@ -101,9 +115,13 @@ class Manager
      */
     public function languages()
     {
-        $languages = array_map(fn ($directory) => basename($directory), $this->disk->directories($this->path));
+        $languages = array_map(function ($directory) {
+            return basename($directory);
+        }, $this->disk->directories($this->path));
 
-        $languages = array_filter($languages, fn ($directory) => $directory != 'vendor' && $directory != 'json');
+        $languages = array_filter($languages, function ($directory) {
+            return $directory != 'vendor' && $directory != 'json';
+        });
 
         sort($languages);
 
@@ -260,7 +278,7 @@ class Manager
         foreach ($this->getAllViewFilesWithTranslations() as $file => $matches) {
             foreach ($matches as $key) {
                 try {
-                    [$fileName, $keyName] = explode('.', $key, 2);
+                    list($fileName, $keyName) = explode('.', $key, 2);
                 } catch (\ErrorException $e) {
                     continue;
                 }
@@ -353,7 +371,7 @@ class Manager
         // other languages. Those keys combined with ones with values = ''
         // will be sent to the console user to fill and save in disk.
         foreach ($values as $key => $value) {
-            [$fileName, $languageKey, $key] = explode('.', $key, 3);
+            list($fileName, $languageKey, $key) = explode('.', $key, 3);
 
             if (in_array("{$fileName}.{$key}", $searched)) {
                 continue;

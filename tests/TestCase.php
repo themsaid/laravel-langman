@@ -6,7 +6,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
 
     protected function getPackageProviders($app)
     {
-        return [\OSSTools\Langman\LangmanServiceProvider::class];
+        return [\Themsaid\Langman\LangmanServiceProvider::class];
     }
 
     protected function getEnvironmentSetUp($app)
@@ -15,14 +15,14 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         $app['config']->set('view.paths', [__DIR__.'/views_temp']);
     }
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 
         exec('rm -rf '.__DIR__.'/temp/*');
     }
 
-    public function tearDown(): void
+    public function tearDown()
     {
         parent::tearDown();
 

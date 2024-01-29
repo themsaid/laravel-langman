@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
-
 class FindCommandTest extends TestCase
 {
     public function testCommandErrorOnFilesNotFound()
@@ -11,9 +9,9 @@ class FindCommandTest extends TestCase
 
         $this->createTempFiles();
 
-        Artisan::call('langman:find', ['keyword' => 'ragnar']);
+        $this->artisan('langman:find', ['keyword' => 'ragnar']);
 
-        $this->assertStringContainsString('No language files were found!', $this->consoleOutput());
+        $this->assertContains('No language files were found!', $this->consoleOutput());
     }
 
     public function testCommandOutputForFile()
@@ -24,12 +22,12 @@ class FindCommandTest extends TestCase
             'sp' => ['user' => "<?php\n return ['else' => 'else'];"],
         ]);
 
-        Artisan::call('langman:find', ['keyword' => 'not found']);
+        $this->artisan('langman:find', ['keyword' => 'not found']);
 
-        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
-        $this->assertMatchesRegularExpression('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
-        $this->assertStringNotContainsString('age', $this->consoleOutput());
-        $this->assertStringNotContainsString('else', $this->consoleOutput());
+        $this->assertRegExp('/key(?:.*)en(?:.*)nl/', $this->consoleOutput());
+        $this->assertRegExp('/user\.not_found(?:.*)User NoT fOunD(?:.*)something/', $this->consoleOutput());
+        $this->assertNotContains('age', $this->consoleOutput());
+        $this->assertNotContains('else', $this->consoleOutput());
     }
 
     public function testCommandOutputForFileWithNestedKeys()
@@ -39,11 +37,11 @@ class FindCommandTest extends TestCase
             'sp' => ['user' => "<?php\n return ['missing' => ['not_found' => 'sp']];"],
         ]);
 
-        Artisan::call('langman:find', ['keyword' => 'not found']);
+        $this->artisan('langman:find', ['keyword' => 'not found']);
 
-        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
-        $this->assertMatchesRegularExpression('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
-        $this->assertStringNotContainsString('jarl_borg', $this->consoleOutput());
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/user\.missing\.not_found(?:.*)user not found(?:.*)sp/', $this->consoleOutput());
+        $this->assertNotContains('jarl_borg', $this->consoleOutput());
     }
 
     public function testCommandOutputForPackage()
@@ -54,10 +52,10 @@ class FindCommandTest extends TestCase
             'vendor' => ['package' => ['en' => ['file' => "<?php\n return ['not_found' => 'file not found here'];"], 'sp' => ['file' => "<?php\n return ['not_found' => 'something'];"]]],
         ]);
 
-        Artisan::call('langman:find', ['keyword' => 'not found', '--package' => 'package']);
+        $this->artisan('langman:find', ['keyword' => 'not found', '--package' => 'package']);
 
-        $this->assertMatchesRegularExpression('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
-        $this->assertMatchesRegularExpression('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
-        $this->assertStringNotContainsString('weight', $this->consoleOutput());
+        $this->assertRegExp('/key(?:.*)en(?:.*)sp/', $this->consoleOutput());
+        $this->assertRegExp('/package::file\.not_found(?:.*)file not found here(?:.*)something/', $this->consoleOutput());
+        $this->assertNotContains('weight', $this->consoleOutput());
     }
 }

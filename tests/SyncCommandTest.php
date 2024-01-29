@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
-
 class SyncCommandTest extends TestCase
 {
     public function testCommandOutputForFile()
@@ -19,7 +17,7 @@ class SyncCommandTest extends TestCase
             'nl' => ['user' => "<?php\n return [];"],
         ]);
 
-        Artisan::call('langman:sync');
+        $this->artisan('langman:sync');
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNlFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
@@ -55,7 +53,7 @@ class SyncCommandTest extends TestCase
             'nl' => ['user' => "<?php\n return ['name' => ['middle' => 'middle', 'first' => 'old_value']];"],
         ]);
 
-        Artisan::call('langman:sync');
+        $this->artisan('langman:sync');
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
         $userNLFile = (array) include $this->app['config']['langman.path'].'/nl/user.php';
@@ -82,7 +80,7 @@ class SyncCommandTest extends TestCase
             'en' => ['user' => "<?php\n return ['name' => ['middle' => 'middle']];"],
         ]);
 
-        Artisan::call('langman:sync');
+        $this->artisan('langman:sync');
 
         $userENFile = (array) include $this->app['config']['langman.path'].'/en/user.php';
 

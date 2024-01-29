@@ -1,10 +1,10 @@
 <?php
 
-namespace OSSTools\Langman\Commands;
+namespace Themsaid\Langman\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use OSSTools\Langman\Manager;
+use Themsaid\Langman\Manager;
 
 class SyncCommand extends Command
 {
@@ -25,14 +25,14 @@ class SyncCommand extends Command
     /**
      * The Languages manager instance.
      *
-     * @var \OSSTools\LangMan\Manager
+     * @var \Themsaid\LangMan\Manager
      */
     private $manager;
 
     /**
      * Command constructor.
      *
-     * @param \OSSTools\LangMan\Manager $manager
+     * @param \Themsaid\LangMan\Manager $manager
      * @return void
      */
     public function __construct(Manager $manager)
@@ -77,7 +77,7 @@ class SyncCommand extends Command
                 $fileContent = $this->manager->getFileContent($path);
 
                 if (isset($allKeysInFiles[$fileName])) {
-                    $missingKeys = array_diff($allKeysInFiles[$fileName], array_keys(Arr::dot($fileContent)));
+                    $missingKeys = array_diff($allKeysInFiles[$fileName], array_keys(array_dot($fileContent)));
 
                     foreach ($missingKeys as $i => $missingKey) {
                         if (Arr::has($fileContent, $missingKey)) {
