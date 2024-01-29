@@ -1,7 +1,7 @@
 <?php
 
-use Themsaid\Langman\Manager;
 use Mockery as m;
+use Themsaid\Langman\Manager;
 
 class RemoveCommandTest extends TestCase
 {
